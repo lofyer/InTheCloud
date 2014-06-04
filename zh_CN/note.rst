@@ -15,4 +15,6 @@ For geek
 --------
 在geek云中添加dlna以及pnp搭建，还有git服务器或者管理的搭建
 
-不要忘了使用的LeapMotion控制台
+使用LeapMotion作为控制设备的控制台
+
+添加XMPP/Jabber？
