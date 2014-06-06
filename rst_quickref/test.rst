@@ -80,3 +80,17 @@ tab测试
 .. epigraph::
 
     鸿篇巨作，引用。
+
+.. DANGER::
+    Beware killer rabbits!
+
+.. line-block::
+    Lend us
+        a couple
+    of tea.
+        Eva.
+
+.. sidebar:: Sidebar Title
+    :subtitle: 边栏
+
+    边栏内容
