@@ -114,3 +114,12 @@
 -----------------------------
 
 既然要搭建一个稳健的基础存储，那么glusterfs推荐使用distributed striped replicated方式，这里使用4台预装CentOS 6(SELINUX设置为permissive)的机器进行演示。
+
+添加DNS或者修改hosts文件
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+鉴于笔者所在环境中暂时没有配置独立的DNS，此处先修改hosts文件以完成配置（每台机器上都如此设置）：
+
+.. code::
+
+    # echo -e "192.168.10.101\tgs1.example.com\n192.168.10.102\tgs2.example.com\n192.168.10.103\tgs3.example.com\n192.168.10.104\tgs4.example.com" >> /etc/hosts
