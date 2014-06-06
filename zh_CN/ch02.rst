@@ -118,8 +118,153 @@
 添加DNS或者修改hosts文件
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-鉴于笔者所在环境中暂时没有配置独立的DNS，此处先修改hosts文件以完成配置（每台机器上都如此设置）：
+鉴于笔者所在环境中暂时没有配置独立的DNS，此处先修改hosts文件以完成配置，注意每台机器都要添加：
 
 .. code::
 
     # echo -e "192.168.10.101\tgs1.example.com\n192.168.10.102\tgs2.example.com\n192.168.10.103\tgs3.example.com\n192.168.10.104\tgs4.example.com" >> /etc/hosts
+
+同样地在所有机器上添加repo：
+
+    /etc/yum.repos.d/gluster_epel.repo
+
+.. code::
+
+    [epel]
+    name=Extra Packages for Enterprise Linux 6 - $basearch
+    #baseurl=http://download.fedoraproject.org/pub/epel/6/$basearch
+    mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-6&amp;arch=$basearch
+    failovermethod=priority
+    enabled=1
+    gpgcheck=0
+    gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-EPEL-6
+
+    [glusterfs-epel]
+    name=GlusterFS is a clustered file-system capable of scaling to several petabytes.
+    baseurl=http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/epel-$releasever/$basearch/
+    enabled=1
+    skip_if_unavailable=1
+    gpgcheck=0
+    gpgkey=http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/pub.key
+
+    [glusterfs-noarch-epel]
+    name=GlusterFS is a clustered file-system capable of scaling to several petabytes.
+    baseurl=http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/epel-$releasever/noarch
+    enabled=1
+    skip_if_unavailable=1
+    gpgcheck=0
+    gpgkey=http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/pub.key
+
+    [glusterfs-source-epel]
+    name=GlusterFS is a clustered file-system capable of scaling to several petabytes. - Source
+    baseurl=http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/epel-$releasever/SRPMS
+    enabled=0
+    skip_if_unavailable=1
+    gpgcheck=1
+    gpgkey=http://download.gluster.org/pub/gluster/glusterfs/LATEST/EPEL.repo/pub.key
+
+准备磁盘作为砖块
+~~~~~~~~~~~~~~~~
+
+在所有节点上安装xfs用户空间工具：
+
+.. code::
+
+    # yum install -y glusterfs glusterfs-fuse glusterfs-server xfsprogs
+    # /etc/init.d/glusterd start
+    # /etc/init.d/glusterfsd start
+    # chkconfig glusterfsd on
+    # chkconfig glusterd on
+
+假设每台机器除系统盘之外都有2块1T SATA硬盘，我们需要对其进行分区，创建逻辑卷，格式化并挂载：
+
+.. code::
+    
+    # fdisk /dev/sdX << EOF
+    n
+    p
+    1
+ 
+    w
+    EOF
+
+格式化并挂载：
+
+.. code::
+
+    # mkfs.xfs -i size 512 /dev/sdb1
+    # mkfs.xfs -i size 512 /dev/sdc1
+    # mkdir /gluster_brick_root1
+    # mkdir /gluster_brick_root2
+    # echo -e "/dev/sdb1\t/gluster_brick_root1\txfs\tdefaults\t0 0\n/dev/sdc1\t/gluster_brick_root2\txfs\tdefaults\t0 0" >> /etc/fstab
+    # mount -a
+    # mkdir /gluster_brick_root1/data
+    # mkdir /gluster_brick_root2/data
+
+.. epigraph:: 
+
+    为什么要用XFS？
+   
+    XFS具有元数据日志功能，可以快速恢复数据；同时，可以在线扩容及碎片整理。其他文件系统比如EXT3，EXT4未做充分测试。
+
+添加卷
+~~~~~~~~
+
+在其中任意台机器上，比如gs2.example.com，执行
+
+.. code::
+
+    # gluster peer probe gs1.example.com
+    # gluster peer probe gs3.example.com
+    # gluster peer probe gs4.example.com
+
+使用砖块进行卷的构建：
+
+.. code::
+
+    # gluster
+      > volume create gluster-vol1 stripe 2 replica 2 gs1.example.com:/gluster_brick_root1/data gs2.example.com:/gluster_brick_root1/data gs1.example.com:/gluster_brick_root2/data gs2.example.com:/gluster_brick_root2/data gs3.example.com:/gluster_brick_root1/data gs4.example.com:/gluster_brick_root1/data gs3.example.com:/gluster_brick_root2/data gs4.example.com:/gluster_brick_root2/data force
+      > volume start gluster-vol1
+      > volume status
+      > volume status
+      Status of volume: gluster-vol1
+      Gluster process                                         Port    Online  Pid
+      ------------------------------------------------------------------------------
+      Brick gs1.example.com:/gluster_brick_root1/data         49152   Y       1984
+      Brick gs2.example.com:/gluster_brick_root1/data         49152   Y       1972
+      Brick gs1.example.com:/gluster_brick_root2/data         49153   Y       1995
+      Brick gs2.example.com:/gluster_brick_root2/data         49153   Y       1983
+      Brick gs3.example.com:/gluster_brick_root1/data         49152   Y       1961
+      Brick gs4.example.com:/gluster_brick_root1/data         49152   Y       1975
+      Brick gs3.example.com:/gluster_brick_root2/data         49153   Y       1972
+      Brick gs4.example.com:/gluster_brick_root2/data         49153   Y       1986
+      NFS Server on localhost                                 2049    Y       1999
+      Self-heal Daemon on localhost                           N/A     Y       2006
+      NFS Server on gs2.example.com                           2049    Y       2007
+      Self-heal Daemon on gs2.example.com                     N/A     Y       2014
+      NFS Server on gs2.example.com                           2049    Y       1995
+      Self-heal Daemon on gs2.example.com                     N/A     Y       2002
+      NFS Server on gs3.example.com                           2049    Y       1986
+      Self-heal Daemon on gs3.example.com                     N/A     Y       1993
+       
+      Task Status of Volume gluster-vol1
+      ------------------------------------------------------------------------------
+      There are no active volume tasks
+      > volume info all
+      gluster volume info all
+         
+      Volume Name: gluster-vol1
+      Type: Distributed-Striped-Replicate
+      Volume ID: bc8e102c-2b35-4748-ab71-7cf96ce083f3
+      Status: Started
+      Number of Bricks: 2 x 2 x 2 = 8
+      Transport-type: tcp
+      Bricks:
+      Brick1: gs1.example.com:/gluster_brick_root1/data
+      Brick2: gs2.example.com:/gluster_brick_root1/data
+      Brick3: gs1.example.com:/gluster_brick_root2/data
+      Brick4: gs2.example.com:/gluster_brick_root2/data
+      Brick5: gs3.example.com:/gluster_brick_root1/data
+      Brick6: gs4.example.com:/gluster_brick_root1/data
+      Brick7: gs3.example.com:/gluster_brick_root2/data
+      Brick8: gs4.example.com:/gluster_brick_root2/data
