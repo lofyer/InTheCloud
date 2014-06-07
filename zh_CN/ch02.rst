@@ -120,13 +120,21 @@
 
 鉴于笔者所在环境中暂时没有配置独立的DNS，此处先修改hosts文件以完成配置，注意每台机器都要添加：
 
+    */etc/hosts*
+
 .. code::
 
-    # echo -e "192.168.10.101\tgs1.example.com\n192.168.10.102\tgs2.example.com\n192.168.10.103\tgs3.example.com\n192.168.10.104\tgs4.example.com" >> /etc/hosts
+    127.0.0.1       localhost.localdomain localhost 
+    ::1             localhost6.localdomain6 localhost6
+
+    192.168.10.101  gs1.example.com
+    192.168.10.102  tgs2.example.com
+    192.168.10.103  tgs3.example.com
+    192.168.10.104  gs4.example.com
 
 同样地在所有机器上添加repo：
 
-    /etc/yum.repos.d/gluster_epel.repo
+    */etc/yum.repos.d/gluster_epel.repo*
 
 .. code::
 
@@ -223,10 +231,13 @@
 .. code::
 
     # gluster
-      > volume create gluster-vol1 stripe 2 replica 2 gs1.example.com:/gluster_brick_root1/data gs2.example.com:/gluster_brick_root1/data gs1.example.com:/gluster_brick_root2/data gs2.example.com:/gluster_brick_root2/data gs3.example.com:/gluster_brick_root1/data gs4.example.com:/gluster_brick_root1/data gs3.example.com:/gluster_brick_root2/data gs4.example.com:/gluster_brick_root2/data force
-      > volume start gluster-vol1
-      > volume status
-      > volume status
+      > volume create gluster-vol1 stripe 2 replica 2 \
+      gs1.example.com:/gluster_brick_root1/data gs2.example.com:/gluster_brick_root1/data \
+      gs1.example.com:/gluster_brick_root2/data gs2.example.com:/gluster_brick_root2/data \
+      gs3.example.com:/gluster_brick_root1/data gs4.example.com:/gluster_brick_root1/data \
+      gs3.example.com:/gluster_brick_root2/data gs4.example.com:/gluster_brick_root2/data force
+      > volume start gluster-vol1 # 启动卷
+      > volume status gluster-vol1 # 查看卷状态
       Status of volume: gluster-vol1
       Gluster process                                         Port    Online  Pid
       ------------------------------------------------------------------------------
@@ -250,7 +261,7 @@
       Task Status of Volume gluster-vol1
       ------------------------------------------------------------------------------
       There are no active volume tasks
-      > volume info all
+      > volume info all 查看所有卷信息
       gluster volume info all
          
       Volume Name: gluster-vol1
@@ -268,3 +279,79 @@
       Brick6: gs4.example.com:/gluster_brick_root1/data
       Brick7: gs3.example.com:/gluster_brick_root2/data
       Brick8: gs4.example.com:/gluster_brick_root2/data
+
+添加卷
+~~~~~~~~
+
+当以glusterfs挂载时，客户端的hosts文件里需要有的任一节点做解析：
+
+    *挂载glusterfs的客户端/etc/hosts*
+
+.. code::
+
+    127.0.0.1       localhost.localdomain localhost
+    ::1             localhost6.localdomain6 localhost6
+
+    192.168.1.81    gs1.example.com
+
+安装glusterfuse，将gluster卷作为glusterfs挂载，并写入1M文件查看其在各砖块分配：
+
+.. code::
+
+    # yum install glusterfs glusterfs-fuse
+    # mount.glusterfs 192.168.1.81:/gluster-vol1 /mnt
+    # cd /mnt
+    # dd if=/dev/zero of=a.img bs=1k count=1k
+    # cp a.img b.img; cp a.img c.img; cp a.img d.img
+
+在四台服务端分别查看：
+
+.. code::
+
+    [root@gs1 ~]# ls -lh /gluster_brick_root*
+    /gluster_brick_root1/data/:
+    total 1.0M
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 a.img
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 d.img
+    /gluster_brick_root2/data/:
+    total 1.0M
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 a.img
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 d.img
+
+.. code::
+
+    [root@gs2 ~]# ls -lh /gluster_brick_root*
+    /gluster_brick_root1/data/:
+    total 1.0M
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 a.img
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 d.img
+    /gluster_brick_root2/data/:
+    total 1.0M
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 a.img
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 d.img
+
+.. code::
+
+    [root@gs3 ~]# ls -lh /gluster_brick_root*
+    /gluster_brick_root1/data/:
+    total 1.0M
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 b.img
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 c.img
+    /gluster_brick_root2/data/:
+    total 1.0M
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 b.img
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 c.img
+
+.. code::
+
+    [root@gs4 ~]# ls -lh /gluster_brick_root*
+    /gluster_brick_root1/data/:
+    total 1.0M
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 b.img
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 c.img
+    /gluster_brick_root2/data/:
+    total 1.0M
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 b.img
+    -rw-r--r--. 2 root root 512K Apr 22 17:13 c.img
+
+至此，所有配置结束。
