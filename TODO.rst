@@ -25,3 +25,7 @@ For geek
 使用LeapMotion作为控制设备的控制台
 
 添加XMPP/Jabber？
+
+添加DMZ主机
+
+添加avahi以及netatalk让apple设备发现
