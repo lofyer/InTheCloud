@@ -280,7 +280,7 @@
       Brick7: gs3.example.com:/gluster_brick_root2/data
       Brick8: gs4.example.com:/gluster_brick_root2/data
 
-添加卷
+挂载卷
 ~~~~~~~~
 
 当以glusterfs挂载时，客户端的hosts文件里需要有的任一节点做解析：
@@ -294,7 +294,7 @@
 
     192.168.1.81    gs1.example.com
 
-安装glusterfuse，将gluster卷作为glusterfs挂载，并写入1M文件查看其在各砖块分配：
+安装gluster-fuse，将gluster卷作为glusterfs挂载，并写入1M文件查看其在各砖块分配：
 
 .. code::
 
@@ -356,18 +356,21 @@
 
 至此，所有配置结束。
 
-Glusterfs应用示例及技巧
-~~~~~~~~~~~~~~~~~~~~~~~
+2.4 Glusterfs应用示例及技巧
+---------------------------
 
-#. 文件权限
+文件权限
+~~~~~~~~
 
     glusterfs在创建卷时会更改砖块所有者为root.root，对于某些应用请注意更改砖块目录所有者（比如在/etc/rc.local中添加chown，不要更改砖块下隐藏目录.glusterfs）。
 
-#. 砖块分割
+砖块组合
+~~~~~~~~
 
     网上现有的部分文档中所述的砖块划分方式，是将整个磁盘划分为砖块，此种划分方式在某些场景下不是很好（比如存储复用），可以在/brickX下创建目录，比如data1，同时在创建glusterfs卷的时候使用HOST:/brickX/data1作为砖块，以合理利用存储空间。
 
-#. normal、replica、striped卷组合
+normal、replica、striped卷组合
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     砖块的划分排序：striped（normal）优先，replica在striped（normal）基础上做冗余；计算大小时，同一replica组中的brick合并为一个砖块，一个striped组可看做一个有效块。
 
@@ -395,7 +398,8 @@ Glusterfs应用示例及技巧
         host1:/brick1 host2:/brick1 host3:/brick1 host4:/brick1 \
         host1:/brick2 host2:/brick2 host3:/brick2 host4:/brick2 force
 
-#. 作为nfs挂载
+作为nfs挂载
+~~~~~~~~~~~
  
     由于glusterfs占用了2049端口，所以其与nfs server一般不能共存于同一台服务器，除非更改nfs服务端口。
 
@@ -403,7 +407,8 @@ Glusterfs应用示例及技巧
    
         # mount -t nfs -o vers=3 server1:/volume1 /mnt
 
-#. 作为cifs挂载
+作为cifs挂载
+~~~~~~~~~~~~
 
     先在某一服务器或者客户端将起挂载，再以cifs方式导出：
 
@@ -417,11 +422,12 @@ Glusterfs应用示例及技巧
          read only = no
          guest ok = yes
 
-#. 修复裂脑（split-brain）
+修复裂脑（split-brain）
+~~~~~~~~~~~~~~~~~~~~~~~
 
     裂脑发生以后，各节点信息可能会出现不一致。可以通过以下步骤查看并修复。
 
-    **定位裂脑文件**
+    #. 定位裂脑文件
 
     通过命令
 
@@ -431,11 +437,11 @@ Glusterfs应用示例及技巧
 
     或者查看在客户端仍然是Input/Output错误的文件。
 
-    **关闭已经打开的文件或者虚机**
+    #. 关闭已经打开的文件或者虚机
 
-    **确定正确副本**
+    #. 确定正确副本
 
-    **恢复扩展属性**
+    #. 恢复扩展属性
 
 #. 当一个卷正在使用时，你删除了其中一个brick，并试图再次使用时，可能会出现“/bricks/app or a prefix of it is already part of a volume”，对于3.3版本以后的glusterfs有此问题。
 
