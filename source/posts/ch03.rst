@@ -1,0 +1,7 @@
+======
+第三章
+======
+
+Welcome to the core!
+
+云计算目前主流实现有SaaS（Software-as-a-service）、PaaS（Platform-as-a-service）和IaaS（Infrastructure-as-a-service）。IaaS和PaaS都算作基础件，SaaS可以与基础件自由组合或者单独使用。
