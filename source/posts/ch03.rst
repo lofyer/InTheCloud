@@ -39,3 +39,25 @@ oVirt目前两种部署方式：
 |                  |    :align: center            |
 +------------------+------------------------------+
 
+3.2 搭建高可用oVirt（hosted engine）
+------------------------------------
+
+笔者写此文时oVirt已经更新到3.4。
+
+在此，我们会用到之前创建的distributed-replicated存储，这样可用保证系统服务的高度可用性有所提高。
+
+有以下几点需要注意：
+
+.. epigraph::
+
+    1. 宿主机的CPU架构需要为Westmere（Westmere E56xx/L56xx/X56xx）、Nehalem（Intel Core i7 9xx）、Penryn（Intel Core 2 Duo P9xxx）或者Conroe（Intel Celeron_4x0）中的之一，否则集群类型会与宿主机类型不兼容导致数据中心启动失败。
+
+    CPU Family table 参阅
+        `Intel Architecture and Processor Identification With CPUID Model and Family Numbers <https://software.intel.com/en-us/articles/intel-architecture-and-processor-identification-with-cpuid-model-and-family-numbers>`_
+
+    2. 建议参考第11节提前安装含有oVirt管理的虚拟机，硬盘格式为RAW，从而在安装管理机时作为OVF导入或者覆盖虚拟磁盘，减少失败风险时间。
+
+准备
+~~~~
+
+每台机器上都要添加作为虚拟机运行的engine的FQDN，此处为ha.lofyer.org。

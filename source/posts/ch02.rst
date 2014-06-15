@@ -443,7 +443,10 @@ normal、replica、striped卷组合
 
     #. 恢复扩展属性
 
-#. 当一个卷正在使用时，你删除了其中一个brick，并试图再次使用时，可能会出现“/bricks/app or a prefix of it is already part of a volume”，对于3.3版本以后的glusterfs有此问题。
+砖块复用
+~~~~~~~~
+
+当一个卷正在使用时，你删除了其中一个brick，并试图再次使用时，可能会出现“/bricks/app or a prefix of it is already part of a volume”，对于3.3版本以后的glusterfs有此问题。
 
     解决方法：
 
