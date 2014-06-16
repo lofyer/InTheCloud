@@ -31,16 +31,35 @@ IaaS云计算平台，综合来说具有以下特性：
 
 oVirt目前两种部署方式：
 
-+------------------+------------------------------+
-|管理独占一台物理机|.. image:: ../images/03-01.png|
-|                  |    :align: center            |
-+------------------+------------------------------+
-|高可用管理机      |.. image:: ../images/03-02.png|
-|                  |    :align: center            |
-+------------------+------------------------------+
++-------------------+------------------------------+
+|管理独占一台物理机 |.. image:: ../images/03-01.png|
+|                   |    :align: center            |
++-------------------+------------------------------+
+|高可用管理机       |.. image:: ../images/03-02.png|
+|                   |    :align: center            |
++-------------------+------------------------------+
 
-3.2 搭建高可用oVirt（hosted engine）
-------------------------------------
+.. note:: **搭建流程概览**
+
+    #. 准备服务器
+    #. 安装高可用管理端或者普通管理端
+    #. 安装节点
+    #. 添加存储域
+
+3.2 搭建普通oVirt虚拟化平台
+---------------------------
+
+对于初次使用oVirt的用户，建议使用此种搭建方式，**太折腾的话就吓走好多目标读者了** 。
+
+使用之前的四台机器，分别为gs1.lofyer.org，gs2.lofyer.org，gs3.lofyer.org和gs4.lofyer.org，其中，将gs1作为管理机安装ovirt-engine，其余三台作为节点（node），存储使用已经创建好的glusterfs。
+
+准备
+~~~~
+
+存储可以使用之前的glusterfs，方式为NFS_V3，注意将brick的权限设置为vdsm.kvm或者36:36。
+
+3.3 搭建管理端高可用oVirt（hosted engine）
+------------------------------------------
 
 笔者写此文时oVirt已经更新到3.4。
 
@@ -71,7 +90,7 @@ oVirt目前两种部署方式：
 .. image:: ../images/03-03.png
     :align: center
 
-由于engine以及node的网络服务依赖于**network**而非**NetworkManager**，我们需要启用前者禁用后者，在每一台服务器上都进行如下类似配置修改网络。
+由于管理端以及节点的网络服务依赖于 **network** 而非 **NetworkManager** ，我们需要启用前者禁用后者，在每一台服务器上都进行如下类似配置修改网络。
 
     */etc/sysconfig/network-scripts/ifcfg-eth0*
 
@@ -124,10 +143,9 @@ oVirt目前两种部署方式：
     [epel]
     name=Extra Packages for Enterprise Linux 6 - $basearch
     #baseurl=http://download.fedoraproject.org/pub/epel/6/$basearch
-    mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-6&amp;arch=$basearch
+    mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=$basearch
     failovermethod=priority
     enabled=1
-    includepkgs=epel-release,python-uinput,puppet,python-lockfile,python-cpopen,python-ordereddict,python-pthreading,python-inotify,python-argparse,novnc,python-ply,python-kitchen,python-daemon,python-websockify,livecd-tools,spice-html5,mom
     gpgcheck=0
 
     [ovirt-glusterfs-epel]
@@ -151,6 +169,7 @@ oVirt目前两种部署方式：
 
 .. code-block:: bash
     :linenos:
+    :emphasize-lines: 21,123,138,144,160,167
 
     # hosted-engine --deploy
     [ INFO  ] Stage: Initializing
@@ -289,7 +308,7 @@ oVirt目前两种部署方式：
               (1) Continue setup - VM installation is complete
               (2) Reboot the VM and restart installation
               (3) Abort setup
-    # 需要在另外一个有图形能力的terminal中运行"remote-viewer vnc://192.168.10.101:5900"连接虚拟机并关闭（密码在第123行），如有需要可运行"hosted-engine --add-console-password"更换控制台密码。如果之前选择cdrom进行安装的话，此处可以在gs1上用已经安装好engine的虚拟磁盘进行覆盖，类似"mount -t nfs 192.168.10.101:192.168.10.101:/gluster-vol1/ovirt_data/hosted_data/ /mnt; engine.raw /mnt/ovirt_data/hosted_data/.../vm_UUID"
+    # 需要在另外一个有图形能力的terminal中运行"remote-viewer vnc://192.168.10.101:5900"连接虚拟机完成engine-setup后关闭虚拟机（密码在第123行）；可以在虚拟机运行状态下执行"hosted-engine --add-console-password"更换控制台密码。如果之前选择cdrom进行安装的话，此处可以在gs1上用已经安装好engine的虚拟磁盘进行覆盖，类似"mount -t nfs 192.168.10.101:192.168.10.101:/gluster-vol1/ovirt_data/hosted_data/ /mnt; mv engine-disk.raw /mnt/ovirt_data/hosted_data/.../vm_UUID"
               (1, 2, 3)[1]: 1
               Waiting for VM to shut down...
     [ INFO  ] Creating VM
@@ -325,3 +344,6 @@ oVirt目前两种部署方式：
     [ INFO  ] Stage: Clean up
     [ INFO  ] Stage: Pre-termination
     [ INFO  ] Stage: Termination
+
+此时，运行”hosted-engine –vm-start”以启动虚拟管理机。
+
