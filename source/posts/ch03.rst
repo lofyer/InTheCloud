@@ -46,35 +46,8 @@ oVirt目前两种部署方式：
     #. 安装节点
     #. 添加存储域
 
-3.2 搭建普通oVirt虚拟化平台
----------------------------
-
-对于初次使用oVirt的用户，建议使用此种搭建方式，**太折腾的话就吓走好多目标读者了** 。
-
-使用之前的四台机器，分别为gs1.lofyer.org，gs2.lofyer.org，gs3.lofyer.org和gs4.lofyer.org，其中，将gs1作为管理机安装ovirt-engine，其余三台作为节点（node），存储使用已经创建好的glusterfs。
-
-准备
-~~~~
-
-存储可以使用之前的glusterfs，方式为NFS_V3，注意将brick的权限设置为vdsm.kvm或者36:36。
-
-3.3 搭建管理端高可用oVirt（hosted engine）
-------------------------------------------
-
-笔者写此文时oVirt已经更新到3.4。
-
-在此，我们会用到之前创建的distributed-replicated存储，这样可用保证系统服务的高度可用性有所提高。
-
-有以下几点需要注意：
-
-.. epigraph::
-
-    1. 宿主机的CPU架构需要为Westmere（Westmere E56xx/L56xx/X56xx）、Nehalem（Intel Core i7 9xx）、Penryn（Intel Core 2 Duo P9xxx）或者Conroe（Intel Celeron_4x0）中的之一，否则集群类型会与宿主机类型不兼容导致数据中心启动失败。
-
-    CPU Family table 参阅
-        `Intel Architecture and Processor Identification With CPUID Model and Family Numbers <https://software.intel.com/en-us/articles/intel-architecture-and-processor-identification-with-cpuid-model-and-family-numbers>`_
-
-    2. 建议参考第11节提前安装含有oVirt管理的虚拟机，硬盘格式为RAW，从而在安装管理机时作为OVF导入或者覆盖虚拟磁盘，减少失败风险时间。
+3.2 搭建管理引擎（engine）
+--------------------------
 
 系统准备
 ~~~~~~~~
@@ -85,10 +58,17 @@ oVirt目前两种部署方式：
 
     # echo -e '192.168.10.100\tha.lofyer.org' >> /etc/hosts
 
-存储使用之前的glusterfs，方式为NFS_V3，注意将brick目录的权限设置为vdsm.kvm或者36:36。
 
-.. image:: ../images/03-03.png
-    :align: center
+存储可以使用之前的glusterfs，方式为NFS_V3，注意将brick的权限设置为vdsm.kvm或者36:36。
+
+.. code::
+
+    # gluster volume create gluster-vol1 replica 2 \
+    gs1.example.com:/gluster_brick0 gs2.example.com:/gluster_brick0 \
+    gs3.example.com:/gluster_brick0 gs4.example.com:/gluster_brick0 \
+    gs1.example.com:/gluster_brick1 gs2.example.com:/gluster_brick1 \
+    gs3.example.com:/gluster_brick1 gs4.example.com:/gluster_brick1 force
+
 
 由于管理端以及节点的网络服务依赖于 **network** 而非 **NetworkManager** ，我们需要启用前者禁用后者，在每一台服务器上都进行如下类似配置修改网络。
 
@@ -161,6 +141,162 @@ oVirt目前两种部署方式：
     enabled=1
     skip_if_unavailable=1
     gpgcheck=0
+
+* 搭建普通oVirt虚拟化平台
+
+笔者写此文时oVirt已经更新到3.4。
+
+在此，我们会用到之前创建的distributed-replicated存储，这样可用保证系统服务的高度可用性有所提高。
+
+对于初次使用oVirt的用户，建议使用此种搭建方式，**太折腾的话就吓走好多目标读者了** 。
+
+使用之前的四台机器，分别为gs1.lofyer.org，gs2.lofyer.org，gs3.lofyer.org和gs4.lofyer.org，其中，将gs1作为管理机安装ovirt-engine，其余三台作为节点（node），存储使用已经创建好的glusterfs。
+
+.. image:: ../images/03-03.png
+    :align: center
+
+安装管理节点
+~~~~~~~~~~~~
+
+在gs1上运行如下命令。
+
+.. code::
+
+    # yum install ovirt-engine
+    # engine-setup --offline
+    [ INFO  ] Stage: Initializing
+    [ INFO  ] Stage: Environment setup
+              Configuration files: ['/etc/ovirt-engine-setup.conf.d/10-packaging.conf']
+              Log file: /var/log/ovirt-engine/setup/ovirt-engine-setup-20140508054649.log
+              Version: otopi-1.2.0 (otopi-1.2.0-1.el6)
+    [ INFO  ] Stage: Environment packages setup
+    [ INFO  ] Stage: Programs detection
+    [ INFO  ] Stage: Environment setup
+    [ INFO  ] Stage: Environment customization
+         
+              --== PRODUCT OPTIONS ==--
+         
+         
+              --== PACKAGES ==--
+         
+         
+              --== NETWORK CONFIGURATION ==--
+         
+              Host fully qualified DNS name of this server [gs1.lofyer.org]: 
+              Setup can automatically configure the firewall on this system.
+              Note: automatic configuration of the firewall may overwrite current settings.
+              Do you want Setup to configure the firewall? (Yes, No) [Yes]: 
+              The following firewall managers were detected on this system: iptables
+              Firewall manager to configure (iptables): iptables
+    [ INFO  ] iptables will be configured as firewall manager.
+         
+              --== DATABASE CONFIGURATION ==--
+         
+              Where is the Engine database located? (Local, Remote) [Local]: 
+              Setup can configure the local postgresql server automatically for the engine to run. This may conflict with existing applications.
+              Would you like Setup to automatically configure postgresql and create Engine database, or prefer to perform that manually? (Automatic, Manual) [Automatic]: 
+         
+              --== OVIRT ENGINE CONFIGURATION ==--
+         
+              Application mode (Both, Virt, Gluster) [Both]: 
+              Default storage type: (NFS, FC, ISCSI, POSIXFS) [NFS]: 
+              Engine admin password: 
+              Confirm engine admin password: 
+         
+              --== PKI CONFIGURATION ==--
+         
+              Organization name for certificate [lofyer.org]: 
+         
+              --== APACHE CONFIGURATION ==--
+         
+              Setup can configure apache to use SSL using a certificate issued from the internal CA.
+              Do you wish Setup to configure that, or prefer to perform that manually? (Automatic, Manual) [Automatic]: 
+              Setup can configure the default page of the web server to present the application home page. This may conflict with existing applications.
+              Do you wish to set the application as the default page of the web server? (Yes, No) [Yes]: 
+         
+              --== SYSTEM CONFIGURATION ==--
+         
+              Configure WebSocket Proxy on this machine? (Yes, No) [Yes]: 
+              Configure an NFS share on this server to be used as an ISO Domain? (Yes, No) [Yes]: no
+         
+              --== MISC CONFIGURATION ==--
+         
+         
+              --== END OF CONFIGURATION ==--
+         
+    [ INFO  ] Stage: Setup validation
+         
+              --== CONFIGURATION PREVIEW ==--
+         
+              Engine database name                    : engine
+              Engine database secured connection      : False
+              Engine database host                    : localhost
+              Engine database user name               : engine
+              Engine database host name validation    : False
+              Engine database port                    : 5432
+              PKI organization                        : lofyer.org
+              Application mode                        : both
+              Firewall manager                        : iptables
+              Update Firewall                         : True
+              Configure WebSocket Proxy               : True
+              Host FQDN                               : gs1.lofyer.org
+              Datacenter storage type                 : nfs
+              Configure local Engine database         : True
+              Set application as default page         : True
+              Configure Apache SSL                    : True
+         
+              Please confirm installation settings (OK, Cancel) [OK]: ok
+    [ INFO  ] Stage: Transaction setup
+    [ INFO  ] Stopping engine service
+    [ INFO  ] Stopping websocket-proxy service
+    [ INFO  ] Stage: Misc configuration
+    [ INFO  ] Stage: Package installation
+    [ INFO  ] Stage: Misc configuration
+    [ INFO  ] Initializing PostgreSQL
+    [ INFO  ] Creating PostgreSQL 'engine' database
+    [ INFO  ] Configuring PostgreSQL
+    [ INFO  ] Creating Engine database schema
+    [ INFO  ] Creating CA
+    [ INFO  ] Configuring WebSocket Proxy
+    [ INFO  ] Generating post install configuration file '/etc/ovirt-engine-setup.conf.d/20-setup-ovirt-post.conf'
+    [ INFO  ] Stage: Transaction commit
+    [ INFO  ] Stage: Closing up
+         
+              --== SUMMARY ==--
+         
+              SSH fingerprint: 1B:FD:08:A2:FD:83:20:8A:65:F5:0D:F6:CB:BF:46:C7
+              Internal CA 28:7E:D6:6B:F7:F2:6C:B5:60:27:44:C3:7F:3C:22:63:E5:68:DD:F4
+              Web access is enabled at:
+                  http://gs1.lofyer.org:80/ovirt-engine
+                  https://gs1.lofyer.org:443/ovirt-engine
+              Please use the user "admin" and password specified in order to login into oVirt Engine
+         
+              --== END OF SUMMARY ==--
+         
+    [ INFO  ] Starting engine service
+    [ INFO  ] Restarting httpd
+    [ INFO  ] Generating answer file '/var/lib/ovirt-engine/setup/answers/20140508054842-setup.conf'
+    [ INFO  ] Stage: Clean up
+              Log file is located at /var/log/ovirt-engine/setup/ovirt-engine-setup-20140508054649.log
+    [ INFO  ] Stage: Pre-termination
+    [ INFO  ] Stage: Termination
+    [ INFO  ] Execution of setup completed successfully
+
+至此，管理节点安装结束，接下来，加入节点以及存储域。
+
+* 搭建管理端高可用oVirt（hosted engine）
+
+.. image:: ../images/03-03.png
+    :align: center
+
+.. epigraph::
+
+    1. 宿主机的CPU架构需要为Westmere（Westmere E56xx/L56xx/X56xx）、Nehalem（Intel Core i7 9xx）、Penryn（Intel Core 2 Duo P9xxx）或者Conroe（Intel Celeron_4x0）中的之一，否则集群类型会与宿主机类型不兼容导致数据中心启动失败。
+
+    CPU Family table 参阅
+        `Intel Architecture and Processor Identification With CPUID Model and Family Numbers <https://software.intel.com/en-us/articles/intel-architecture-and-processor-identification-with-cpuid-model-and-family-numbers>`_
+
+    2. 建议参考第11节提前安装含有oVirt管理的虚拟机，硬盘格式为RAW，从而在安装管理机时作为OVF导入或者覆盖虚拟磁盘，减少失败风险时间。
 
 安装hosted-engine
 ~~~~~~~~~~~~~~~~~
@@ -346,4 +482,78 @@ oVirt目前两种部署方式：
     [ INFO  ] Stage: Termination
 
 此时，运行”hosted-engine –vm-start”以启动虚拟管理机。
+
+3.3 添加节点以及存储域
+----------------------
+
+我想，你看到这的话应该已经有了一个数据中心、几个宿主机，也可能有一个虚拟机（engine），还差一个存储虚拟机镜像的地方就可以拥有基本的oVirt平台了。
+
+添加节点（宿主机）
+~~~~~~~~~~~~~~~~~~
+
+对于第11节的普通oVirt、第12节的ha平台，你可能需要添加更多节点以支持更好的SLA（service level agreement）。
+添加节点目前有三种方式：
+
+- 通过oVirt的节点ISO安装系统后加入。
+
+- 直接将现有CentOS或者Fedora转化为节点。
+
+- 指定使用外部提供者（Foreman）。
+
+在此我们使用第二种方法。
+
+.. image:: ../images/03-05.png
+    :align: center
+
+添加存储域
+~~~~~~~~~~
+
+存储域有3种，Data（数据域）、ISO（ISO域）、Export（导出域）。
+
+其中，数据域是为必需，在创建任何虚拟机之前需要有一个可用的数据域用于存储虚拟磁盘以及快照文件；ISO域中可以存放ISO和VFD格式的系统镜像或者驱动文件，可在多个数据中心间共享；导出域用于导出或导入OVF格式的虚机。
+
+而根据数据域的存储类型，我们有5种（NFS、POSIX兼容、Glusterfs、iSCSI、光纤）可选，在此，选择glusterfs导出的NFS。
+
+.. image:: ../images/03-06.png
+    :align: center
+
+.. note:: 确保存储域目录被vdsm.kvm可读，即所有者为36:36，或者vdsm.kvm。
+
+3.4 oVirt使用进阶
+~~~~~~~~~~~~~~~~~
+
+**ovirt-shell**
+
+使用ovirt-shell在一定程度上适合于某些场景。
+
+.. code::
+
+    # ovirt-shell -I -u admin@internal -l https://server_ip/api
+    ============================================================================
+                            >>> connected to oVirt manager 3.4.0.0 <<<
+    ============================================================================
+
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                  Welcome to oVirt shell
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    [oVirt shell (connected)]#
+
+主机hooks
+参考`vdsm-hooks<https://github.com/oVirt/vdsm/tree/master/vdsm_hooks>`_。
+
+集群策略
+参考这个PDF。
+
+libguestfs扩容
+LVM扩容
+普通扩容
+
+UI plugin
+ShellInABox
+
+平台插件
+Foreman
+OpenStack Network
+OpenStack Image
+
 
