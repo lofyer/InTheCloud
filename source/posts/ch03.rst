@@ -291,7 +291,7 @@ oVirt目前两种部署方式：
 
 .. epigraph::
 
-    1. 宿主机的CPU架构需要为Westmere（Westmere E56xx/L56xx/X56xx）、Nehalem（Intel Core i7 9xx）、Penryn（Intel Core 2 Duo P9xxx）或者Conroe（Intel Celeron_4x0）中的之一，否则集群类型会与宿主机类型不兼容导致数据中心启动失败。
+    1. 宿主机的CPU架构建议选择Westmere（Westmere E56xx/L56xx/X56xx）、Nehalem（Intel Core i7 9xx）、Penryn（Intel Core 2 Duo P9xxx）或者Conroe（Intel Celeron_4x0）中的之一。
 
     CPU Family table 参阅
         `Intel Architecture and Processor Identification With CPUID Model and Family Numbers <https://software.intel.com/en-us/articles/intel-architecture-and-processor-identification-with-cpuid-model-and-family-numbers>`_
