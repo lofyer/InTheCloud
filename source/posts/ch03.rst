@@ -296,7 +296,7 @@ oVirt目前两种部署方式：
     [ INFO  ] Stage: Termination
     [ INFO  ] Execution of setup completed successfully
 
-至此，管理节点安装结束，接下来，加入节点以及存储域。
+至此，管理节点安装结束，参考 :ref:`label1` 加入节点以及存储域。
 
 * 搭建管理端高可用oVirt（hosted engine）
 
@@ -495,6 +495,8 @@ oVirt目前两种部署方式：
 
 此时，运行”hosted-engine –vm-start”以启动虚拟管理机。
 
+.. _label1:
+
 3.3 添加节点以及存储域
 ----------------------
 
@@ -537,7 +539,7 @@ oVirt目前两种部署方式：
 ovirt-shell
 ~~~~~~~~~~~~~~~~~
 
-使用ovirt-shell在一定程度上适合于某些场景。
+使用ovirt-shell在一定程度上适用于某些场景。
 
 .. code::
 

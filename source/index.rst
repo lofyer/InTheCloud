@@ -13,9 +13,13 @@ In the Cloud
     posts/ch01.rst
     posts/ch02.rst
     posts/ch03.rst
-    posts/thanks.rst
 
 链接
 ==================
+
+.. toctree::
+    :maxdepth: 1
+
+    posts/thanks.rst
 
 * :ref:`search`

@@ -444,7 +444,7 @@ normal、replica、striped卷组合
 砖块复用
 ~~~~~~~~
 
-当一个卷正在使用时，你删除了其中一个brick，并试图再次使用时，可能会出现“/bricks/app or a prefix of it is already part of a volume”，对于3.3版本以后的glusterfs有此问题。
+当卷正在被使用，其中一个砖块被删除，而用户试图再次将其用于卷时，可能会出现“/bricks/app or a prefix of it is already part of a volume”。
 
     解决方法：
 
