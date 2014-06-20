@@ -312,12 +312,14 @@ oVirt目前两种部署方式：
 
     2. 建议参考第11节提前安装含有oVirt管理的虚拟机，硬盘格式为RAW，从而在安装管理机时作为OVF导入或者覆盖虚拟磁盘，减少失败风险时间。
 
-安装hosted-engine
-~~~~~~~~~~~~~~~~~
+安装高可用管理节点
+~~~~~~~~~~~~~~~~~~~
 
 安装ovirt-hosted-engine-setup，并回答一些问题，注意高亮部分：
 
-.. code::
+.. code-block:: bash
+    :linenos:
+    :emphasize-lines: 21,36,123,138,144,160,167
 
     # hosted-engine --deploy
     [ INFO  ] Stage: Initializing
