@@ -35,19 +35,33 @@ oVirt目前两种部署方式：
 |管理独占一台物理机 |.. image:: ../images/03-01.png|
 |                   |    :align: center            |
 +-------------------+------------------------------+
-|高可用管理机       |.. image:: ../images/03-02.png|
+|高可用管理引擎     |.. image:: ../images/03-02.png|
 |                   |    :align: center            |
 +-------------------+------------------------------+
 
-.. note:: **搭建流程概览**
+.. note:: **搭建流程概览以及常见名词**
+
+**管理引擎（engine）**：
+
+**节点（node/host）**：
+
+**存储域（storage domain）**：
+
+**逻辑网络（logic network）**：
+
+**数据中心（data center）**：
+
+**池（pool）**：
+
+**集群策略（cluster policy）**：
 
     #. 准备服务器
     #. 安装高可用管理端或者普通管理端
     #. 安装节点
     #. 添加存储域
 
-3.2 搭建管理引擎（engine）
---------------------------
+3.2 搭建管理引擎
+----------------
 
 系统准备
 ~~~~~~~~
@@ -303,9 +317,7 @@ oVirt目前两种部署方式：
 
 安装ovirt-hosted-engine-setup，并回答一些问题，注意高亮部分：
 
-.. code-block:: bash
-    :linenos:
-    :emphasize-lines: 21,123,138,144,160,167
+.. code::
 
     # hosted-engine --deploy
     [ INFO  ] Stage: Initializing
@@ -444,7 +456,7 @@ oVirt目前两种部署方式：
               (1) Continue setup - VM installation is complete
               (2) Reboot the VM and restart installation
               (3) Abort setup
-    # 需要在另外一个有图形能力的terminal中运行"remote-viewer vnc://192.168.10.101:5900"连接虚拟机完成engine-setup后关闭虚拟机（密码在第123行）；可以在虚拟机运行状态下执行"hosted-engine --add-console-password"更换控制台密码。如果之前选择cdrom进行安装的话，此处可以在gs1上用已经安装好engine的虚拟磁盘进行覆盖，类似"mount -t nfs 192.168.10.101:192.168.10.101:/gluster-vol1/ovirt_data/hosted_data/ /mnt; mv engine-disk.raw /mnt/ovirt_data/hosted_data/.../vm_UUID"
+    # 需要在另外一个有图形能力的terminal中运行"remote-viewer vnc://192.168.10.101:5900"连接虚拟机完成engine-setup后关闭虚拟机；可以在虚拟机运行状态下执行"hosted-engine --add-console-password"更换控制台密码。如果之前选择cdrom进行安装的话，此处可以在gs1上用已经安装好engine的虚拟磁盘进行覆盖，类似"mount -t nfs 192.168.10.101:192.168.10.101:/gluster-vol1/ovirt_data/hosted_data/ /mnt; mv engine-disk.raw /mnt/ovirt_data/hosted_data/.../vm_UUID"
               (1, 2, 3)[1]: 1
               Waiting for VM to shut down...
     [ INFO  ] Creating VM
@@ -565,5 +577,3 @@ Icinga/Nagios
 Foreman
 OpenStack Network
 OpenStack Image
-
-
