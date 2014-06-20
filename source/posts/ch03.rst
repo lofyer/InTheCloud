@@ -520,9 +520,10 @@ oVirt目前两种部署方式：
 .. note:: 确保存储域目录被vdsm.kvm可读，即所有者为36:36，或者vdsm.kvm。
 
 3.4 oVirt使用进阶
-~~~~~~~~~~~~~~~~~
+-----------------
 
-**ovirt-shell**
+ovirt-shell
+~~~~~~~~~~~~~~~~~
 
 使用ovirt-shell在一定程度上适合于某些场景。
 
@@ -539,19 +540,28 @@ oVirt目前两种部署方式：
     [oVirt shell (connected)]#
 
 主机hooks
-参考`vdsm-hooks<https://github.com/oVirt/vdsm/tree/master/vdsm_hooks>`_。
+~~~~~~~~~~~~~~~~~
+
+参考 `vdsm-hooks <https://github.com/oVirt/vdsm/tree/master/vdsm_hooks>`_  。
 
 集群策略
 参考这个PDF。
 
-libguestfs扩容
+libguestfs
+~~~~~~~~~~~~~~~~~
+
 LVM扩容
 普通扩容
 
 UI plugin
+~~~~~~~~~~~~~~~~~
+
 ShellInABox
+Icinga/Nagios
 
 平台插件
+~~~~~~~~~~~~~~~~~
+
 Foreman
 OpenStack Network
 OpenStack Image

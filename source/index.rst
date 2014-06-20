@@ -6,22 +6,16 @@
 In the Cloud
 =============================
 
-Contents:
-
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     posts/ch00.rst
     posts/ch01.rst
     posts/ch02.rst
     posts/ch03.rst
+    posts/thanks.rst
 
-
-
-Indices and tables
+链接
 ==================
 
-* :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`
-
