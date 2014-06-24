@@ -312,9 +312,7 @@ oVirt目前两种部署方式：
 
 安装ovirt-hosted-engine-setup，并回答一些问题，注意高亮部分：
 
-.. code-block:: bash
-    :linenos:
-    :emphasize-lines: 21,36,123,138,144,160,167
+.. code::
 
     # hosted-engine --deploy
     [ INFO  ] Stage: Initializing
@@ -453,7 +451,13 @@ oVirt目前两种部署方式：
               (1) Continue setup - VM installation is complete
               (2) Reboot the VM and restart installation
               (3) Abort setup
-    # 需要在另外一个有图形能力的terminal中运行"remote-viewer vnc://192.168.10.101:5900"连接虚拟机完成engine-setup后关闭虚拟机；可以在虚拟机运行状态下执行"hosted-engine --add-console-password"更换控制台密码。如果之前选择cdrom进行安装的话，此处可以在gs1上用已经安装好engine的虚拟磁盘进行覆盖，类似"mount -t nfs 192.168.10.101:192.168.10.101:/gluster-vol1/ovirt_data/hosted_data/ /mnt; mv engine-disk.raw /mnt/ovirt_data/hosted_data/.../vm_UUID"
+    # 需要在另外一个有图形能力的terminal中运行
+    # "remote-viewer vnc://192.168.10.101:5900"连接虚拟机。
+    # 完成engine-setup后关闭虚拟机；可以在虚拟机运行状态下执行
+    # "hosted-engine --add-console-password"更换控制台密码。
+    # 如果之前选择cdrom进行安装的话，此处可以在gs1上用已经安装好engine的
+    # 虚拟磁盘进行覆盖，类似
+    # "mount -t nfs 192.168.10.101:192.168.10.101:/gluster-vol1/ovirt_data/hosted_data/ /mnt; mv engine-disk.raw /mnt/ovirt_data/hosted_data/.../vm_UUID"
               (1, 2, 3)[1]: 1
               Waiting for VM to shut down...
     [ INFO  ] Creating VM
@@ -533,10 +537,12 @@ oVirt目前两种部署方式：
 3.4 oVirt使用进阶
 -----------------
 
-ovirt-shell
+ovirt-shell与API
 ~~~~~~~~~~~~~~~~~
 
-使用ovirt-shell在一定程度上适用于某些场景。
+API（Application User Interface）是oVirt的一大特点，用户可以通过它将其与第三方的界面或者应用进行集成。访问 http://ovirt_manager/api?rsdl 以获取其用法。
+
+ovirt-shell则是全部使用API写成的shell，通过它可以完成图形界面所不能提供的功能。
 
 .. code::
 
@@ -549,6 +555,10 @@ ovirt-shell
                                   Welcome to oVirt shell
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     [oVirt shell (connected)]#
+
+示例：
+
+    
 
 主机hooks
 ~~~~~~~~~~~~~~~~~

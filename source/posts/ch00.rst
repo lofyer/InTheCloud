@@ -34,7 +34,7 @@
 
   + 3.4. 使用进阶
 
-    + 3.4.1 ovirt-shell
+    + 3.4.1 ovirt-shell与API
 
     + 3.4.2 主机hooks
 

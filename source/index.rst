@@ -20,6 +20,6 @@ In the Cloud
 .. toctree::
     :maxdepth: 1
 
-    posts/thanks.rst
+    posts/about.rst
 
 * :ref:`search`
