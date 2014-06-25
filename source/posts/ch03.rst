@@ -540,13 +540,13 @@ oVirt目前两种部署方式：
 ovirt-shell与API
 ~~~~~~~~~~~~~~~~~
 
-API（Application User Interface）是oVirt的一大特点，用户可以通过它将其与第三方的界面或者应用进行集成。访问 http://ovirt_manager/api?rsdl 以获取其用法。
+Restful API（Application User Interface）是oVirt的一大特点，用户可以通过它将其与第三方的界面或者应用进行集成。访问 http://192.168.10.100/api?rsdl 以获取其用法。
 
-ovirt-shell则是全部使用API写成的shell，通过它可以完成图形界面所不能提供的功能。
+ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成图形界面所不能提供的功能。
 
 .. code::
 
-    # ovirt-shell -I -u admin@internal -l https://server_ip/api
+    # ovirt-shell -I -u admin@internal -l https://192.168.10.100/api
     ============================================================================
                             >>> connected to oVirt manager 3.4.0.0 <<<
     ============================================================================
@@ -556,12 +556,101 @@ ovirt-shell则是全部使用API写成的shell，通过它可以完成图形界�
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     [oVirt shell (connected)]#
 
-示例：
+**示例：使用ovirt-shell或者API来连接虚拟机。**
 
+    1. 获取虚拟机列表及其所在宿主机
+
+    + ovirtshell
+
+    .. code::
+        
+        # ovirt-shell -I -u admin@internal -l https://192.168.10.100/api -E "list vms"
+        id         : 124e8020-c9d7-4e86-81e1-0d4e28ff1cd4
+        name       : aaa 
+        # ovirt-shell -I -u admin@internal -l https://192.168.10.100/api -E "show vm aaa"
+        id                                : 124e8020-c9d7-4e86-81e1-0d4e28ff1cd4
+        name                              : aaa
+        ...
+        display-address                   : 192.168.10.100
+        ...
+        display-port                      : 5912
+        display-secure_port               : 5913
+        ...
+
+    + restapi
+
+    .. code::
+
+        # curl -u admin@internal:admin https://192.168.10.100/api/vms | less
+        <name>aaa</name>
+        <description></description>
+        ...
+        <display>
+            <type>spice</type>
+            <address>192.168.10.100</address>
+            <port>5912</port>
+            <secure_port>5913</secure_port>
+            <monitors>1</monitors>
+            <single_qxl_pci>false</single_qxl_pci>
+            <allow_override>false</allow_override>
+            <smartcard_enabled>false</smartcard_enabled>
+        </display>
+        ...
+
+    2. 获取/设置控制台密码
+
+    + ovirtshell
+
+    .. code::
+
+        # ovirt-shell -I -u admin@internal -l https://192.168.10.100/api -E     "action vm aaa ticket"
+        # [oVirt shell (connected)]# action vm aaa ticket 
+
+        status-state : complete
+        ticket-expiry: 7200
+        ticket-value : MfY9P5kpmNpw
+        vm-id        : 124e8020-c9d7-4e86-81e1-0d4e28ff1cd4
+
+    + restapi
+
+    .. code::
+
+        # curl -k -u admin@internal:admin https://192.168.10.100/api/vms/124e8020-c9d7-4e86-81e1-0d4e28ff1cd4/ticket -X POST -H "Content-type: application/xml" -d '<action><ticket><expiry>120</expiry></ticket></action>'
+        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+        <action>
+            <ticket>
+                <value>jRUqhrks6JiT</value>
+                <expiry>120</expiry>
+            </ticket>
+            ...
+            <status>
+                <state>complete</state>
+            </status>
+        </action>
+
+    3. 连接虚拟机
+
+    除了以上获取的显示端口、宿主机IP，我们需要额外获取一个根证书。
+
+    .. code::
+        
+        # wget http://192.168.10.100/ca.crt
+
+    + ovirt-shell
+
+    .. code::
+
+        # ovirt-shell -I -u admin@internal -l https://192.168.10.100/api \
+        -E "console aaa"
     
+    + virt-viewer
+
+    .. code::
+
+        # remote-viewer --spice-ca-file=ca.crt spice://192.168.10.100?port=5912&tls-port=5913&password=jRUqhrks6JiT
 
 主机hooks
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~
 
 参考 `vdsm-hooks <https://github.com/oVirt/vdsm/tree/master/vdsm_hooks>`_  。
 
@@ -569,7 +658,7 @@ ovirt-shell则是全部使用API写成的shell，通过它可以完成图形界�
 参考这个PDF。
 
 libguestfs
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
 
 LVM扩容
 普通扩容
