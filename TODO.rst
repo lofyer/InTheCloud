@@ -27,6 +27,8 @@ XFS相关的理论以及操作
 
 DRBD Heartbeat?
 
+NFS使用V3，修改nfsmount.conf中的Version为3
+
 For geek
 --------
 
