@@ -1,6 +1,6 @@
-========
+======
 第二章
-========
+======
 
 2.1 谈谈分布式存储
 -------------------
@@ -53,7 +53,7 @@
 
     在Linux系统中的实现有很多，比如各种要挂载ntfs文件系统使用到的ntfs-3g，以及即将要用到的glusterfs-fuse。
 
-.. image:: ../images/02-01.png
+.. image:: /images/02-01.png
     :align: center
 
 2.2 Glusterfs简述
@@ -63,7 +63,7 @@
 
 首先它可以基于以太网或者Infiniband构建大规模分布式文件系统，其设计原则符合奥卡姆剃刀原则，即“ *若无必要，勿增实体* ”；它的源码部分遵循GPLv3，另一部分遵循GPLv2/LGPLv3；统一对象视图，与UNIX设计哲学类似，所有皆对象；跨平台兼容性高，可作为hadoop、openstack、ovirt、Amazon EC的后端。
 
-.. image:: ../images/02-02.png
+.. image:: /images/02-02.png
     :align: center
 
 .. note::
@@ -82,29 +82,29 @@
 **gluster支持四种存储逻辑卷组合：普通分布式（Distributed）、条带（Striped）、冗余（Replicated）、条带冗余（Striped-Replicated）**
 
 +-----------+-------------------------------+
-|普通分布式 |.. image:: ../images/02-04.png |
+|普通分布式 |.. image:: /images/02-04.png   |
 |           |   :align: center              |
 +-----------+-------------------------------+
-|条带       |.. image:: ../images/02-05.png |
+|条带       |.. image:: /images/02-05.png   |
 |           |   :align: center              |
 +-----------+-------------------------------+
-| 冗余      |.. image:: ../images/02-06.png |
+| 冗余      |.. image:: /images/02-06.png   |
 |           |   :align: center              |
 +-----------+-------------------------------+
-|条带冗余   |.. image:: ../images/02-07.png |
+|条带冗余   |.. image:: /images/02-07.png   |
 |           |   :align: center              |
 +-----------+-------------------------------+
 
 **支持跨网备份**
 
 +-----------+-------------------------------+
-|局域网备份 |.. image:: ../images/02-08.png |
+|局域网备份 |.. image:: /images/02-08.png   |
 |           |   :align: center              |
 +-----------+-------------------------------+
-|内网备份   |.. image:: ../images/02-09.png |
+|内网备份   |.. image:: /images/02-09.png   |
 |           |   :align: center              |
 +-----------+-------------------------------+
-|广域网备份 |.. image:: ../images/02-10.png |
+|广域网备份 |.. image:: /images/02-10.png   |
 |           |   :align: center              |
 +-----------+-------------------------------+
 
@@ -374,7 +374,7 @@ normal、replica、striped卷组合
 
     假设我们有4个主机，8个砖块，每个砖块都是5GB，如下图：
 
-    .. image:: ../images/02-11.png
+    .. image:: /images/02-11.png
         :align: center
 
 
@@ -388,7 +388,7 @@ normal、replica、striped卷组合
 
     砖块将会按照如下进行组合：
 
-    .. image:: ../images/02-12.png
+    .. image:: /images/02-12.png
 
     .. code::
     
