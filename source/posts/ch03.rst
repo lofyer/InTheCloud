@@ -652,7 +652,36 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
 主机hooks
 ~~~~~~~~~~
 
-参考 `vdsm-hooks <https://github.com/oVirt/vdsm/tree/master/vdsm_hooks>`_  。
+主机hooks位于各个宿主机上，用于扩展oVirt的平台功能，比如网络、USB设备、SRIOV等。原理是在某一事件触发时（比如虚拟机启动之前），修改libvirt启动XML文件或者环境变量，从而改变qemu的启动参数。
+
+更多hooks内容请参考 `vdsm-hooks <https://github.com/oVirt/vdsm/tree/master/vdsm_hooks>`_  。
+
+**示例：使用libvirt内部网络**
+
+    1. 准备所需文件。
+
+    拷贝 `extnet_vnic.py <https://raw.githubusercontent.com/oVirt/vdsm/master/vdsm_hooks/extnet/extnet_vnic.py>`_ 至/usr/libexec/vdsm/hooks/before_vm_start/，不要忘记添加可执行权限。
+
+    2. 查看，添加libvirt网络。
+
+    .. code::
+       
+        # virsh net-list
+
+    在 *extnet_vnic.py* 文件中 **newnet = os.environ.get('extnet')** 前一行添加如下代码，替换其中的 **default** 为要使用的libvirt网络：
+
+    .. code::
+
+        params = "default"
+            os.environ.__setitem__("extnet",params)
+
+    3. 虚拟机一定要添加网络配置，否则会启动失败，在虚拟机启动时，第一个网络配置文件会被替换为**default**网络。
+
+.. note:: 如果忘记了libvirt密码，可以用以下命令重置。
+
+    .. code::
+        
+        # saslpasswd2 -a libvirt root
 
 集群策略
 ~~~~~~~~~~
