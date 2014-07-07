@@ -673,9 +673,9 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
     .. code::
 
         params = "default"
-            os.environ.__setitem__("extnet",params)
+        os.environ.__setitem__("extnet",params)
 
-    3. 虚拟机一定要添加网络配置，否则会启动失败，在虚拟机启动时，第一个网络配置文件会被替换为**default**网络。
+    3. 虚拟机一定要添加网络配置，否则会启动失败，在虚拟机启动时，第一个网络配置文件会被替换为 **default** 网络。
 
 .. note:: 如果忘记了libvirt密码，可以用以下命令重置。
 
@@ -683,10 +683,12 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
         
         # saslpasswd2 -a libvirt root
 
-集群策略
-~~~~~~~~~~
+主机策略
+~~~~~~~~~
 
-参考这个 `PDF <http://www.ovirt.org/images/2/2a/Scheduler-Deep-Dive-oVirt.pdf>`_ 。
+参考这个 `PDF <http://www.ovirt.org/images/2/2a/Scheduler-Deep-Dive-oVirt.pdf>`_ 。（没记错的话，里面那个显卡透穿的问题，是当初我问的。。）
+
+**示例：**
 
 libguestfs
 ~~~~~~~~~~~
