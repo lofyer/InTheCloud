@@ -693,18 +693,26 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
 libguestfs
 ~~~~~~~~~~~
 
-LVM扩容
 普通扩容
+
+LVM扩容
+
+FAT/NTFS扩容
 
 UI plugin
 ~~~~~~~~~~~~~~~~~
 
 ShellInABox
+
 Icinga/Nagios
+
+可利用libguestfs进行磁盘的在线扩容
 
 平台插件
 ~~~~~~~~~~~~~~~~~
 
 Foreman
+
 OpenStack Network
+
 OpenStack Image
