@@ -693,9 +693,44 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
 libguestfs
 ~~~~~~~~~~~
 
-普通扩容
+具体内容请参考 `libguestfs site <http://libguestfs.org/>`_ 。
 
-LVM扩容
+**Linux文件系统扩容**
+
+    1. 检视磁盘
+
+    .. code::
+
+        virt-filesystem --all --long -h -a hda.img
+
+    2. 创建待扩容磁盘副本（假设原磁盘大小为10G）
+
+        对于RAW格式：
+
+    .. code::
+        
+        truncate -r hda.img hda-new.img
+        truncate -s +10G hda-new.img
+
+        对于QCOW2等有压缩格式：
+
+    .. code::
+
+        qemu-img create -f qcow2 -o preallocation=metadata hda-new.img 20G
+
+    3. 扩展分区尺寸
+
+        普通分区扩展：
+
+        .. code::
+
+            virt-resize --resize /dev/sda1=+200M --expand /dev/sda2 a.img b.img
+            
+        LVM分区扩展：
+
+        .. code::
+
+
 
 FAT/NTFS扩容
 
