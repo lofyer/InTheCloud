@@ -730,8 +730,6 @@ libguestfs
 
         .. code::
 
-
-
 FAT/NTFS扩容
 
 UI plugin

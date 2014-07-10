@@ -41,3 +41,5 @@ For geek
 添加DMZ主机
 
 添加avahi以及netatalk让apple设备发现
+
+无人机（摄像头以及传感器）数据如何分析？
