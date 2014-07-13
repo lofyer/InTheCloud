@@ -92,11 +92,11 @@ oVirt目前两种部署方式：
     # iptables -F
     # service iptables save
 
-每台机器上都要添加作为虚拟机运行的engine的FQDN，此处为ha.lofyer.org。
+每台机器上都要添加作为虚拟机运行的engine的FQDN，此处为ha.example.com。
 
 .. code::
 
-    # echo -e '192.168.10.100\tha.lofyer.org' >> /etc/hosts
+    # echo -e '192.168.10.100\tha.example.com' >> /etc/hosts
 
 
 存储可以使用之前的glusterfs，方式为NFS_V3，注意将brick的权限设置为vdsm.kvm或者36:36。
@@ -199,7 +199,7 @@ oVirt目前两种部署方式：
 
 对于初次使用oVirt的用户，建议使用此种搭建方式，**太折腾的话就吓走好多目标读者了** 。
 
-使用之前的四台机器，分别为gs1.lofyer.org，gs2.lofyer.org，gs3.lofyer.org和gs4.lofyer.org，其中，将gs1作为管理机安装ovirt-engine，其余三台作为节点（node），存储使用已经创建好的glusterfs。
+使用之前的四台机器，分别为gs1.example.com，gs2.example.com，gs3.example.com和gs4.example.com，其中，将gs1作为管理机安装ovirt-engine，其余三台作为节点（node），存储使用已经创建好的glusterfs。
 
 .. image:: /images/03-03.png
     :align: center
@@ -228,7 +228,7 @@ oVirt目前两种部署方式：
          
               --== NETWORK CONFIGURATION ==--
          
-              Host fully qualified DNS name of this server [gs1.lofyer.org]: 
+              Host fully qualified DNS name of this server [gs1.example.com]: 
               Setup can automatically configure the firewall on this system.
               Note: automatic configuration of the firewall may overwrite current settings.
               Do you want Setup to configure the firewall? (Yes, No) [Yes]: 
@@ -251,7 +251,7 @@ oVirt目前两种部署方式：
          
               --== PKI CONFIGURATION ==--
          
-              Organization name for certificate [lofyer.org]: 
+              Organization name for certificate [example.com]: 
          
               --== APACHE CONFIGURATION ==--
          
@@ -280,12 +280,12 @@ oVirt目前两种部署方式：
               Engine database user name               : engine
               Engine database host name validation    : False
               Engine database port                    : 5432
-              PKI organization                        : lofyer.org
+              PKI organization                        : example.com
               Application mode                        : both
               Firewall manager                        : iptables
               Update Firewall                         : True
               Configure WebSocket Proxy               : True
-              Host FQDN                               : gs1.lofyer.org
+              Host FQDN                               : gs1.example.com
               Datacenter storage type                 : nfs
               Configure local Engine database         : True
               Set application as default page         : True
@@ -313,8 +313,8 @@ oVirt目前两种部署方式：
               SSH fingerprint: 1B:FD:08:A2:FD:83:20:8A:65:F5:0D:F6:CB:BF:46:C7
               Internal CA 28:7E:D6:6B:F7:F2:6C:B5:60:27:44:C3:7F:3C:22:63:E5:68:DD:F4
               Web access is enabled at:
-                  http://gs1.lofyer.org:80/ovirt-engine
-                  https://gs1.lofyer.org:443/ovirt-engine
+                  http://gs1.example.com:80/ovirt-engine
+                  https://gs1.example.com:443/ovirt-engine
               Please use the user "admin" and password specified in order to login into oVirt Engine
          
               --== END OF SUMMARY ==--
@@ -407,8 +407,8 @@ oVirt目前两种部署方式：
               This needs to match the FQDN that you will use for the engine installation within the VM.
               Note: This will be the FQDN of the VM you are now going to create,
               it should not point to the base host or to any other existing machine.
-              Engine FQDN: ha.lofyer.org
-    [WARNING] Failed to resolve ha.lofyer.org using DNS, it can be resolved only locally
+              Engine FQDN: ha.example.com
+    [WARNING] Failed to resolve ha.example.com using DNS, it can be resolved only locally
               Please provide the name of the SMTP server through which we will send notifications [localhost]: 
               Please provide the TCP port number of the SMTP server [25]: 
               Please provide the email address from which notifications will be sent [root@localhost]: 
@@ -417,7 +417,7 @@ oVirt目前两种部署方式：
          
               --== CONFIGURATION PREVIEW ==--
          
-              Engine FQDN                        : ha.lofyer.org
+              Engine FQDN                        : ha.example.com
               Bridge name                        : ovirtmgmt
               SSH daemon port                    : 22
               Gateway address                    : 192.168.10.1
