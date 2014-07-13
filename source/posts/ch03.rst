@@ -58,8 +58,39 @@ oVirt目前两种部署方式：
 3.2 搭建管理引擎
 ----------------
 
+搭建oVirt平台的步骤：
+
+1. 安装Redhat类操作系统（Redhat、CentOS、Fedora）
+
+2. 从yum安装oVirt，并执行engine-setup，或者直接从oVirt提供的 `iso <http://plain.resources.ovirt.org/releases/3.4/iso/ovirt-live-3.4.0.el6ev.iso>`_ 进行安装
+
+3. 添加宿主机
+
+4. 添加存储域
+
+5. 创建虚拟机
+
 系统准备
 ~~~~~~~~
+
+所有机器的SELINUX都设置为permissive。
+
+    */etc/selinux/config*
+
+.. code::
+
+    SELINUX=permissive
+
+.. code::
+
+    # setenfoce permissive
+
+如有需要，清除iptables规则。
+
+.. code::
+    
+    # iptables -F
+    # service iptables save
 
 每台机器上都要添加作为虚拟机运行的engine的FQDN，此处为ha.lofyer.org。
 
@@ -151,7 +182,16 @@ oVirt目前两种部署方式：
     skip_if_unavailable=1
     gpgcheck=0
 
-* 搭建普通oVirt虚拟化平台
+**从下面两种方式中选择之一进行搭建**
+
+:ref:`label2`
+
+:ref:`label3`
+
+.. _label2:
+
+搭建普通oVirt虚拟化平台
+~~~~~~~~~~~~~~~~~~~~~~~
 
 笔者写此文时oVirt已经更新到3.4。
 
@@ -163,9 +203,6 @@ oVirt目前两种部署方式：
 
 .. image:: /images/03-03.png
     :align: center
-
-安装管理节点
-~~~~~~~~~~~~
 
 在gs1上运行如下命令。
 
@@ -293,7 +330,10 @@ oVirt目前两种部署方式：
 
 至此，管理节点安装结束，参考 :ref:`label1` 加入节点以及存储域。
 
-* 搭建管理端高可用oVirt（hosted engine）
+.. _label3:
+
+搭建管理端高可用oVirt（hosted engine）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. image:: /images/03-03.png
     :align: center
@@ -306,9 +346,6 @@ oVirt目前两种部署方式：
         `Intel Architecture and Processor Identification With CPUID Model and Family Numbers <https://software.intel.com/en-us/articles/intel-architecture-and-processor-identification-with-cpuid-model-and-family-numbers>`_
 
     2. 建议参考第11节提前安装含有oVirt管理的虚拟机，硬盘格式为RAW，从而在安装管理机时作为OVF导入或者覆盖虚拟磁盘，减少失败风险时间。
-
-安装高可用管理节点
-~~~~~~~~~~~~~~~~~~~
 
 安装ovirt-hosted-engine-setup，并回答一些问题，注意高亮部分：
 
@@ -511,7 +548,7 @@ oVirt目前两种部署方式：
 
 - 通过oVirt的节点ISO安装系统后加入。
 
-- 直接将现有CentOS或者Fedora转化为节点。
+- 直接将现有CentOS或者Fedora转化为节点（可以为当前管理机）。
 
 - 指定使用外部提供者（Foreman）。
 
@@ -534,8 +571,16 @@ oVirt目前两种部署方式：
 
 .. note:: 确保存储域目录被vdsm.kvm可读，即所有者为36:36，或者vdsm.kvm。
 
-3.4 oVirt使用进阶
+3.4 连接虚拟机
 -----------------
+
+3.5 oVirt使用进阶
+-----------------
+
+平台参数配置
+~~~~~~~~~~~~~~~~~
+
+engine-config
 
 ovirt-shell与API
 ~~~~~~~~~~~~~~~~~
@@ -729,6 +774,8 @@ libguestfs
         LVM分区扩展：
 
         .. code::
+
+            asd
 
 FAT/NTFS扩容
 
