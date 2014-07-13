@@ -108,7 +108,7 @@ oVirt目前两种部署方式：
 
 .. code::
 
-    # yum localinstall http://resources.ovirt.org/releases/ovirt-release.noarch.rpm
+    # yum localinstall http://plain.resources.ovirt.org/releases/ovirt-release/ovirt-release34.rpm
     # yum install ovirt-hosted-engine-setup
 
 或者手动添加：
@@ -117,14 +117,14 @@ oVirt目前两种部署方式：
 
     [ovirt-stable]
     name=Latest oVirt Releases
-    baseurl=http://ovirt.org/releases/stable/rpm/EL/$releasever/
+    baseurl=http://resources.ovirt.org/releases/stable/rpm/EL/$releasever/
     enabled=1
     skip_if_unavailable=1
     gpgcheck=0
 
     [ovirt-3.4-stable]
     name=Latest oVirt 3.4.z Releases
-    baseurl=http://ovirt.org/releases/3.4/rpm/EL/$releasever/
+    baseurl=http://resources.ovirt.org/releases/3.4/rpm/EL/$releasever/
     enabled=1
     skip_if_unavailable=1
     gpgcheck=0
