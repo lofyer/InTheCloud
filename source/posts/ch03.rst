@@ -574,13 +574,64 @@ oVirt目前两种部署方式：
 3.4 连接虚拟机
 -----------------
 
+虚拟机运行后，通过web界面，你可用使用以下几种方式连接虚拟机（可通过控制台选项进行修改）：
+
+.. image:: /images/03-08.png
+    :align: center
+
+1. Spice-Html5
+
+   首先在服务器端打开spice代理：
+
+   .. code::
+    
+        # yum install -y numpy # 安装numpy以加速转换。
+        # engine-config -s WebSocketProxy="192.168.10.100:6100"
+        # engine-config -s SpiceProxyDefault='192.168.10.100:6100'
+        # service ovirt-websocket-proxy restart
+        # service ovirt-engine restart
+
+   连接之前，要信任以下两处https证书：
+
+        https://192.168.10.100
+        https://192.168.10.100:6100
+
+   然后点击控制台按钮即可在浏览器的新标签中打开spice-html5桌面。
+
+2. 浏览器插件
+
+   对于Redhat系列系统，可安装spice-xpi插件；Windows系统可以安装SpiceX的控件。
+
+3. 本地客户端
+
+   访问 `virt-manager官网 <http://virt-manager.org/download/>`_ 下载virt-viewer客户端，使用它打开下载到本地的console.vv文件。
+
+4. RDP插件（仅适用于Windows虚机及IE浏览器）
+
+   如果虚拟机的操作系统选择为Windows，使用IE浏览器访问用户或者管理员入口时，会启用RDP控件。
+
 3.5 oVirt使用进阶
 -----------------
 
 平台参数配置
 ~~~~~~~~~~~~~~~~~
 
-engine-config
+平台安装完以后，可用通过engine-config命令进行详细参数配置。
+
+.. code::
+
+    # 查看设置说明
+    # engine-config -l
+    # 查看当前设置
+    # engine-config -a
+
+**示例：重设管理员密码**
+
+.. code::
+
+    # engine-config -s AdminPassword=interactive
+    Please enter a password: # 密码
+    Please reenter password: # 密码
 
 ovirt-shell与API
 ~~~~~~~~~~~~~~~~~
