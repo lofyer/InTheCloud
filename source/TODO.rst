@@ -17,6 +17,8 @@ Normal
 Suffix
 --------
 
+zabbix/nagios
+
 添加一个手册，对于常见的linux操作，比如lvm
 
 XFS相关的理论以及操作
