@@ -135,6 +135,10 @@ oVirt目前两种部署方式：
 添加repo
 ~~~~~~~~
 
+.. note:: **oVirt3.4.2 特别说明**
+
+    2014年六七月的初次安装oVirt的用户可能会遇到添加宿主机失败的问题，暂时解决办法为卸载python-pthreading-0.1.3-1及以后的版本，安装老版本，比如 ftp://ftp.icm.edu.pl/vol/rzm2/linux-fedora/linux/epel/6/i386/python-pthreading-0.1.3-0.el6.noarch.rpm ，再尝试安装vdsm并添加宿主机。
+
 使用rpm：
 
 .. code::
