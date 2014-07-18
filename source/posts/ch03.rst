@@ -802,38 +802,40 @@ libguestfs
 
     .. code::
 
-        virt-filesystem --all --long -h -a hda.img
+        # virt-filesystem --all --long -h -a hda.img
 
-    2. 创建待扩容磁盘副本（假设原磁盘大小为10G）
+    2. 创建待扩容磁盘副本，同时扩容10G（假设原磁盘大小为10G）
 
-        对于RAW格式：
+    对于RAW格式：
 
     .. code::
         
-        truncate -r hda.img hda-new.img
-        truncate -s +10G hda-new.img
+        # truncate -r hda.img hda-new.img
+        # truncate -s +10G hda-new.img
 
-        对于QCOW2等有压缩格式：
+    对于QCOW2等有压缩格式：
 
     .. code::
 
-        qemu-img create -f qcow2 -o preallocation=metadata hda-new.img 20G
+        # qemu-img create -f qcow2 -o preallocation=metadata hda-new.img 20G
 
     3. 扩展分区尺寸
 
-        普通分区扩展：
+    普通分区扩展，/boot分区扩容200M，其余全部给/分区：
 
-        .. code::
+    .. code::
 
-            virt-resize --resize /dev/sda1=+200M --expand /dev/sda2 a.img b.img
+        # virt-resize --resize /dev/sda1=+200M --expand /dev/sda2 hda.img hda-new.img
             
-        LVM分区扩展：
+    LVM分区扩展，扩容lv_root逻辑卷：
 
-        .. code::
+    .. code::
 
-            asd
+        # virt-resize --expand /dev/sda2 --LV-expand /dev/vg_livecd/lv_root hda.qcow2 hda-new.qcow2
 
-FAT/NTFS扩容
+**FAT/NTFS扩容**
+
+使用Paragon Partion Manager。
 
 UI plugin
 ~~~~~~~~~~~~~~~~~
