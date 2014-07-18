@@ -32,17 +32,19 @@
 
   + 3.3. 完善平台
 
-  + 3.4. 使用进阶
+  + 3.4. 连接虚拟机
 
-    + 3.4.1 ovirt-shell与API
+  + 3.5. 使用进阶
 
-    + 3.4.2 主机hooks
+    + 3.5.1 ovirt-shell与API
 
-    + 3.4.3 libguestfs
+    + 3.5.2 主机hooks
 
-    + 3.4.4 UI Plugin
+    + 3.5.3 libguestfs
 
-    + 3.4.5 平台插件
+    + 3.5.4 UI Plugin
+
+    + 3.5.5 平台插件
 
 - 附录1
 
@@ -50,7 +52,7 @@
 
   + 常见性能测试测量工具
 
-  + 搭建OpenStack
+  + OpenStack/Neutron快速搭建
 
 --------
 下册
@@ -85,7 +87,3 @@
   + 3. 媒体管理
 
   + 4. 控制中心
-
-- 附录
-
-  + 1. OpenStack/Neutron快速入门指南
