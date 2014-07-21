@@ -101,7 +101,7 @@ oVirt目前两种部署方式：
 
 存储可以使用之前的glusterfs，方式为NFS_V3，注意将brick的权限设置为vdsm.kvm或者36:36。
 
-.. note:: *普通NFS服务器设置*
+.. note:: **普通NFS服务器设置**
 
     因为考虑到NFS4的权限配置较为复杂，推荐NFS使用V3，修改nfsmount.conf中的Version为3。
 
