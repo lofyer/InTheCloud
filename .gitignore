@@ -1,2 +1,3 @@
 build
 *.html
+.DS_Store
