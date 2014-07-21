@@ -32,10 +32,10 @@ IaaS云计算平台，综合来说具有以下特性：
 oVirt目前两种部署方式：
 
 +-------------------+------------------------------+
-|管理独占一台物理机 |.. image:: /images/03-01.png  |
+|管理独占一台物理机 |.. image:: ../images/03-01.png|
 |                   |    :align: center            |
 +-------------------+------------------------------+
-|高可用管理引擎     |.. image:: /images/03-02.png  |
+|高可用管理引擎     |.. image:: ../images/03-02.png|
 |                   |    :align: center            |
 +-------------------+------------------------------+
 
@@ -208,7 +208,7 @@ oVirt目前两种部署方式：
 
 使用之前的四台机器，分别为gs1.example.com，gs2.example.com，gs3.example.com和gs4.example.com，其中，将gs1作为管理机安装ovirt-engine，其余三台作为节点（node），存储使用已经创建好的glusterfs。
 
-.. image:: /images/03-03.png
+.. image:: ../images/03-03.png
     :align: center
 
 在gs1上运行如下命令。
@@ -342,7 +342,7 @@ oVirt目前两种部署方式：
 搭建管理端高可用oVirt（hosted engine）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. image:: /images/03-03.png
+.. image:: ../images/03-03.png
     :align: center
 
 .. epigraph::
@@ -561,7 +561,7 @@ oVirt目前两种部署方式：
 
 在此我们使用第二种方法。
 
-.. image:: /images/03-05.png
+.. image:: ../images/03-05.png
     :align: center
 
 添加存储域
@@ -573,7 +573,7 @@ oVirt目前两种部署方式：
 
 而根据数据域的存储类型，我们有5种（NFS、POSIX兼容、Glusterfs、iSCSI、光纤）可选，在此，选择glusterfs导出的NFS。
 
-.. image:: /images/03-06.png
+.. image:: ../images/03-06.png
     :align: center
 
 .. note:: 确保存储域目录被vdsm.kvm可读，即所有者为36:36，或者vdsm.kvm。
@@ -583,7 +583,7 @@ oVirt目前两种部署方式：
 
 虚拟机运行后，通过web界面，你可用使用以下几种方式连接虚拟机（可通过控制台选项进行修改）：
 
-.. image:: /images/03-08.png
+.. image:: ../images/03-08.png
     :align: center
 
 1. Spice-Html5
