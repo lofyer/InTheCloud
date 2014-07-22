@@ -840,14 +840,18 @@ libguestfs
 
 使用Paragon Partion Manager。
 
-UI plugin
-~~~~~~~~~~~~~~~~~
+UI 插件
+~~~~~~~~
 
-ShellInABox
+更详细内容请参考 `oVirt官网关于UI插件的介绍 <http://www.ovirt.org/Features/UIPlugins>`_ ，在此我仅使用ShellInABox举例。
 
-Icinga/Nagios
+**ShellInABox oVirt UI plugin**
 
-可利用libguestfs进行磁盘的在线扩容
+    1. 在宿主机上安装ShellInABox。
+
+    .. code::
+
+        # yum install shellinabox
 
 平台插件
 ~~~~~~~~~~~~~~~~~

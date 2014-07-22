@@ -378,7 +378,7 @@ normal、replica、striped卷组合
         :align: center
 
 
-    创建卷时，使用如下命令：
+    创建卷时使用如下命令：
 
     .. code::
         
@@ -389,12 +389,20 @@ normal、replica、striped卷组合
     砖块将会按照如下进行组合：
 
     .. image:: ../images/02-12.png
+        :align: center
+
+    然而，创建卷时使用如下命令：
 
     .. code::
     
         # gluster volume create gluster-vol1 stripe 2 replica 2 \
         host1:/brick1 host2:/brick1 host3:/brick1 host4:/brick1 \
         host1:/brick2 host2:/brick2 host3:/brick2 host4:/brick2 force
+
+    砖块将会按照如下进行组合：
+
+    .. image:: ../images/02-13.png
+        :align: center
 
 作为nfs挂载
 ~~~~~~~~~~~
