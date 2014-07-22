@@ -636,11 +636,11 @@ oVirt目前两种部署方式：
 
 **示例：重设管理员密码**
 
-.. code::
+    .. code::
 
-    # engine-config -s AdminPassword=interactive
-    Please enter a password: # 密码
-    Please reenter password: # 密码
+        # engine-config -s AdminPassword=interactive
+        Please enter a password: # 密码
+        Please reenter password: # 密码
 
 ovirt-shell与API
 ~~~~~~~~~~~~~~~~~
