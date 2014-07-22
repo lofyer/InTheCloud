@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>第一章 &mdash; In the Cloud alpha documentation</title>
+    
+    <link rel="stylesheet" href="../_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="In the Cloud alpha documentation" href="../index.html" />
+    <link rel="next" title="第二章" href="ch02.html" />
+    <link rel="prev" title="目录-内容梗概" href="ch00.html" /> 
+  </head>
+  <body>
+      <div class="header"><h1 class="heading"><a href="../index.html">
+          <span>In the Cloud alpha documentation</span></a></h1>
+        <h2 class="heading"><span>第一章</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="ch00.html">目录-内容梗概</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="ch02.html">第二章</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="id1">
+<h1>第一章<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id2">
+<h2>1.1 我所看到的<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<p>从07年那会儿，甚至更早，拥有千万用户（包括盗版受害者在内）的行业先锋VMware，又有Google数据中心以及Amazon各种在线服务，这些实打实的东西遵循计算能力的摩尔定律，再顺应日益增长的商业需求，就有了“云”和“大数据”这两个让许多企业再次躁动的概念。</p>
+<p>稍微有些行业经验（至少以为是或者看来是）的人觉得这俩只是个噱头；搞大型机的说，嗯，这个，呵呵；搞IDC的觉得一台机器现在当二十台甚至更多卖，不错；搞互联网服务的就有些挠头，咦，这啥？噢，就那玩意儿啊，干嘛起这名？</p>
+<p>不管大家都怎么看吧，先引用一句关于“大数据”的经典：</p>
+<p><em>“Big Data is like teenage sex: everyone talks about it, nobody really knows how to do it, everyone thinks everyone else is doing it, so everyone claims they are doing it.”</em></p>
+<p>有时，你我或许都会有迷惘，我这么做（说），对么？</p>
+<p>那就这样，<strong>但行好事，莫问前程</strong>。</p>
+<p>作为公司的一名小小员工，从客户交流到现场部署、从SDN交换机到Neutron、从QEMU到IAAS，我都有过了解或接触，并将其记录成文，是总结，亦是探索。期间难免会有这样或者那样的想法，而将这些想法实践出来的过程是会让人觉得生活依旧是美好的。</p>
+<p>接下来是以我目前水平能看到的：</p>
+<ul class="simple">
+<li>和多数行业一样，不管哪个公司，他们技术和关系，在不同客户那里都有不同的权重，这点的南北差异尤为明显；</li>
+<li>风（宏观调控）让云去哪，云就去哪；</li>
+<li>以我所遇到的客户来看，部分客户不会明确的说使用“云”，他们的需求在多数情况下可以有这样或者那样的传统方案替代；明确要求使用“云”的客户，总会要求周边指标（用户接入、终端协议、视频流占用带宽、UPS、存储复用等）以及各种各样的定制；</li>
+<li><strong>云计算的本意不是虚拟机，也不是管理方便的集群，国内好多公司搞的云计算都是在卖传统计算机所能提供的服务，要有公司来建分水岭。</strong></li>
+</ul>
+<p>所以，在需求上的灵活变通，也是有些许重要性的，<strong>不要把技术人员的固执带到客户那</strong>。</p>
+</div>
+<div class="section" id="id3">
+<h2>1.2 今天天气怎样<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<p>7:50 手机闹铃响了，随之而来的是你订阅的RSS、Flipboard推送的新闻。随手翻阅下，完后Siri说今天天气挺暖和的，可以穿你最喜欢的高领毛衣，起床。</p>
+<p>8:30 高速公路上，地图告诉你前方拥堵，正好这时领导打来电话，你告诉Siri说“接听”。挂了电话以后，红灯亮了，汽车记录下你这次堵车的时间，并默默再次计算预计到时。</p>
+<p>9:20 到达公司门口，没有保安，取而代之的是连接公司LDAP服务器的瞳孔识别。</p>
+<p>10:00 收到信息，来自楼下快件派发柜，你订购的球鞋到了。</p>
+<p>10:30 客户预约的拜访，你告诉Siri说把公司地址导航路线发送给客户张三。</p>
+<p>11:10 通过公司IM告诉前台临时允许车牌号为K9031的车辆进来并发送车位信息给客户。</p>
+<p>11:20 和客户在临时会客厅谈话，期间你把演说内容通过手势（食指一划）推送到客户邮箱，他们感到很意外（加分点）。</p>
+<p>12:30 午餐时间，Siri还记得你在决心减肥期间，提醒你不要吃最喜欢的红烧肉，末了来一句“两个人被老虎追，谁最危险？Bingo，胖的那个”。</p>
+<p>14:30 有客户如约送来了10T的财务数据，你通知技术部小李对这些数据进行方案II处理，百分之30的处理任务交给武汉机房的机器，因为这些从机柜到主板都是你依照节能环保的原则主持设计的。</p>
+<p>16:00 Siri告诉你，抱歉，六点钟有局部降雨。</p>
+<p>17:00 你把今天的备忘录存进公司派发给你的虚拟桌面，下班。</p>
+<p>19:00 老婆大人的晚饭做好了，你也再次连上虚拟桌面把备忘录整理归档。</p>
+<p>20:30 跑步结束，它告诉你这几周换季期间，要增加运动量，你说“可以”。</p>
+<p>23:00 休息，Siri通过文字悄悄告诉你，明天结婚纪念日，记住。</p>
+<p><strong>所有已知未知的暗流，让人有了继续折腾下去的欲望。</strong></p>
+<p>我是一个着重实践的人，是的，比如磁盘不拆开的话我可能就对扇区、磁道、柱面没什么深刻概念（其实拆了也没多深刻）。所以，这一些列文章将尽量从操作或者现象中总结规律。一些原理性的东西会尽量用我觉得容易理解的形式表现出来。</p>
+<a class="reference internal image-reference" href="../_images/01-01.jpg"><img alt="../_images/01-01.jpg" class="align-center" src="../_images/01-01.jpg" style="width: 300px; height: 373px;" /></a>
+<p>整本“书”的结构将会是这个样子：</p>
+<p>介绍下主流“云”的现状，会引用许多现成（尽量）客观的信息片段；畅想一下；从中选择部分组成一个完整系统，进行搭建（或模拟）并本地调优（避免过早优化）；避免烂尾，结尾送两首短诗吧。</p>
+</div>
+<div class="section" id="id4">
+<h2>1.3 根据需求来架构<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>所有我们所需要的东西，至此有了一个整体的印象。接下来，我列举几个关键词，从中挑出一部分来组建我们“云”。</p>
+<ul class="simple">
+<li>存储：将要构建的基础设施的基础，所以一定要对其可用性及速度有所保证。</li>
+<li>虚拟化：通过软件模拟芯片以及处理器的运行结构，作为八九十年代生人（忽然觉得时间好快），多数人最熟悉的应该是红白机模拟器了吧。</li>
+<li>集群：这个概念里有并行还有分布，两者比较明显的区别是是否在某一时间段内有共同的计算目的。</li>
+<li>授权服务：现代数据中心的多数应用，都需要统一的用户数据，如何安全地使用统一的用户数据，也是我们需要考虑的。</li>
+<li>安全与可信：安全的问题，<strong>很重要</strong>。不要等到哪天信用卡账户被盗刷才发现安全的重要性；可信，即是服务提供者与接受者具有可信的第三方提供支持，参考Kerberos。</li>
+<li>可扩展：这里有两个层面，一个基础设施自身计算与存储能力扩增，另一个是与其他云计算平台的模块级别兼容。</li>
+<li>外围设备：对于特殊的应用（环境监视、认证、GPU依赖应用等），我们需要一些外围设备来辅助完成（usb设备、显卡等）。对于重要设备或者非常依赖总线带宽的设备（令牌、显卡等）的安装，推荐将其与实施应用的物理机直接绑定，对于其他设备（U盘、摄像头等）推荐使用某一既定物理机进行基于TCP/IP的透传。</li>
+<li>电源管理：由于集群中存在中央管理，所以有必要使用栅栏（fencing）去关闭与管理失去联系的机器，防止其自建中央管理。</li>
+</ul>
+<p>如此划分的意图是什么呢？<strong>基础设施，在保证安全可靠的前提下，对本地资源实现最大化利用，才是我们追求的。</strong></p>
+<p>接下来，看看即将部署的各个层之间的关系：</p>
+<img alt="../_images/01-02.png" class="align-center" src="../_images/01-02.png" />
+<p>整个架构不是很复杂，其中仅Admin部分需要自己开发，其余皆是现有模块。既然需求有了，我们要用它来实现什么功能呢？</p>
+<ul class="simple">
+<li>云存储？</li>
+<li>云计算？</li>
+</ul>
+<p>NO，NO，NO。我们有更大的目的。</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="ch00.html">目录-内容梗概</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="../index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="ch02.html">第二章</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2014, lofyer.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
