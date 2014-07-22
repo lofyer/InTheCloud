@@ -356,7 +356,8 @@ oVirt目前两种部署方式：
 
 安装ovirt-hosted-engine-setup，并回答一些问题，注意高亮部分：
 
-.. code::
+.. code-block:: bash
+    :emphasize-lines: 21,36,123,138-144,150,166,173
 
     # hosted-engine --deploy
     [ INFO  ] Stage: Initializing
