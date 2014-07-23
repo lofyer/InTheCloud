@@ -2,7 +2,7 @@ In the Cloud
 ====
 
 这是一本云计算入门手册，旨在给入门云计算的同学们一个指南，快速入坑的指南。
-内容主要涵盖：oVirt，Glusterfs，Hadoop，OpenStack，家居云，以及各种可以折腾的小东西。当然，如果你有什么好的意见或者建议可以新建issue，或者在v2ex上留言，再或者去Lofyer's Archive留言，或者干脆发邮件给我。
+内容主要涵盖：*oVirt*，*Glusterfs*，*Hadoop*，*OpenStack*，*家居云*，以及各种可以*折腾的小东西*。当然，如果你有什么好的意见或者建议可以新建[issue](https://inthecloud.readthedocs.org/)，或者在[v2ex](http://www.v2ex.com/t/123647)上留言，再或者去[Lofyer's Archive](http://blog.lofyer.org/workshop/)留言，或者干脆[发邮件](mailto:lofyer@gmail.com)给我。
 
 获取源码
 ----
@@ -13,6 +13,11 @@ Github: https://github.com/lofyer/InTheCloud
 ----
 
 ReadTheDocs: https://inthecloud.readthedocs.org
+
+项目主站
+----
+
+InTheCloud: http://blog.lofyer.org/InTheCloud
 
 编译
 ----
