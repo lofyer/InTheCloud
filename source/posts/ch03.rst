@@ -857,8 +857,4 @@ UI 插件
 平台插件
 ~~~~~~~~~~~~~~~~~
 
-Foreman
-
-OpenStack Network
-
-OpenStack Image
+oVirt平台目前可以使用Foreman，OpenStack Network，OpenStack Image的部分功能，具体实施请参阅附录一内容。
