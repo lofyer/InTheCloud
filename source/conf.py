@@ -56,7 +56,7 @@ copyright = u'2014, lofyer'
 # built documents.
 #
 # The short X.Y version.
-version = '1.0'
+version = '0.5'
 # The full version, including alpha/beta/rc tags.
 release = 'alpha'
 

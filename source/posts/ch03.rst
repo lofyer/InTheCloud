@@ -55,8 +55,8 @@ oVirt目前两种部署方式：
 
     **集群策略（cluster policy）**：虚拟机运行或者迁移时所遵循的原则。
 
-3.2 搭建管理引擎
-----------------
+3.2 搭建oVirt管理引擎
+----------------------
 
 搭建oVirt平台的步骤：
 
@@ -795,12 +795,14 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
 
 **示例：**
 
-libguestfs
-~~~~~~~~~~~
+虚拟机文件系统扩容
+~~~~~~~~~~~~~~~~~~~
 
-具体内容请参考 `libguestfs site <http://libguestfs.org/>`_ 。
+oVirt 3.4 磁盘可以进行在线扩容，但是对于磁盘内的文件系统需要单独支持，在此列出常用Linux以及Windows扩容方法。
 
-**Linux文件系统扩容**
+**Linux文件系统扩容（libguestfs）**
+
+    具体内容请参考 `libguestfs site <http://libguestfs.org/>`_ 。
 
     1. 检视磁盘
 
@@ -839,12 +841,12 @@ libguestfs
 
 **FAT/NTFS扩容**
 
-使用Paragon Partion Manager。
+    XP使用Paragon Partion Manager；Windows 7 在磁盘管理中即可扩容。
 
 UI 插件
 ~~~~~~~~
 
-更详细内容请参考 `oVirt官网关于UI插件的介绍 <http://www.ovirt.org/Features/UIPlugins>`_ ，在此我仅使用ShellInABox举例。
+更详细内容请参考 `oVirt官网关于UI插件的介绍 <http://www.ovirt.org/Features/UIPlugins>`_ ，在此我仅使用ShellInABox举例，你可以考虑将上面的libguestfs扩容加进来。
 
 **ShellInABox oVirt UI plugin**
 

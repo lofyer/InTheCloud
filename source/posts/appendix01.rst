@@ -1,6 +1,6 @@
-======
-附录一
-======
+================================
+附录一 OpenStack及常用运维工具
+================================
 
 --------------------------
 OpenStack/Neutron快速搭建
@@ -47,14 +47,14 @@ RDO快速部署
 
 .. note:: **安装说明**
 
-    在RedHat系列（CentOS）系统上部署，将selinux置为permissive；禁用NetworkManager，启用network服务，详细配置请参考以前章节。
+    建议在一台安装有RedHat系列（CentOS）系统上部署，将selinux置为permissive；禁用NetworkManager，启用network服务，详细配置请参考以前章节。
 
 .. code::
 
     sudo yum update -y
     sudo yum install -y http://rdo.fedorapeople.org/rdo-release.rpm
     sudo yum install -y openstack-packstack
-    packstack --allinone
+    sudo packstack --allinone
 
 请耐心等待，以上过程预计花费一到两小时。有关此次部署的详细信息，在安装完成后可以看到：
 
@@ -73,12 +73,23 @@ RDO快速部署
      * The installation log file is available at: /var/tmp/packstack/20140730-110621-upxlZJ/openstack-setup.log
      * The generated manifests are available at: /var/tmp/packstack/20140730-110621-upxlZJ/manifests
 
+可修改 */root/packstack-answers-20140730-110621.txt* 内容以 `增加计算节点 <http://openstack.redhat.com/Adding_a_compute_node>`_ ；同理可增加网络节点（待实验）。
+
+添加镜像
+---------
+
+从ISO安装新实例
+----------------
+
+oVirt使用Neutron与Nova服务
+---------------------------
+
 ----------------
 SDN学习/mininet
 ----------------
 
 -----------------
-常见性能测量工具
+常用性能测量工具
 -----------------
 
 ------------
