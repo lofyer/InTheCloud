@@ -19,6 +19,11 @@ ReadTheDocs: https://inthecloud.readthedocs.org
 
 InTheCloud: http://blog.lofyer.org/InTheCloud
 
+QQ群
+----
+
+271787901
+
 编译
 ----
 

@@ -846,7 +846,7 @@ oVirt 3.4 磁盘可以进行在线扩容，但是对于磁盘内的文件系统�
 UI 插件
 ~~~~~~~~
 
-更详细内容请参考 `oVirt官网关于UI插件的介绍 <http://www.ovirt.org/Features/UIPlugins>`_ ，在此我仅使用ShellInABox举例，你可以考虑将上面的libguestfs扩容加进来。
+详细内容请参考 `oVirt官网关于UI插件的介绍 <http://www.ovirt.org/Features/UIPlugins>`_ ，在此我仅使用ShellInABox举例，你可以考虑将上面的libguestfs扩容加进来，更多UI Plugin请 **git clone git://gerrit.ovirt.org/samples-uiplugins.git** 。
 
 **ShellInABox oVirt UI plugin**
 
@@ -855,6 +855,7 @@ UI 插件
     .. code::
 
         # yum install shellinabox
+        # chkconfig
 
 平台插件
 ~~~~~~~~~~~~~~~~~
