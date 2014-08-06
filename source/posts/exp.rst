@@ -13,5 +13,5 @@
 
 软件：OpenLDAP、ejabber、owncloud、XBMC（更名Kodi）、
 
-使用一键部署
--------------
+一键部署
+--------
