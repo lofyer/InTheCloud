@@ -104,7 +104,9 @@ oVirt自3.3版本起，便可以添加外部组件，比如Foreman、OpenStack�
 .. note:: 认证选项
 
     用户名：glance
+
     密码：存于RDO配置文件中，形如 CONFIG_GLANCE_KS_PW=bf83b75a635843b4
+
     Tenant：services
 
 3. 然后可以在oVirt的存储域中看到刚刚添加的Glance服务。
@@ -115,13 +117,54 @@ oVirt自3.3版本起，便可以添加外部组件，比如Foreman、OpenStack�
 Neutron
 ~~~~~~~
 
+.. image:: ../images/apx01-06.jpeg
+    :align: center
+
+可参考 `Overlay_Networks_with_Neutron_Integration <http://www.ovirt.org/Overlay_Networks_with_Neutron_Integration>`_ 。
+
+1. 配置oVirt。
+   
+.. code::
+
+    # engine-config --set OnlyRequiredNetworksMandatoryForVdsSelection=true
+    # yum install vdsm-hook-openstacknet
+    # service ovirt-engine restart
+
+2. 如图添加Neutron组件。
+
+.. image:: ../images/apx01-07.png
+    :align: center
+
+.. image:: ../images/apx01-08.png
+    :align: center
+
+.. note:: 认证选项
+
+    用户名：neutron
+
+    密码：存于RDO配置文件中，形如 CONFIG_NEUTRON_KS_PW=a16c52e3ea634324
+
+    Tenant：services
+
+    agent 配置相同
+
 ----------------
 SDN学习/mininet
 ----------------
 
+现代SDN来自OpenFlow，关于SDN有一个个人认为最佳的学习工具： `mininet <http://mininet.org>`_ 。
+
 -----------------
 常用性能测量工具
 -----------------
+
+- CPU：SPEC、UNIXbench、SuperPI、PCMark
+
+- 图形：3dmark
+
+- 磁盘：hdparm、iozone、blogbench、dbench
+
+- ram：ramspeed
 
 ------------
 常用运维工具

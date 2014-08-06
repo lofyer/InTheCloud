@@ -7,11 +7,11 @@
 构建元素
 --------
 
-硬件： **HP N54L** 、 **Raspberry Pi**
+硬件： **HP N54L** 、 **Raspberry Pi** 、 **Mac mini**
 
 服务：网络认证、XMPP即时通信、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）
 
-软件：OpenLDAP、ejabber、owncloud、XBMC（更名Kodi）、
+软件：OpenLDAP、ejabber、owncloud、XBMC（更名Kodi）
 
 一键部署
 --------
