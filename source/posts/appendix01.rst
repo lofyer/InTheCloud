@@ -78,11 +78,58 @@ RDO快速部署
 添加镜像
 ---------
 
+以admin或者demo用户身份登录dashboard后，选择“镜像”，上传ISO。
+
+.. image:: ../images/apx01-01.png
+    :align: center
+    
+
 从ISO安装新实例
 ----------------
 
-oVirt使用Neutron与Nova服务
----------------------------
+在“实例”选项卡中，选择“添加实例”，并从现有镜像启动。
+
+.. image:: ../images/apx01-02.png
+    :align: center
+
+oVirt使用Glance与Neutron服务
+-----------------------------
+
+oVirt自3.3版本起，便可以添加外部组件，比如Foreman、OpenStack的网络或镜像服务。
+
+在添加OpenStack相关组件之前，oVirt管理端需要配置OpenStack的KeyStone URL：
+
+.. code::
+
+    # engine-config --set KeystoneAuthUrl=http://192.168.2.160:35357/v2.0
+    # service ovirt-engine restart
+
+添加OpenStack镜像服务Glance至oVirt
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. 在OpenStack的控制台中，添加一个新镜像，比如my_test_image，格式为raw。
+
+.. image:: ../images/apx01-03.png
+    :align: center
+
+2. 在oVirt左边栏，选择External Provider添加OpenStack Image服务。
+
+.. image:: ../images/apx01-04.png
+    :align: center
+
+.. note:: 认证选项
+
+    用户名：glance
+    密码：存于RDO配置文件中，形如 CONFIG_GLANCE_KS_PW=bf83b75a635843b4
+    Tenant：services
+
+3. 然后可以在oVirt的存储域中看到刚刚添加的Glance服务。
+
+.. image:: ../images/apx01-05.png
+    :align: center
+
+Neutron
+~~~~~~~
 
 ----------------
 SDN学习/mininet
