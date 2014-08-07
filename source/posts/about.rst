@@ -2,6 +2,8 @@
 关于文档
 ==========
 
+Author: lofyer@gmail.com
+
 Github: https://github.com/lofyer/InTheCloud
 
 ReadTheDocs: https://inthecloud.readthedocs.org

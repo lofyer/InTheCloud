@@ -59,6 +59,10 @@ RDO快速部署
 
 可修改 */root/packstack-answers-20140730-110621.txt* 内容以 `增加计算节点 <http://openstack.redhat.com/Adding_a_compute_node>`_ ；同理可增加网络节点（待实验）。
 
+.. note::
+
+    假如更换了admin/demo/services的密码，不要忘记在此配置文件中将其修改为新密码。
+
 添加镜像
 ---------
 
