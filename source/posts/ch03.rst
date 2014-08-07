@@ -55,6 +55,8 @@ oVirt目前两种部署方式：
 
     **集群策略（cluster policy）**：虚拟机运行或者迁移时所遵循的原则。
 
+    **DWH/Reports**：可以查看当前状态报告（需要ovirt-engine-reports）。
+
 3.2 搭建oVirt管理引擎
 ----------------------
 
