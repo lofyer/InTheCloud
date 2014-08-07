@@ -846,7 +846,7 @@ oVirt 3.4 磁盘可以进行在线扩容，但是对于磁盘内的文件系统�
 UI 插件
 ~~~~~~~~
 
-详细内容请参考 `oVirt官网关于UI插件的介绍 <http://www.ovirt.org/Features/UIPlugins>`_ ，在此我仅使用ShellInABox举例，你可以考虑将上面的libguestfs扩容加进来，更多UI Plugin请 **git clone git://gerrit.ovirt.org/samples-uiplugins.git** 。
+详细内容请参考 `oVirt官网关于UI插件的介绍 <http://www.ovirt.org/Features/UIPlugins>`_ 以及附录部分内容，在此我仅使用ShellInABox举例，你可以考虑将上面的libguestfs扩容加进来，更多UI Plugin请 **git clone git://gerrit.ovirt.org/samples-uiplugins.git** 。
 
 **ShellInABox oVirt UI plugin**
 
@@ -855,9 +855,30 @@ UI 插件
     .. code::
 
         # yum install shellinabox
-        # chkconfig
+        # chkconfig shellinaboxd on
 
-平台插件
+    修改shellinabox配置 **OPTS** ：
+
+        */etc/sysconfig/shellinaboxd*   
+        
+    .. code::
+        
+        OPTS="--disable-ssl --service /:SSH"
+
+    2. 拷贝uiplugin文件并启动服务。
+
+    .. code::
+
+        # git clone git://gerrit.ovirt.org/samples-uiplugins.git
+        # cp -r samples-uiplugins/shellinabox-plugin/* /usr/share/ovirt-engine/ui-plugins/
+        # service shellinaboxd start
+        # service ovirt-engine restart
+
+    .. note:: shellinabox插件链接问题
+
+       由于3.3到3.4之后链接的变化，shellinabox.json中的 **/webadmin/webadmin/plugin/ShellBoxPlugin/start.html** 需要替换为 **plugin/ShellBoxPlugin/start.html** 。
+
+集成其他平台组件
 ~~~~~~~~~~~~~~~~~
 
 oVirt平台目前可以使用Foreman，OpenStack Network，OpenStack Image的部分功能，具体实施请参阅附录一内容。

@@ -173,8 +173,11 @@ SDN学习/mininet
 nagios
 -------
 
+使用UI Plugin可以将在oVirt管理界面中查看Nagios监控状态，请参考第三章节相关内容。
+
 foreman
 --------
 
-chef 自动化部署
-----------------
+使用Foreman的主要目的是更方便地部署宿主机以及创建虚拟机。
+
+参考 `ForemanIntegration <http://www.ovirt.org/Features/ForemanIntegration>`_ 、 `foreman_ovirt <https://github.com/oourfali/foreman_ovirt>`_ 以及UIPlugin相关内容。
