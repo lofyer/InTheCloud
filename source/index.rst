@@ -16,6 +16,7 @@ In the Cloud
     posts/ch04.rst
     posts/ch05.rst
     posts/appendix01.rst
+    posts/appendix02.rst
     posts/exp.rst
 
 链接

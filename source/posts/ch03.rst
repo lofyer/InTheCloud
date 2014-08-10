@@ -624,7 +624,7 @@ oVirt目前两种部署方式：
 3.5 oVirt使用进阶
 -----------------
 
-平台参数配置
+engine-config参数配置
 ~~~~~~~~~~~~~~~~~
 
 平台安装完以后，可用通过engine-config命令进行详细参数配置。
@@ -880,7 +880,7 @@ UI 插件
 
        由于3.3到3.4之后链接的变化，shellinabox.json中的 **/webadmin/webadmin/plugin/ShellBoxPlugin/start.html** 需要替换为 **plugin/ShellBoxPlugin/start.html** 。
 
-集成其他平台组件
-~~~~~~~~~~~~~~~~~
+与其他平台集成
+~~~~~~~~~~~~~~~
 
 oVirt平台目前可以使用Foreman，OpenStack Network，OpenStack Image的部分功能，具体实施请参阅附录一内容。
