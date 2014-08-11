@@ -625,7 +625,7 @@ oVirt目前两种部署方式：
 -----------------
 
 engine-config参数配置
-~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 平台安装完以后，可用通过engine-config命令进行详细参数配置。
 
@@ -875,6 +875,9 @@ UI 插件
         # cp -r samples-uiplugins/shellinabox-plugin/* /usr/share/ovirt-engine/ui-plugins/
         # service shellinaboxd start
         # service ovirt-engine restart
+
+    .. image:: ../images/03-09.png
+        :align: center
 
     .. note:: shellinabox插件链接问题
 
