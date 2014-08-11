@@ -9,9 +9,9 @@ Welcome to the core!
 
 云计算目前主流实现有SaaS（Software-as-a-service）、PaaS（Platform-as-a-service）和IaaS（Infrastructure-as-a-service）。IaaS和PaaS都算作基础件，SaaS可以与基础件自由组合或者单独使用。
 
-虚拟化技术已经很受重视而且被推到了一个浪尖。如今诸多开源虚拟化平台，比如XenServer、CloudStack、OpenStack、Eucalyptus、oVirt、OpenVZ等，我们都看花了眼，些许慌乱不知哪个适合自己了。
+虚拟化技术已经很受重视而且被推到了一个浪尖。如今诸多开源虚拟化平台，比如XenServer、CloudStack、OpenStack、Eucalyptus、oVirt、OpenVZ、Docker、LXC等，我们都看花了眼，些许慌乱不知哪个适合自己了。
 
-各平台实现方式：全虚拟化，半虚拟化，TBD
+各平台实现方式：全虚拟化，半虚拟化，应用虚拟化。
 
 IaaS云计算平台，综合来说具有以下特性：
 
@@ -45,7 +45,7 @@ oVirt目前两种部署方式：
 
     **宿主机（node/host）**：为平台的的功能提供支持，主要是虚拟化能力。
 
-    **数据中心（data center）**：所有
+    **数据中心（data center）**：以数据共享方式（Shared/Local）划分的容器，可以包含多个集群。
 
     **存储域（storage domain）**：平台所依赖的各种存储空间。
 
@@ -53,7 +53,7 @@ oVirt目前两种部署方式：
 
     **池（pool）**：用于批量创建虚拟机。
 
-    **集群策略（cluster policy）**：虚拟机运行或者迁移时所遵循的原则。
+    **集群策略（cluster policy）**：宿主机/虚拟机运行或者迁移时所遵循的原则。
 
     **DWH/Reports**：可以查看当前状态报告（需要ovirt-engine-reports）。
 
