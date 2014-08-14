@@ -9,11 +9,25 @@
 
 硬件： **HP N54L** 、 **Raspberry Pi** 、 **Mac mini**
 
-服务：网络认证、XMPP即时通信、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）
+服务：网络认证、XMPP即时通信（服务群成员）、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）
 
 软件：OpenLDAP、ejabber、owncloud、XBMC（更名Kodi）、Wiki
 
 一键部署/OVF下载
 ----------------
 
-针对常用的
+系统架构
+--------
+
+你可以在这个架构的基础上，删删减减，总有适合你的。
+
+OS X Server
+-----------
+
+鉴于OS X Server安装服务，特地开设一个章节针对常用服务进行讲解。
+
+- Time Machine： 给Mac机器提供时光机器服务，可以很方便地对Mac进行备份与恢复，一定要保证磁盘划分合理。
+
+- VPN：可以创建基于LT2P或者PPTP的VPN服务器。
+
+- Wiki：可以创建博客以及Wiki服务器。

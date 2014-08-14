@@ -31,14 +31,14 @@ RDO快速部署
 
 .. note:: **安装说明**
 
-    建议在一台安装有RedHat系列（CentOS）系统上部署，将selinux置为permissive；禁用NetworkManager，启用network服务，详细配置请参考以前章节。
+    在一台安装有RedHat系列（CentOS）系统上部署，将selinux置为permissive；禁用NetworkManager，启用network服务，详细配置请参考以前章节。
 
 .. code::
 
-    sudo yum update -y
-    sudo yum install -y http://rdo.fedorapeople.org/rdo-release.rpm
-    sudo yum install -y openstack-packstack
-    sudo packstack --allinone
+    # yum install -y http://rdo.fedorapeople.org/rdo-release.rpm
+    # yum update -y
+    # yum install -y openstack-packstack
+    # packstack --allinone
 
 请耐心等待，以上过程预计花费一到两小时。有关此次部署的详细信息，在安装完成后可以看到：
 
@@ -62,6 +62,7 @@ RDO快速部署
 .. note::
 
     假如更换了admin/demo/services的密码，不要忘记在此配置文件中将其修改为新密码。
+    # packstack --answer-file=/root/packstack-answers-20140730-110621.txt
 
 添加镜像
 ---------
