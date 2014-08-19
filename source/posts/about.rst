@@ -4,9 +4,17 @@
 
 Author: lofyer@gmail.com
 
+新浪微博: lofyer
+
+书的源码
+
 Github: https://github.com/lofyer/InTheCloud
 
+在线阅读
+
 ReadTheDocs: https://inthecloud.readthedocs.org
+
+朴素的官网
 
 ProjectSite: http://blog.lofyer.org/InTheCloud
 

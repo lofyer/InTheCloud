@@ -11,6 +11,18 @@ scrapy
 scrapy with redis
 ~~~~~~~~~~~~~~~~~~
 
+数据来源示例
+-------------
+
+新浪微博
+~~~~~~~~
+
+1. 使用OdinLin的工具：
+
+https://github.com/OdinLin/Pyweibo.git
+
+2. 使用新浪提供的API
+
 机器学习常用算法及Python实现
 ----------------------------
 
