@@ -27,6 +27,8 @@
 一键部署/OVF下载
 ----------------
 
+多年以后，我不再想折腾，我会给自己提供一些可维护的工具以方便以后直接轻易就能用上。
+
 OS X Server
 -----------
 
@@ -37,3 +39,15 @@ OS X Server
 - VPN：可以创建基于LT2P或者PPTP的VPN服务器。
 
 - Wiki：可以创建博客以及Wiki服务器。
+
+- 网站：可提供PHP或者Python的Web服务。
+
+- 文件共享：可以通过Samba、AFP、Webdav方式共享文件或目录。
+
+- FTP：提供FTP服务。
+
+- 通讯录：可提供CardDav格式或者LDAP内的通讯录，适用于大多数移动设备。
+
+- NetInstall：提供网络安装OS X的服务，一般用于重装或者恢复系统。
+
+- Open Directory：提供LDAP服务，包含Kerberos认证。
