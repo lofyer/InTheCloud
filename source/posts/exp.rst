@@ -18,9 +18,9 @@
 构建元素
 --------
 
-硬件： **HP N54L** 、 **Raspberry Pi** 、 **Mac mini**
+硬件： **HP N54L** 、 **Raspberry Pi** 、 **Mac mini** 、 **WRT-54G**
 
-服务：网络认证、XMPP即时通信（服务群成员）、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）、数据源（微博等）
+服务：网络认证、XMPP即时通信（服务群成员）、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）、数据源（微博等）、DNS（解析内部服务器）
 
 软件：OpenLDAP、ejabber、owncloud、XBMC（更名Kodi）、Wiki
 
@@ -38,6 +38,8 @@ OS X Server
 
 - VPN：可以创建基于LT2P或者PPTP的VPN服务器。
 
+- 信息：提供基于XMPP的Jabber即时消息服务。
+
 - Wiki：可以创建博客以及Wiki服务器。
 
 - 网站：可提供PHP或者Python的Web服务。
@@ -51,3 +53,5 @@ OS X Server
 - NetInstall：提供网络安装OS X的服务，一般用于重装或者恢复系统。
 
 - Open Directory：提供LDAP服务，包含Kerberos认证。
+
+- DNS：用于内部DNS服务，可用WRT-54G代替。
