@@ -79,6 +79,8 @@
 功能特性
 ~~~~~~~~
 
+关于Gluterfs的更多功能特性请参考 `Glusterfs features <https://www.gluster.org/documentation/architecture/Features_Overview/>`_ 。
+
 **gluster支持四种存储逻辑卷组合：普通分布式（Distributed）、条带（Striped）、冗余（Replicated）、条带冗余（Striped-Replicated）**
 
 +-----------+-------------------------------+
