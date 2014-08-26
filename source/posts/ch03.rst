@@ -779,6 +779,7 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
 
     .. code::
 
+        # 注意此处使用双引号
         params = "default"
         os.environ.__setitem__("extnet",params)
 
