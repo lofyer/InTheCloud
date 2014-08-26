@@ -781,6 +781,7 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
 
         # 注意此处使用双引号
         params = "default"
+        # 同上部分粗体字，因为大部分hooks检查engine-config中的环境变量，简便起见，我直接在hooks脚本中设置了环境变量
         os.environ.__setitem__("extnet",params)
 
     3. 虚拟机一定要添加网络配置，否则会启动失败，在虚拟机启动时，第一个网络配置文件会被替换为 **default** 网络。
