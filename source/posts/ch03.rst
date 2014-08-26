@@ -775,7 +775,7 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
        
         # virsh net-list
 
-    在 *extnet_vnic.py* 文件中 **newnet = os.environ.get('extnet')** 前一行添加如下代码，替换其中的 **default** 为要使用的libvirt网络：
+    在 *extnet_vnic.py* 文件中 **newnet = os.environ.get('extnet')** 前一行添加如下代码，替换其中的 **default** 为要使用的libvirt网络， **其他的hooks脚本多数可以这样修改，也可以在engine-config的CustomProperty中指定** ：
 
     .. code::
 
