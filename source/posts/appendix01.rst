@@ -186,3 +186,15 @@ foreman
 使用Foreman的主要目的是更方便地部署宿主机以及创建虚拟机。
 
 参考 `ForemanIntegration <http://www.ovirt.org/Features/ForemanIntegration>`_ 、 `foreman_ovirt <https://github.com/oourfali/foreman_ovirt>`_ 以及UIPlugin相关内容。
+
+chef
+----
+
+简单理解为一些列安装脚本（cookbook）。
+
+访问 `http://gettingstartedwithchef.com/ <http://gettingstartedwithchef.com/first-steps-with-chef.html>`_ 开始快速上手学习。
+
+`获取更多cookbook <https://supermarket.getchef.com/cookbooks-directory>`_ 。
+
+puppet
+------
