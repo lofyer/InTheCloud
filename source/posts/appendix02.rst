@@ -9,16 +9,18 @@
 网络
 -----
 
-**VLAN**
+1. 使用 **VLAN** 、 **openvswitch** 进行隔离或限制。
 
-**openvswitch**
+2. 使用tc（Traffic Controller）命令进行速率的限制，许多虚拟化平台使用的都是它。
+
+****
 
 CPU
 -----
 
-使用CPU Pin可以将特定虚拟核固定在指定物理核上。
+1. 使用CPU Pin可以将特定虚拟核固定在指定物理核上。线程当作核来使用的话，每一个虚拟机使用一个核，之间互不干涉。
 
-线程当作核来使用的话，每一个虚拟机使用一个核，之间互不干涉。
+2. 使用Linux的 `Control Group <https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/Documentation/cgroups>`_ 来限制虚拟机对宿主机CPU的用度。
 
 磁盘IO
 -------
