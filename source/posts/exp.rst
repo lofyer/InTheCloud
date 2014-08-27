@@ -38,11 +38,6 @@
 
 软件：OpenLDAP、jabber、owncloud、XBMC（更名Kodi）、Wiki
 
-一键部署/OVF下载
-----------------
-
-多年以后，我不再想折腾，我会给自己提供一些可维护的工具以方便以后直接轻易就能用上。
-
 OS X Server
 -----------
 
