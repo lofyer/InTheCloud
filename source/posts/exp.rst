@@ -36,7 +36,7 @@
 
 服务：网络认证、XMPP即时通信（服务群成员）、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）、数据源（微博等）、DNS（解析内部服务器）、语音电话、语音识别控制
 
-软件：OpenLDAP、jabber、owncloud、XBMC（更名Kodi）、Wiki、Asterisk、Simon语音
+软件：OpenLDAP、jabber、 `owncloud <http://www.owncloud.org>`_ 、 `XBMC（更名Kodi） <http://xbmc.org/>`_ 、Wiki、Asterisk、 `jasper <http://jasperproject.github.io/>`_
 
 OS X Server
 -----------

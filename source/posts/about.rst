@@ -6,6 +6,8 @@ Author: lofyer@gmail.com
 
 新浪微博: lofyer
 
+QQ: 578645806
+
 书的源码
 
 Github: https://github.com/lofyer/InTheCloud
