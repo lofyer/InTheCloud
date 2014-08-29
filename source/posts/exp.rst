@@ -32,11 +32,11 @@
 构建元素
 --------
 
-硬件： **HP N54L** 、 **Raspberry Pi** 、 **Mac mini**
+硬件： **HP N54L** 、 **Raspberry Pi** 、 **Mac mini** 、 **电话语音卡**
 
-服务：网络认证、XMPP即时通信（服务群成员）、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）、数据源（微博等）、DNS（解析内部服务器）
+服务：网络认证、XMPP即时通信（服务群成员）、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）、数据源（微博等）、DNS（解析内部服务器）、语音电话、语音识别控制
 
-软件：OpenLDAP、jabber、owncloud、XBMC（更名Kodi）、Wiki
+软件：OpenLDAP、jabber、owncloud、XBMC（更名Kodi）、Wiki、Asterisk、Shpinx语音
 
 OS X Server
 -----------
