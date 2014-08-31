@@ -29,6 +29,9 @@
 
 8. 你是不是。。。
 
+.. image:: ../images/exp-01.png
+    :align: center
+
 构建元素
 --------
 
