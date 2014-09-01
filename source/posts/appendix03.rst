@@ -25,7 +25,7 @@ https://github.com/lofyer/onekey-deploy.git
 
 - Gitlab
 
-- Nagios
+- Zabbix
 
 - oVirt
 
