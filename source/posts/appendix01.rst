@@ -207,3 +207,7 @@ chef
 
 puppet
 ------
+
+功能上与chef类似，但是影响力更大。
+
+`下载虚拟机 <https://puppetlabs.com/download-learning-vm>`_ 并按照里面的教程来快速上手。
