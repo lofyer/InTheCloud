@@ -180,6 +180,10 @@ zabbix
 
 类似Nagios，不过图形绘制很强，在一键脚本中提供安装。
 
+`移动客户端下载 <http://www.zabbix.com/third_party_tools.php>`_  。
+
+关于zabbix的更多介绍可以参考 `itnihao的相关著作 <http://www.zhihu.com/question/19973178>`_ 。
+
 nagios
 -------
 
