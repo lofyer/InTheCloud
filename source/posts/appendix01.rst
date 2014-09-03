@@ -187,7 +187,7 @@ zabbix
 nagios
 -------
 
-使用UI Plugin可以将在oVirt管理界面中查看Nagios监控状态，请参考第三章节相关内容。
+使用UI Plugin可以将在oVirt管理界面中查看Nagios监控状态，可参考 `oVirt_Monitoring_UI_Plugin <http://www.ovirt.org/Features/UIPlugins#oVirt_Monitoring_UI_Plugin>`_ 以及 `Nagios_Intergration <http://www.ovirt.org/Features/Nagios_Integration>`_ 。
 
 foreman
 --------
