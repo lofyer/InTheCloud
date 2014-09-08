@@ -30,3 +30,8 @@ https://github.com/lofyer/onekey-deploy.git
 - oVirt
 
 - Jasper
+
+常用爬虫
+---------
+
+https://github.com/lofyer/myspiders.git

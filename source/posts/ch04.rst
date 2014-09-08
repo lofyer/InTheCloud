@@ -2,29 +2,34 @@
 第四章 
 ======
 
+在开始这一章之前，你可能需要补习一下数学知识。
+
 4.1 数据收集
 -------------
 
 scrapy
 ~~~~~~~
 
+具体文档请参考 `Scrapy 中文文档 <http://scrapy-chs.readthedocs.org/zh_CN/0.22/intro/overview.html>_` 。
+
 scrapy with redis
 ~~~~~~~~~~~~~~~~~~
 
-4.2 数据来源示例
------------------
+4.2 爬虫示例
+-------------
 
-新浪微博
-~~~~~~~~
+58同城
+~~~~~~~
 
 知乎
 ~~~~
 
-1. 使用OdinLin的工具：
+http://blog.javachen.com/2014/06/08/using-scrapy-to-cralw-zhihu/
 
-https://github.com/OdinLin/Pyweibo.git
+新浪微博
+~~~~~~~~
 
-2. 使用新浪提供的API
+1. 使用第三方SDK：
 
 4.3 机器学习常用算法及Python实现
 ---------------------------------
