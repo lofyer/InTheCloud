@@ -10,7 +10,7 @@
 scrapy
 ~~~~~~~
 
-具体文档请参考 `Scrapy 中文文档 <http://scrapy-chs.readthedocs.org/zh_CN/0.22/intro/overview.html>_` 。
+具体文档请参考 `Scrapy 中文文档 <http://scrapy-chs.readthedocs.org/zh_CN/0.22/intro/overview.html>`_ 。
 
 scrapy with redis
 ~~~~~~~~~~~~~~~~~~
