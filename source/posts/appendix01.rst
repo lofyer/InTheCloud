@@ -153,6 +153,13 @@ Neutron
 
     agent 配置相同
 
+OpenStack常见问题集锦
+~~~~~~~~~~~~~~~~~~~~~
+
+Q：Swift不能删除目录。
+
+A：使用命令 swift delete public_container aaa/ 进行删除。
+
 ----------------
 SDN学习/mininet
 ----------------

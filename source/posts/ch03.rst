@@ -657,6 +657,15 @@ ovirt-shell与API
 
 Restful API（Application User Interface）是oVirt的一大特点，用户可以通过它将其与第三方的界面或者应用进行集成。访问 http://192.168.10.100/api?rsdl 以获取其用法。
 
+.. note:: 访问API使用GET、POST、PUT、DELETE方法
+
+    获取内容时使用GET；
+    添加新内容或者执行动作使用POST；
+    更新内容使用PUT；
+    删除内容使用DELETE；
+
+    详细用法参考 http://www.ovirt.org/Api
+
 ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成图形界面所不能提供的功能。
 
 .. code::
