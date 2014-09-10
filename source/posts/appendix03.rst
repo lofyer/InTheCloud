@@ -16,8 +16,8 @@ OVF
 
 用户：，系统：root/123456
 
-一键脚本
---------
+快速安装脚本
+------------
 
 https://github.com/lofyer/onekey-deploy.git
 
