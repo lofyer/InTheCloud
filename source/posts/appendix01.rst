@@ -2,8 +2,10 @@
 附录一 
 ================================
 
+这里我会使用RDO快速部署一个具有基本功能的OpenStack环境，如果你想要更完整的部署（比如Heat、Trove组件），可以参考 `官方文档 <http://docs.openstack.org/icehouse/install-guide/install/yum/content>`_ 。
+
 ---------------------
-OpenStack RDO快速搭建
+OpenStack RDO快速部署
 ---------------------
 
 在开始之前需要将这些关键组件关系理清。

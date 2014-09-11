@@ -1,5 +1,5 @@
-附录三 文档中资源下载
-======================
+附录三 文档参考资源以及建议书单
+================================
 
 OVF
 ----
@@ -35,3 +35,31 @@ https://github.com/lofyer/onekey-deploy.git
 ---------
 
 https://github.com/lofyer/myspiders.git
+
+Django based WebAdmin
+----------------------
+
+https://github.com/lofyer/vm-webadmin.git
+
+书单
+----
+
+虽然现在的移动设备很适合阅读，但我还是推荐多看些实体书，尤其是一些大部头。
+
+当然，下面的书目我会尽量提供适合移动设备阅读的版本（PDF、MOBI、EPUB、TXT）。
+
+TCP/IP Vol. 1/2/3
+
+Machine Learning in Action
+
+Elements of Information Theory
+
+The Design of UNIX Operating System
+
+Understanding the Linux Kernel
+
+Linux内核完全注释
+
+浪潮之巅
+
+数学之美

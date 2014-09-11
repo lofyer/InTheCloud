@@ -41,6 +41,10 @@
 
 软件：OpenLDAP、jabber、 `owncloud <http://www.owncloud.org>`_ 、 `XBMC（更名Kodi） <http://xbmc.org/>`_ 、Wiki、Asterisk、 `jasper <http://jasperproject.github.io/>`_
 
+.. note:: 不需要的东西
+
+    建立一个搜索引擎就三步：下载网页、建立索引、质量排序，对的，我们不需要自己建立，主要原因就是索引量太小。有兴趣的话可以查看 http://en.wikipedia.org/wiki/List_of_search_engines ，或者使用Lucene或者Sphinx来搭建自己的搜索引擎。
+
 OS X Server
 -----------
 
