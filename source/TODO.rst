@@ -13,20 +13,12 @@ Normal
 Suffix
 --------
 
-OpenStack 常见问题集锦
-
-zabbix/nagios/chef
-
 各种证书生成方法
 
 DRBD Heartbeat?
 
 For geek
 --------
-
-在geek云中添加dlna以及pnp搭建，还有git服务器或者管理的搭建
-
-RaspberryPi大大地利用
 
 使用LeapMotion作为控制设备的控制台
 
