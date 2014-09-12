@@ -50,6 +50,8 @@ CPU
  
         # echo $VM_PID > /sys/fs/cgroup/blkio/limit1M/tasks
 
+3. 更改qemu drive cache。
+
 设备
 -----
 
