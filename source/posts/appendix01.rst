@@ -4,6 +4,8 @@
 
 这里我会使用RDO快速部署一个具有基本功能的OpenStack环境，如果你想要更完整的部署（比如Heat、Trove组件），可以参考 `官方文档 <http://docs.openstack.org/icehouse/install-guide/install/yum/content>`_ 。
 
+要学习更多关于OpenStack的内容，可以参考 `陈沙克的日志 <http://www.chenshake.com/cloud-computing/>`_ 。
+
 ---------------------
 OpenStack RDO快速部署
 ---------------------
@@ -161,6 +163,10 @@ OpenStack常见问题集锦
 Q：Swift不能删除目录。
 
 A：使用命令 swift delete public_container aaa/ 进行删除。
+
+Q: Neutron 网络快速开始？
+
+A：参考https://www.ustack.com/blog/neutron_intro/
 
 ----------------
 SDN学习/mininet
