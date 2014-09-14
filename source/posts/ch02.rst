@@ -209,9 +209,7 @@
     # mkdir /gluster_brick_root1/data
     # mkdir /gluster_brick_root2/data
 
-.. epigraph:: 
-
-    为什么要用XFS？
+.. note:: 为什么要用XFS？
    
     XFS具有元数据日志功能，可以快速恢复数据；同时，可以在线扩容及碎片整理。其他文件系统比如EXT3，EXT4未做充分测试。
 

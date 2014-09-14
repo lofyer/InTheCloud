@@ -39,7 +39,7 @@ https://github.com/lofyer/myspiders.git
 Django based WebAdmin
 ----------------------
 
-https://github.com/lofyer/vm-webadmin.git
+https://github.com/lofyer/webadmin.git
 
 书单
 ----
@@ -63,3 +63,7 @@ Linux内核完全注释
 浪潮之巅
 
 数学之美
+
+UNIX环境高级编程
+
+存储技术原理分析
