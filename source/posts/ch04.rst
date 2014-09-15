@@ -49,7 +49,47 @@ http://blog.javachen.com/2014/06/08/using-scrapy-to-cralw-zhihu/
 
 1. 使用第三方SDK：
 
-4.3 机器学习常用分类算法及Python实现
+4.3 numpy 快查
+---------------
+
+.. code::
+
+    import numpy as np
+    a = np.arange(1,5)
+    data_type = [('name','S10'), ('height', 'float'), ('age', int)]
+    values = [('Arthur', 1.8, 41), ('Lancelot', 1.9, 38), 
+                ('Galahad', 1.7, 38)]
+    b = np.array(values, dtype=data_type)
+
+    # 数组最大值
+    a.max()
+
+    #数组最小值
+    a.max()
+
+    #区间峰峰值
+    a.ptp()
+
+    #乘积
+    a.prod()
+
+    #累积
+    a.cumprod()
+
+    #平均值
+    a.mean()
+
+    #差分
+    np.diff(a)
+
+    #元素条件查找
+    np.where(a>2)
+
+    #排序
+    np.msort(a)
+    np.sort(b, kind='mergesort', order='height')
+
+4.4 机器学习常用分类算法及Python实现
 -------------------------------------
 
 K邻近算法
@@ -70,10 +110,10 @@ SVM
 AdaBoost
 ~~~~~~~~
 
-4.4 无监督学习
+4.5 无监督学习
 ---------------
 
-4.5 数据可视化
+4.6 数据可视化
 ---------------
 
 数据统计
