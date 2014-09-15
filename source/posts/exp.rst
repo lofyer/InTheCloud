@@ -37,7 +37,7 @@ OK，这些我们都可以分而治之，整个系统的骨架大概如下图所
 构建元素
 --------
 
-硬件： **HP N54L** 、 **Raspberry Pi** 、 **Mac mini** 、 **电话语音卡**
+硬件： **HP N54L** 、 **Raspberry Pi** 、 **Mac mini** 、 **电话语音卡** 、 **WRT54G（可选）**
 
 服务：网络认证、XMPP即时通信（服务群成员）、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）、数据源（微博等）、DNS（解析内部服务器）、语音电话、语音识别控制、股票分析
 
@@ -75,3 +75,7 @@ OS X Server
 - Open Directory：提供LDAP服务，包含Kerberos认证。
 
 - DNS：用于内部DNS服务。
+
+.. note:: 家庭局域网DNS服务器
+
+    家庭局域网中的DNS服务器有时还是很有必要的，可以使用RPi、MacMini（或者其他合适的路由设备）作为DNS转发，配合 `dnsmasq <http://www.thekelleys.org.uk/dnsmasq/docs/dnsmasq.conf.example>`_ 快速部署DNS。
