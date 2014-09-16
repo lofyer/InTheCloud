@@ -172,7 +172,7 @@ A：参考https://www.ustack.com/blog/neutron_intro/
 
 Q：OpenStack组件间的通信是靠什么？
 
-A：AMQP，比如RabbitMQ、Apache的ActiveMQ，部署时候可以选择。
+A：AMQP，比如RabbitMQ、Apache的ActiveMQ，部署时候可以选择，如果对这种消息传输工具有兴趣可以参考 `rabbitmq tutorial <http://www.rabbitmq.com/getstarted.html>`_ 以及 `各种有用的插件（web监视等） <http://www.rabbitmq.com/plugins.html>`_ 。
 
 ----------------
 SDN学习/mininet
