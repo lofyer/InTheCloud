@@ -61,33 +61,48 @@ http://blog.javachen.com/2014/06/08/using-scrapy-to-cralw-zhihu/
                 ('Galahad', 1.7, 38)]
     b = np.array(values, dtype=data_type)
 
+    # 符号
+    np.sign(a)
+
     # 数组最大值
     a.max()
 
-    #数组最小值
+    # 数组最小值
     a.max()
 
-    #区间峰峰值
+    # 区间峰峰值
     a.ptp()
 
-    #乘积
+    # 乘积
     a.prod()
 
-    #累积
+    # 累积
     a.cumprod()
 
-    #平均值
+    # 平均值
     a.mean()
 
-    #差分
+    # 中值
+    a.median()
+
+    # 差分
     np.diff(a)
 
-    #元素条件查找
+    # 方差
+    np.var(a)
+
+    # 元素条件查找，返回index的array
     np.where(a>2)
 
-    #排序
+    # 返回第2，3，5个元素的array
+    np.take(a, np.array(1,2,4))
+
+    # 排序
     np.msort(a)
     np.sort(b, kind='mergesort', order='height')
+
+    # 均分，奇数个元素的array不可分割为偶数。
+    np.split(b,2)
 
 4.4 机器学习常用分类算法及Python实现
 -------------------------------------

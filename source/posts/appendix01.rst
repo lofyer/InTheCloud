@@ -6,6 +6,8 @@
 
 要学习更多关于OpenStack的内容，可以参考 `陈沙克的日志 <http://www.chenshake.com/cloud-computing/>`_ 。
 
+API使用请参考http://developer.openstack.org/api-ref.html 以及 http://docs.openstack.org/developer/openstack-projects.html 。
+
 ---------------------
 OpenStack RDO快速部署
 ---------------------
