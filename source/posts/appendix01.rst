@@ -166,9 +166,13 @@ Q：Swift不能删除目录。
 
 A：使用命令 swift delete public_container aaa/ 进行删除。
 
-Q: Neutron 网络快速开始？
+Q： Neutron 网络快速开始？
 
 A：参考https://www.ustack.com/blog/neutron_intro/
+
+Q：OpenStack组件间的通信是靠什么？
+
+A：MQ，比如RabbitMQ、Apache的ActiveMQ，部署时候可以选择。
 
 ----------------
 SDN学习/mininet

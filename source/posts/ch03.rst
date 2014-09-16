@@ -908,3 +908,14 @@ UI 插件
 ~~~~~~~~~~~~~~~
 
 oVirt平台目前可以使用Foreman，OpenStack Network，OpenStack Image的部分功能，具体实施请参阅附录一内容。
+
+后端（libvirt/qemu/kernel）优化
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+如果你觉得现有平台的性能达不到预期，或者有其他的需求，可以从以下几方面进行调节或优化。
+
+- qemu ： 我写了 `一系列qemu的脚本 <https://github.com/lofyer/qemu-cmd-reloaded>`_ ，你可以调节里面的参数直接启动虚拟机进行调试或者优化。
+
+- libvirt ： `libvirt <http://libvirt.org>`_ 的目的是统一各种虚拟化后端的调用方式（kvm/xen/lxc/OpenVZ//VirtualBox/VMWare/Hyper-V等等），主要一个特性是用统一的描述文件来定义虚拟机配置（xml文件），在Linux下你可以使用 `Virt Manager <http://virt-manager.org>`_ 进行调试。
+
+- kernel ： 基本上大部分的内核相关配置都可以通过 **/sys** 或者 **/proc** 进行调节，而针对内核所谓的“优化”，在非大规模部署的情况下，其优势很难体现出来，还有一方面，目前的KVM效率，CPU、内存管理、网络等方面都很优秀了，只是在I/O方面还有部分不足，可以在 `VIRTIO <http://www.linux-kvm.org/page/Virtio>`_ 上进行相关的优化。
