@@ -62,7 +62,7 @@ OS X Server
 
 - Wiki：可以创建博客以及Wiki服务器。
 
-- 网站：可提供PHP或者Python的Web服务。
+- 网站：可提供PHP或者Python的Web服务。 OS X有一个 `webpromotion <https://github.com/st3fan/osx-10.9/blob/master/apache-786/webpromotion.rb>`_ 命令，用于更改桌面配置，以优化web服务体验。
 
 - 文件共享：可以通过Samba、AFP、Webdav方式共享文件或目录。
 
