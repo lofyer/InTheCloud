@@ -140,9 +140,13 @@ GraphViz
 
 python-matplotlib
 
+Microsoft Excel 2013 PowerView
+
 地理位置表示
 ~~~~~~~~~~~~
 
 `百度地图API <http://developer.baidu.com/map/index.php?title=%E9%A6%96%E9%A1%B5>`_
 
 `MaxMind GeoIP <http://dev.maxmind.com/geoip/geoip2/geolite2/>`_
+
+Microsoft Excel 2013 PowerView
