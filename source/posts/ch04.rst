@@ -44,6 +44,10 @@ scrapy-redis
 
 http://blog.javachen.com/2014/06/08/using-scrapy-to-cralw-zhihu/
 
+http://segmentfault.com/blog/javachen/1190000000583419
+
+https://github.com/KeithYue/Zhihu_Spider.git
+
 新浪微博
 ~~~~~~~~
 
