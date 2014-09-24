@@ -904,6 +904,27 @@ UI 插件
 
        由于3.3到3.4之后链接的变化，shellinabox.json中的 **/webadmin/webadmin/plugin/ShellBoxPlugin/start.html** 需要替换为 **plugin/ShellBoxPlugin/start.html** 。
 
+使用SysPrep重置虚拟机信息
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**初始化Redhat系列Linux**
+
+    .. code::
+
+        # touch /.unconfigured
+        # rm -i /etc/ssh/ssh_host_*
+        # echo "HOSTNAME=localhost.localdomain" >> /etc/sysconfig/network
+        # rm -i /etc/udev/rules.d/70-persistent*
+
+    删除 */etc/sysconfig/network-scripts/ifcfg-** 文件中的 **HWADDR=** 字段，删除 */var/log/** 、 */root/*.log* ，然后关机即可。
+
+**初始化Windows 7**
+
+    使用位于 *C:\\Windows\\system32\\sysprep* 目录下的工具。
+
+    .. image:: ../images/03-10.jpg
+        :align: center
+
 与其他平台集成
 ~~~~~~~~~~~~~~~
 

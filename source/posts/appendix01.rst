@@ -131,7 +131,7 @@ Neutron
 .. image:: ../images/apx01-06.jpeg
     :align: center
 
-可参考 `Overlay_Networks_with_Neutron_Integration <http://www.ovirt.org/Overlay_Networks_with_Neutron_Integration>`_ 。
+可参考 `NeutronVirtualAppliance <http://www.ovirt.org/Features/NeutronVirtualAppliance>`_ 以及 `Overlay_Networks_with_Neutron_Integration <http://www.ovirt.org/Overlay_Networks_with_Neutron_Integration>`_ 。
 
 1. 配置oVirt。
    
