@@ -8,6 +8,8 @@ Author: lofyer@gmail.com
 
 QQ: 578645806
 
+个人博客: http://lofyer.org
+
 书的源码
 
 Github: https://github.com/lofyer/InTheCloud

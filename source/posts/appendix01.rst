@@ -174,6 +174,24 @@ Q：OpenStack组件间的通信是靠什么？
 
 A：AMQP，比如RabbitMQ、Apache的ActiveMQ，部署时候可以选择，如果对这种消息传输工具有兴趣可以参考 `rabbitmq tutorial <http://www.rabbitmq.com/getstarted.html>`_ 以及 `各种有用的插件（web监视等） <http://www.rabbitmq.com/plugins.html>`_ 。
 
+------------------------
+Docker 使用以及相关集成
+------------------------
+
+Docker已经越来越流行了（IaaS平台开始支持它，PaaS平台也开始支持它），不介绍它总感觉过不去。
+
+它是基于LXC的容器类型虚拟化技术，从实现上说更类似于chroot，用户空间的信息被很好隔离的同时，又实现了网络相关的分离。它取代LXC的原因，我想是因为其REPO非常丰富，操作上更顺畅。
+
+中文入门手册请参考 `Docker中文指南 <http://www.widuu.com/chinese_docker/>`_ 。
+
+官方repo `https://registry.hub.docker.com/ <https://registry.hub.docker.com/>`_ 。
+
+镜像操作
+---------
+
+REPO操作
+---------
+
 ----------------
 SDN学习/mininet
 ----------------
