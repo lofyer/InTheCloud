@@ -8,6 +8,14 @@
 5.2 模块部署（单机/集群）
 -------------------------
 
+现在部署Hadoop的方式比过去更加容易，就我所知，你可以使用 `Cloudera Manager <http://www.cloudera.com/content/cloudera/en/downloads/cloudera_manager/cm-5-1-3.html>`_ 或者 Puppet 去完成企业级的部署；如果你需要概念证明类的工作，可以直接使用 `Hortonworks 的虚拟机镜像 <http://zh.hortonworks.com/products/hortonworks-sandbox/>`_ 或者 `Cloudera的虚拟机镜像 <http://www.cloudera.com/content/cloudera/en/downloads/quickstart_vms/cdh-5-1-x1.html>`_ 。 在接下来的章节中我会使用rpm包进行安装，而不是按照 `官方文档 <http://hadoop.apache.org/docs/r1.2.1/single_node_setup.html>`_ 去部署。
+
+单节点部署
+~~~~~~~~~~~
+
+集群部署
+~~~~~~~~~
+
 5.3 本地数据处理
 -----------------
 
