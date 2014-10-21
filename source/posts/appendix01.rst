@@ -198,17 +198,21 @@ SDN学习/mininet
 
 现代SDN来自OpenFlow，关于SDN有一个个人认为最佳的学习工具： `mininet <http://mininet.org>`_ 。
 
------------------
-常用性能测量工具
------------------
+-----------------------
+常用性能测量及优化工具
+-----------------------
 
-- CPU：SPEC、UNIXbench、SuperPI、PCMark
+- 优化
 
-- 图形：3dmark
+.. image:: ../images/apx01-09.jpg
 
-- 磁盘：hdparm、iozone、blogbench、dbench
+- 监视
 
-- ram：ramspeed
+.. image:: ../images/apx01-10.jpg
+
+- 测试
+
+.. image:: ../images/apx01-11.jpg
 
 ------------
 常用运维工具
