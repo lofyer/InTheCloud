@@ -33,7 +33,7 @@ CPU
 
     .. code::
  
-        # ount tmpfs cgroup_root /sys/fs/cgroup
+        # mount tmpfs cgroup_root /sys/fs/cgroup
         # mkdir /sys/fs/cgroup/blkio
         # mount -t cgroup -o blkio none /sys/fs/cgroup/blkio
 
