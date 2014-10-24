@@ -37,18 +37,25 @@ CPU
         # mkdir /sys/fs/cgroup/blkio
         # mount -t cgroup -o blkio none /sys/fs/cgroup/blkio
 
-    创建一个1 Mbps的IO限制组。
+    创建一个1 Mbps的IO限制组，X:Y 为MAJOR:MINOR。
 
     .. code::
  
+        # lsblk
         # mkdir -p /sys/fs/cgroup/blkio/limit1M/
-        # echo "X:Y  1048576" > /sys/fs/cgroup/blkio/limit1M/blkio.throttle.write_bps_device
+        # echo "8:0  1048576" > /sys/fs/cgroup/blkio/limit1M/blkio.throttle.write_bps_device
 
     将虚拟机进程附加到限制组。
 
     .. code::
  
         # echo $VM_PID > /sys/fs/cgroup/blkio/limit1M/tasks
+
+    目前没有删除task功能，只能将它移到根组，或者是删除此组。
+
+    .. code::
+
+        # echo $VM_PID > /sys/fs/cgroup/blkio/tasks
 
 3. 更改qemu drive cache。
 
