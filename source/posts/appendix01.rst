@@ -218,6 +218,12 @@ SDN学习/mininet
 常用运维工具
 ------------
 
+Ganglia
+--------
+
+一款专门针对虚拟机的监视工具。
+http://blog.sflow.com/2012/01/using-ganglia-to-monitor-virtual.html
+
 zabbix
 -------
 
