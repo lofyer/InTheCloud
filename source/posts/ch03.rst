@@ -587,9 +587,10 @@ oVirt目前两种部署方式：
 .. image:: ../images/03-06.png
     :align: center
 
-.. note:: 确保存储域目录被vdsm.kvm可读，即所有者为36:36，或者vdsm.kvm。
-
-.. note:: 导出域在已加入数据中心后不可共享，如果它意外损坏，请参考 http://blog.lofyer.org/blog/2014/05/11/cloud-6-5-advanced-ovirt/ 手动修复。
+.. note:: 
+    确保存储域目录被vdsm.kvm可读，即所有者为36:36，或者vdsm.kvm。
+    导出域在已加入数据中心后不可共享，如果它意外损坏，请参考 http://blog.lofyer.org/blog/2014/05/11/cloud-6-5-advanced-ovirt/ 手动修复。
+    若要使用oVirt的gluster支持，请安装vdsm-gluster包。
 
 3.4 连接虚拟机
 -----------------
