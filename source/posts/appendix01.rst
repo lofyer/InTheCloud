@@ -91,6 +91,44 @@ RDO快速部署
 .. image:: ../images/apx01-02.png
     :align: center
 
+与owncloud集成
+----------------
+
+1. 创建一个指定region的endpoint于swift服务中
+
+    .. code::
+
+        # source ./keystone_admin
+        # keystone endpoint-create --service swift --region swift_region \
+          --publicurl "http://192.168.2.160:8080/v1/AUTH_7d11dd5a3f3544149e8b6a9799a2aa48/oc"
+
+    其中的publicurl可以从container的详细信息中查看。
+
+2. 使用owncloud的第三方app——external storage，如下进行填写
+
+    - 目录名称：显示在owncloud中的目录名称。
+
+    - user：project用户名。
+
+    - bucket：容器名。
+
+    - region：上一步指定的region。
+
+    - key：用户密码。
+
+    - tenant：project名。
+
+    - password：用户密码。
+
+    - service_name：服务名，即swift。
+
+    - url：使用keystone认证的url，即http://192.168.2.160:5000/v2.0 。
+
+    - timeout：超时时长，可不填。
+
+    .. image:: ../images/apx01-12.jpg
+        :align: center
+
 oVirt使用Glance与Neutron服务
 -----------------------------
 
@@ -166,7 +204,7 @@ Neutron
 OpenStack常见问题集锦
 ~~~~~~~~~~~~~~~~~~~~~
 
-Q：Swift不能删除目录。
+Q：管理界面Swift不能删除目录。
 
 A：使用命令 swift delete public_container aaa/ 进行删除。
 
