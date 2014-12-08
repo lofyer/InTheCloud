@@ -667,7 +667,7 @@ Restful API（Application User Interface）是oVirt的一大特点，用户可�
     更新内容使用PUT；
     删除内容使用DELETE；
 
-    详细用法参考 http://www.ovirt.org/Api
+    详细用法参考 http://www.ovirt.org/Api，SDK示例参考 http://www.ovirt.org/Testing/PythonApi
 
 ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成图形界面所不能提供的功能。
 
