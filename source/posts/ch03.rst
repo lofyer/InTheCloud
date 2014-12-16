@@ -628,7 +628,39 @@ oVirt目前两种部署方式：
 
    访问 `virt-manager官网 <http://virt-manager.org/download/>`_ 下载virt-viewer客户端，使用它打开下载到本地的console.vv文件。
 
-4. RDP插件（仅适用于Windows虚机及IE浏览器）
+4. spice proxy - gateway - squid代理
+
+   设置squid代理，将所有spice端口代理至3128端口。
+
+    .. code::
+
+        # yum install squid
+
+   修改/etc/squid/squid.conf，在第41行。
+
+    .. code::
+
+        http_access deny CONNECT !Safe_ports
+        acl spice_servers dst 192.168.10.0/24
+        http_access allow spice_servers
+
+   启用squid服务。
+
+    .. code::
+
+        # chkconfig squid on
+        # service squid restart
+
+   设置engine的SpiceProxy
+
+    .. code::
+
+        # engine-config -s SpiceProxyDefault="http://FQDN_or_外网IP:3128"
+        # service ovirt-engine restart
+
+    可通过集群设置中设置所有宿主机的Spice代理，或者在虚拟机设置中单一设置某台虚拟机通过代理访问。
+
+5. RDP插件（仅适用于Windows虚机及IE浏览器）
 
    如果虚拟机的操作系统选择为Windows，使用IE浏览器访问用户或者管理员入口时，会启用RDP控件。
 
