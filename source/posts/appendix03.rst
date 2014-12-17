@@ -1,71 +1,12 @@
-附录三 文档参考资源以及建议书单
-================================
+附录三 PaaS
+============
 
-OVF
-----
-
-`ownCloud <http://tobeupload.com>`_
-
-管理员：admin/admin，系统：root/123456
-
-`XMPP <http://tobeupload.com>`_
-
-管理员：lofyer/123456，系统：root/123456
-
-`OpenStack RDO <http://tobeupload.com>`_
-
-用户：，系统：root/123456
-
-快速安装脚本
-------------
-
-https://github.com/lofyer/onekey-deploy.git
-
-目前包含：
-
-- Gitlab
-
-- Zabbix
-
-- oVirt
-
-- Jasper
-
-常用爬虫
+这是什么
 ---------
 
-https://github.com/lofyer/myspiders.git
+设想，你有一个公网主机，上面配置了Apache/Nginx，同时上面你装的有Ruby、JBoss、Python等环境，平时你用它作你自己的应用发布。某一天，你的朋友说他也有一个Django应用要发布，问你要一个环境，你就在你的主机上配置了VirtualHost来解析xiaoli.myhost.com到/var/www/django/xiaoli这个目录下，然后他就请你去吃个烤羊腿了。后来，又一个朋友问你要这样的环境，但是这次是php，你就把/var/www/html/php/zhangsan这个目录给他了，这次请你吃麻辣烫。再后来，问你要环境的朋友越来越多，你就又搞了一个主机，同时配置了一个代理服务来解析不同的域名到某个主机的目录下。某天你在公交车上的时候就想了，我为什么不写一个应用让他们自己注册选择语言环境和域名呢？于是，你就开始了，花了两天时间终于搞定。用的人越来越多，你吃得也也越来越胖。。
 
-Django based WebAdmin
-----------------------
+这样一个应用，就是PaaS的原型。
 
-https://github.com/lofyer/webadmin.git
-
-书单
-----
-
-虽然现在的移动设备很适合阅读，但我还是推荐多看些实体书，尤其是一些大部头。
-
-当然，下面的书目我会尽量提供适合移动设备阅读的版本（PDF、MOBI、EPUB、TXT）。
-
-TCP/IP Vol. 1/2/3
-
-Machine Learning in Action
-
-Elements of Information Theory
-
-The Design of UNIX Operating System
-
-Understanding the Linux Kernel
-
-The Art of Computer Programming Vol. 1/2/3/4
-
-Linux内核完全注释
-
-浪潮之巅
-
-数学之美
-
-UNIX环境高级编程
-
-存储技术原理分析
+当前的形势
+----------
