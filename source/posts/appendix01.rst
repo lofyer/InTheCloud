@@ -6,6 +6,8 @@
 
 另外，你也可以使用Mirantis来进行快速部署，参考 `Mirantis <https://software.mirantis.com/>`_ 。
 
+如果不想安装任何东西，只是在线使用的话，可以访问 http://trystack.org/ 。
+
 要学习更多关于OpenStack的内容，可以参考 `陈沙克的日志 <http://www.chenshake.com/cloud-computing/>`_ 。
 
 API使用请参考http://developer.openstack.org/api-ref.html 以及 http://docs.openstack.org/developer/openstack-projects.html 。
