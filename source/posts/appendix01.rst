@@ -48,6 +48,7 @@ RDO快速部署
 .. code::
 
     # yum install -y http://rdo.fedorapeople.org/rdo-release.rpm
+    # yum install -y epel-release
     # yum update -y
     # yum install -y openstack-packstack
     # packstack --allinone
