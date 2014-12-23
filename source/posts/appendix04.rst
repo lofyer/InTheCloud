@@ -4,17 +4,9 @@
 OVF
 ----
 
-`ownCloud <http://tobeupload.com>`_
+文中的全部资源，可以访问通过百度网盘进行下载。
 
-管理员：admin/admin，系统：root/123456
-
-`XMPP <http://tobeupload.com>`_
-
-管理员：lofyer/123456，系统：root/123456
-
-`OpenStack RDO <http://tobeupload.com>`_
-
-用户：，系统：root/123456
+    链接: http://pan.baidu.com/s/1he23k 密码: bmfn
 
 快速安装脚本
 ------------

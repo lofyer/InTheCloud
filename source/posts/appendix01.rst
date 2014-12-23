@@ -273,7 +273,7 @@ Docker已经越来越流行了（IaaS平台开始支持它，PaaS平台也开始
     docker log my_container
 
 Registry操作
----------
+-------------
 
 登录，默认为DockerHub
 
