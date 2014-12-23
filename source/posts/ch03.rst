@@ -56,6 +56,10 @@ oVirt目前两种部署方式：
     **集群策略（cluster policy）**：宿主机/虚拟机运行或者迁移时所遵循的原则。
 
     **DWH/Reports**：可以查看当前状态报告（需要ovirt-engine-reports）。
+    
+    **可信服务**： 需要OpenAttestation 。
+
+    **电源管理**： 如果没有物理电源控制器，可以直接指定某一台主机为代理机，以构建更稳健的集群。
 
 3.2 搭建oVirt管理引擎
 ----------------------
@@ -972,8 +976,10 @@ UI 插件
 
        由于3.3到3.4之后链接的变化，shellinabox.json中的 **/webadmin/webadmin/plugin/ShellBoxPlugin/start.html** 需要替换为 **plugin/ShellBoxPlugin/start.html** 。
 
-使用SysPrep重置虚拟机信息
+使用SysPrep/Cloud-Init重置虚拟机信息
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+参考 https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Virtualization/3.4/html/Administration_Guide/sect-Sealing_Templates_in_Preparation_for_Deployment.html .
 
 **初始化Redhat系列Linux**
 
