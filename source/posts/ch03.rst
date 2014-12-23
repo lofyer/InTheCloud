@@ -881,6 +881,16 @@ oVirt 3.4 磁盘可以进行在线扩容，但是对于磁盘内的文件系统�
 
         # resize2fs /dev/sda3
 
+**Linux文件系统扩容（lvm）**
+
+    在创建好一个新的分区或者一个新的磁盘后，将新空间(比如10G)添加到PV，VG，扩容LV，然后扩容文件系统。
+
+    .. code::
+
+        # vgextend vg_livecd /dev/sdb
+        # lvextend /dev/vg_livecd/lv_root -L +10G
+        # resize2fs /dev/vg_livecd/lv_root
+
 **Linux文件系统扩容（libguestfs）**
 
     具体内容请参考 `libguestfs site <http://libguestfs.org/>`_ 。
