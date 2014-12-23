@@ -222,9 +222,9 @@ Docker 使用以及相关集成
 
 Docker已经越来越流行了（IaaS平台开始支持它，PaaS平台也开始支持它），不介绍它总感觉过不去。
 
-它是基于LXC的容器类型虚拟化技术，从实现上说更类似于chroot，用户空间的信息被很好隔离的同时，又实现了网络相关的分离。它取代LXC的原因，我想是因为其REPO非常丰富，操作上更顺畅。
+它是基于LXC的容器类型虚拟化技术，从实现上说更类似于chroot，用户空间的信息被很好隔离的同时，又实现了网络相关的分离。它取代LXC的原因，我想是因为其REPO非常丰富，操作上类似git。
 
-中文入门手册请参考 `Docker中文指南 <http://www.widuu.com/chinese_docker/>`_ 。
+中文入门手册请参考 `Docker中文指南 <http://www.widuu.com/chinese_docker/>`_ ，另外它有一个WebUI `shipyard <https://github.com/shipyard/shipyard>`_ 。
 
 官方repo `https://registry.hub.docker.com/ <https://registry.hub.docker.com/>`_ 。
 
