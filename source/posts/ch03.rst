@@ -815,7 +815,7 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
 主机hooks
 ~~~~~~~~~~
 
-主机hooks位于各个宿主机上，用于扩展oVirt的平台功能，比如网络、USB设备、SRIOV等。原理是在某一事件触发时（比如虚拟机启动之前），修改libvirt启动XML文件或者环境变量，从而改变qemu的启动参数。
+主机hooks位于各个宿主机上，用于扩展oVirt的平台功能，比如网络、USB设备、SRIOV等。原理是在某一事件触发时（比如虚拟机启动之前），修改libvirt启动XML文件、环境变量或者主机配置，从而改变qemu的启动参数。
 
 更多hooks内容请参考 `vdsm-hooks <https://github.com/oVirt/vdsm/tree/master/vdsm_hooks>`_  。
 
@@ -977,7 +977,7 @@ UI 插件
        由于3.3到3.4之后链接的变化，shellinabox.json中的 **/webadmin/webadmin/plugin/ShellBoxPlugin/start.html** 需要替换为 **plugin/ShellBoxPlugin/start.html** 。
 
 使用SysPrep/Cloud-Init重置虚拟机信息
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 参考 https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Virtualization/3.4/html/Administration_Guide/sect-Sealing_Templates_in_Preparation_for_Deployment.html .
 
@@ -1013,4 +1013,4 @@ oVirt平台目前可以使用Foreman，OpenStack Network，OpenStack Image的部
 
 - libvirt ： `libvirt <http://libvirt.org>`_ 的目的是统一各种虚拟化后端的调用方式（kvm/xen/lxc/OpenVZ//VirtualBox/VMWare/Hyper-V等等），主要一个特性是用统一的描述文件来定义虚拟机配置（xml文件），在Linux下你可以使用 `Virt Manager <http://virt-manager.org>`_ 进行调试。
 
-- kernel ： 基本上大部分的内核相关配置都可以通过 **/sys** 或者 **/proc** 进行调节，而针对内核所谓的“优化”，在非大规模部署的情况下，其优势很难体现出来，还有一方面，目前的KVM效率，CPU、内存管理、网络等方面都很优秀了，只是在I/O方面还有部分不足，可以在 `VIRTIO <http://www.linux-kvm.org/page/Virtio>`_ 上进行相关的优化。
+- kernel ： 基本上大部分的内核相关配置都可以通过 **/sys** 或者 **/proc** 进行调节，而针对内核所谓的“优化”，在非大规模部署的情况下，其优势很难体现出来，还有一方面，目前的KVM效率，CPU、内存管理、网络等方面都比较优秀，在I/O方面还有部分不足，可以在 `VIRTIO <http://www.linux-kvm.org/page/Virtio>`_ 上进行相关的优化，还有开启 `HugePage <://www.kernel.org/doc/Documentation/vm/hugetlbpage.txt>`_ 等操作。
