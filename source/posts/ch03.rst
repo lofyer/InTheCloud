@@ -604,7 +604,8 @@ oVirt目前两种部署方式：
 .. image:: ../images/03-08.png
     :align: center
 
-1. Spice-Html5
+Spice-Html5
+~~~~~~~~~~~~
 
    首先在服务器端打开spice代理：
 
@@ -624,15 +625,18 @@ oVirt目前两种部署方式：
 
    然后点击控制台按钮即可在浏览器的新标签中打开spice-html5桌面。
 
-2. 浏览器插件
+浏览器插件
+~~~~~~~~~~~~
 
    对于Redhat系列系统，可安装spice-xpi插件；Windows系统可以安装SpiceX的控件。
 
-3. 本地客户端
+本地客户端
+~~~~~~~~~~~~
 
    访问 `virt-manager官网 <http://virt-manager.org/download/>`_ 下载virt-viewer客户端，使用它打开下载到本地的console.vv文件。
 
-4. spice proxy - gateway - squid代理
+spice proxy - gateway - squid代理
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
    设置squid代理，将所有spice端口代理至3128端口。
 
