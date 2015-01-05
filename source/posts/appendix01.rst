@@ -272,6 +272,15 @@ Docker已经越来越流行了（IaaS平台开始支持它，PaaS平台也开始
     
     docker log my_container
 
+commit/save/load
+
+.. code::
+
+    docker images
+    docker commit $image_id$ myimage
+    docker save myimage > myimage.tar
+    docker load < myimage.tar
+
 Registry操作
 -------------
 
