@@ -274,6 +274,10 @@ Docker已经越来越流行了（IaaS平台开始支持它，PaaS平台也开始
 
 commit/save/load
 
+.. note:: 保存
+
+    只有commit，对docker做的修改才会保存，形如docker run centos yum install -y nmap不会保存。
+
 .. code::
 
     docker images
