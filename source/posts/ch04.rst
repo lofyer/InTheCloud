@@ -6,7 +6,7 @@
 
 建议先通读一下 `Scrapy 中文文档 <http://scrapy-chs.readthedocs.org/zh_CN/0.22/intro/overview.html>`_ ，这样你会省去好多Google的时间；在 `知乎 <http://www.zhihu.com/topic/19559424/top-answers>`_ 上有许多关于 *大数据* 、 *数据挖掘* 的讨论，你可以去看看了解一些业内的动态。
 
-另外，可以使用 `Nutch <http://nutch.apache.org>`_ 来爬取，并用 `Solr <http://lucene.apache.org/solr/>`_ 来构建一个简单的搜索引擎，它们可以跟下一章节的Hadoop集成。
+另外，可以使用 `Nutch <http://nutch.apache.org>`_ 来爬取，并用 `Solr <http://lucene.apache.org/solr/>`_ 来构建一个简单的搜索引擎，它们可以跟下一章节的Hadoop集成。 
 
 **在收集数据的时候，有时我想不出来要这些数据能统计出什么，直到我背后中了一箭，哦不，直到对象说租房要挑个性价比高地理位置又好的地方后，我才明白大量数据的重要性。当然，这跟大数据半毛钱关系没有。**
 
