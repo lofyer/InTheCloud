@@ -159,3 +159,8 @@ Microsoft Excel 2013 PowerView
 `MaxMind GeoIP <http://dev.maxmind.com/geoip/geoip2/geolite2/>`_
 
 Microsoft Excel 2013 PowerView
+
+4.7 机器学习工具
+-----------------
+
+`Weka <http://www.cs.waikato.ac.nz/>`_
