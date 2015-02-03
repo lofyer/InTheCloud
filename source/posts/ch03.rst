@@ -1004,10 +1004,12 @@ UI 插件
     .. image:: ../images/03-10.jpg
         :align: center
 
-与其他平台集成
-~~~~~~~~~~~~~~~
+与其他平台集成、与认证服务器集成
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 oVirt平台目前可以使用Foreman，OpenStack Network，OpenStack Image的部分功能，具体实施请参阅附录一内容。
+
+与认证服务器集成时很有可能遇到各种问题，比如与AD集成时不能使用Administrator用户进行engine-manage-domains，与IPA集成时需要修改minss之类的参数，与LDAP集成时需要Kerberos或者使用3.5版本中的aaa认证插件。
 
 后端（libvirt/qemu/kernel）优化
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
