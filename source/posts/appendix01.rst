@@ -43,7 +43,7 @@ RDO快速部署
 
     在一台安装有RedHat系列（CentOS）系统上部署，将selinux置为permissive；禁用NetworkManager，启用network服务，详细配置请参考以前章节。
 
-    如果安装失败，请查看你的CentOS或者Fedora是否为最新。
+    如果安装失败，请查看你的CentOS或者Fedora是否为最新发行版。笔者在写时使用的是CentOS6，目前为CentOS7。
 
 .. code::
 
