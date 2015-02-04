@@ -26,8 +26,8 @@ For geek
 
 无人机（摄像头以及传感器）数据如何分析？
 
-Ceph？
-
 R语言？
 
 OpenShift？
+
+英文版？
