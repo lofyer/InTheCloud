@@ -62,7 +62,7 @@ https://github.com/KeithYue/Zhihu_Spider.git
 新浪微博
 ~~~~~~~~
 
-1. 使用第三方SDK：
+https://github.com/followyourheart/sina-weibo-crawler
 
 4.3 numpy 快查
 ---------------
