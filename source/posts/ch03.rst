@@ -555,6 +555,22 @@ oVirt目前两种部署方式：
 
 此时，运行”hosted-engine –vm-start”以启动虚拟管理机。
 
+.. note::
+
+    1. 若要重新部署
+
+    # vdsClient -s 0 list
+
+    # vdsClient -s 0 destroy <ID of the vm you get from the first command>
+
+    2. 若要添加第二台机器
+
+    # yum install ovirt-hosted-engine-setup
+    
+    # hosted-engine --deploy
+
+    然后指定存储路径即可自动判断此为第2+台机器。
+
 .. _label1:
 
 3.3 添加节点以及存储域
