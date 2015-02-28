@@ -466,3 +466,5 @@ normal、replica、striped卷组合
 ~~~~~~~~~~~~~
 
 由于挂载存储时需要指定集群中的任意IP，所以我们可以使用Heartbeat/CTDB/Pacemaker等集群软件来保证业务IP的高可用。
+
+可参考http://clusterlabs.org/wiki/Debian_Lenny_HowTo#Configure_an_IP_resource，http://geekpeek.net/linux-cluster-corosync-pacemaker/
