@@ -394,6 +394,7 @@ oVirt目前两种部署方式：
               During customization use CTRL-D to abort.
               Please specify the storage you would like to use (nfs3, nfs4)[nfs3]: 
     # 此处的存储域只存储hosted-engine的相关文件，不作为主数据域
+    # 建议挂载gluster的nfs时使用localhost:data形式
               Please specify the full shared storage connection path to use (example: host:/path): 192.168.10.101:/gluster-vol1/ovirt_data/hosted_engine
     [ INFO  ] Installing on first host
               Please provide storage domain name. [hosted_storage]: 
