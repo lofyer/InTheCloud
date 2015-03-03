@@ -29,6 +29,10 @@
 
 8. 你是不是炒股？你的信息来源是不是非常分散？
 
+9. 机器太多，怎么监控？
+
+0. OK，我在扯淡。。
+
 OK，这些我们都可以分而治之，整个系统的骨架大概如下图所示。
 
 .. image:: ../images/exp-01.png
@@ -39,7 +43,7 @@ OK，这些我们都可以分而治之，整个系统的骨架大概如下图所
 
 硬件： **HP N54L** 、 **Raspberry Pi** 、 **Mac mini** 、 **电话语音卡** 、 **WRT54G（可选）**
 
-服务：网络认证、XMPP即时通信（服务群成员）、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）、数据源（微博等）、DNS（解析内部服务器）、语音电话、语音识别控制、股票分析、clamav（防病毒）
+服务：网络认证、XMPP即时通信（服务群成员）、云存储、家庭知识库、家庭影像库、NAS（Apple TM兼容）、数据源（微博等）、DNS（解析内部服务器）、语音电话、语音识别控制、股票分析、clamav（防病毒）、zabbix监控
 
 软件：OpenLDAP、jabber、 `owncloud <http://www.owncloud.org>`_ 、 `XBMC（更名Kodi） <http://xbmc.org/>`_ 、Wiki、Asterisk、 `jasper <http://jasperproject.github.io/>`_ 、 Hadoop 、 `clamav <http://www.clamav.net/download.html>`_
 
