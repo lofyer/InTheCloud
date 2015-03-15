@@ -10,3 +10,6 @@
 
 当前的形势
 ----------
+面对国内社交APP微信的火爆，对Web服务器的需求日益增长，同样，开发者的需求环境也有所差异，而面对这种差异，一个更加灵活的平台就出现了，国内比如SinaAPP，国外比如Google APPEngine，Redhat OpenShift，Amazon AWS。
+
+OK，不多说了，下面开始试验OpenShift的服务器搭建及上线。
