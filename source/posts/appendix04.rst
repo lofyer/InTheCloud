@@ -61,3 +61,13 @@ Linux内核完全注释
 UNIX环境高级编程
 
 存储技术原理分析
+
+Hadoop权威指南
+
+Weka应用技术与实践
+
+Python机器学习时间
+
+Model Thinking
+
+Practice Lisp
