@@ -316,6 +316,10 @@ push/pull
     # docker tag ubuntu localhost:5000/ubuntu
     # docker push localhost:5000/ubuntu
 
+-----------------
+Foreman 部署指导
+-----------------
+
 -----------------------
 常用性能测量及优化工具
 -----------------------
