@@ -664,10 +664,10 @@ spice proxy - gateway - squid代理
    修改/etc/squid/squid.conf，在第41行。
 
     .. code::
-
-        http_access deny CONNECT !Safe_ports
-        acl spice_servers dst 192.168.10.0/24
-        http_access allow spice_servers
+         
+        http_access allow CONNECT Safe_ports
+        #acl spice_servers dst 192.168.10.0/24
+        #http_access allow spice_servers
 
    启用squid服务。
 
