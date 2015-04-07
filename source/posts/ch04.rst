@@ -15,7 +15,7 @@
 4.1 数据收集
 -------------
 
-为了省去一些学习的麻烦，我给一些真正的“大数据”先。
+为了省去一些学习的麻烦，我找了一些真正的“大”数据。
 
 http://www.quora.com/Where-can-I-find-large-datasets-open-to-the-public
 

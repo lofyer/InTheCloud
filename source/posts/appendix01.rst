@@ -4,7 +4,7 @@
 
 这里我会使用RDO快速部署一个具有基本功能的OpenStack环境，如果你想要更完整的部署（比如Heat、Trove组件），可以参考 `官方文档 <http://docs.openstack.org/icehouse/install-guide/install/yum/content>`_ 。
 
-另外，你也可以使用Mirantis来进行快速部署，参考 `Mirantis <https://software.mirantis.com/>`_ 。
+也可以使用Mirantis来进行快速部署，参考 `Mirantis <https://software.mirantis.com/>`_ ；StackOps部署，参考 `StackOps<https://www.stackops.com>`_ 。
 
 如果不想安装任何东西，只是在线使用的话，可以访问 http://trystack.org/ 。
 
