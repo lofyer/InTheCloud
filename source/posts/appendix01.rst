@@ -1,10 +1,10 @@
-=======================================
-附录一 OpenStack/Docker 及常用管理工具
-=======================================
+=====================================================
+附录一 OpenStack/Docker/Foreman 以及其他很有用的资源
+=====================================================
 
-这里我会使用RDO快速部署一个具有基本功能的OpenStack环境，如果你想要更完整的部署（比如Heat、Trove组件），可以参考 `官方文档 <http://docs.openstack.org/icehouse/install-guide/install/yum/content>`_ 。
+首先在这里我会使用RDO快速部署一个具有基本功能的OpenStack环境，如果你想要更完整的部署（比如Heat、Trove组件），可以参考 `官方文档 <http://docs.openstack.org/icehouse/install-guide/install/yum/content>`_ 。
 
-也可以使用Mirantis来进行快速部署，参考 `Mirantis <https://software.mirantis.com/>`_ ；StackOps部署，参考 `StackOps<https://www.stackops.com>`_ 。
+也可以使用Mirantis来进行快速部署，参考 `Mirantis <https://software.mirantis.com/>`_ ；StackOps部署，参考 `StackOps <https://www.stackops.com>`_ 。
 
 如果不想安装任何东西，只是在线使用的话，可以访问 http://trystack.org/ 。
 
@@ -343,6 +343,45 @@ SDN学习/mininet
 SDN广泛用来内容加速以及虚拟机网络。
 
 现代SDN来自OpenFlow，关于SDN有一个个人认为最佳的学习工具： `mininet <http://mininet.org>`_ 。
+
+----------------
+HAProxy
+----------------
+
+没错，我就是要把这个东西单列出来讲，因为你可以用这个东西来做几乎全部应用的HA或者LoadBalancer， `这里是配置说明 <http://www.haproxy.org/download/1.4/doc/configuration.txt>` 。
+
+代理http:
+
+.. code::
+
+    ...
+
+    backend webbackend
+        balance roundrobin
+        server web1 192.168.0.130:80 check
+
+    frontend http
+        bind *:80
+        mode http
+        default_backend webbackend
+
+    listen  stats :8080
+        balance
+        mode http
+        stats enable
+        stats auth me:password
+
+代理tcp:
+
+.. code::
+
+    listen *:3306
+        mode tcp
+        option tcplog
+        balance roundrobin
+        server smtp 192.168.0.1:3306 check
+        server smtp1 192.168.0.2:3306 check
+
 
 ------------
 常用运维工具
