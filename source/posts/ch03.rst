@@ -630,7 +630,6 @@ Spice-Html5
     
         # yum install -y numpy # 安装numpy以加速转换。
         # engine-config -s WebSocketProxy="192.168.10.100:6100"
-        # engine-config -s SpiceProxyDefault='192.168.10.100:6100'
         # service ovirt-websocket-proxy restart
         # service ovirt-engine restart
 
