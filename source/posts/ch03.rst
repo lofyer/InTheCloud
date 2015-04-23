@@ -628,6 +628,7 @@ Spice-Html5
 
    .. code::
     
+        # engine-setup --otopi-environment="OVESETUP_CONFIG/websocketProxyConfig=bool:True" # 如果未setup或者要在其他机器setup，可做此步
         # yum install -y numpy # 安装numpy以加速转换。
         # engine-config -s WebSocketProxy="192.168.10.100:6100"
         # service ovirt-websocket-proxy restart
