@@ -965,6 +965,78 @@ oVirt 3.4 磁盘可以进行在线扩容，但是对于磁盘内的文件系统�
 
     XP使用Paragon Partion Manager；Windows 7 在磁盘管理中即可扩容。
 
+P2V/V2P
+~~~~~~~~~~~~
+
+**V2V**
+
+    在此以ESXi迁移至oVirt为例。
+
+    1. 在oVirt上创建一个NFS导出域
+
+    2. 安装libguestfs，并创建.netrc文件，文件内容为ESXi的登陆信息：
+
+    *~/.netrc*
+
+    .. code::
+
+        machine 192.168.1.135 login root password 1234567
+
+    3. 开始迁移，确保ESXi的虚拟机已正常关闭：
+
+    .. code::
+
+        # virt-v2v -ic esx://192.168.1.135/?no_verify=1 -o rhev -os 192.168.1.111:/virtfan/export --network mgmtnet myvm
+        myvm_myvm: 100% [====================================================]D 0h04m48s
+        virt-v2v: myvm configured with virtio drivers.
+
+    4. 从导出域导入虚拟机并运行：
+
+    导入虚拟机：
+
+    .. image:: ../images/03-11.png
+        :align: center
+
+    运行虚拟机：
+
+    .. image:: ../images/03-12.png
+        :align: center
+
+**P2V**
+
+    oVirt的P2V方式我所知的有三种，一是使用VMWare的P2V工具转化为VM以后，再通过virt-v2v转化为oVirt的VM，二是使用clonezilla或者ghost制作系统后，再将其安装到oVirt中，三则是使用virt-p2v工具。笔者在此使用virt-p2v工具示例，成文时只在CentOS 6.5以上版本测试，CentOS 7未测试，RHEL 7.1以上有此工具。
+
+    1. 在服务器端安装所需包：
+
+    .. code::
+
+        yum install -y virt-p2v virt-v2v
+
+    2. 将/usr/share/virt-v2v/中的ISO文件dd到U盘或者烧录到光盘，然后在要转化的机器上启动。
+
+    3. 修改服务器端/etc/virt-v2v.conf，修改rhevm的配置，形如：
+
+    .. code::
+
+        <virt-v2v>
+          <profile name="rhev-sparse">
+            <method>rhev</method>
+            <storage format='qcow2' allocation='sparse'>
+              nfs.example.com:/ovirt-export
+            </storage>
+            <network type="default">
+              <network type="network" name="ovirtmgmt"/>
+            </network>
+          </profile>
+        </virt-v2v>
+
+    4. 开始转换（我是使用libvirt的profile示例）
+
+    .. image:: ../images/03-13.png
+        :align: center
+
+    5. 转换完成后关闭计算机，并修改虚拟机的配置以完全适应OS。
+
 UI 插件
 ~~~~~~~~
 

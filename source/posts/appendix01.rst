@@ -336,6 +336,8 @@ Foreman 部署指导
 
 .. image:: ../images/apx01-11.jpg
 
+另外针对qemu/libvirt相关的测试工具，可以参考 `virt-test <https://github.com/autotest/virt-test>`_ ，当然，仅作参考。
+
 ----------------
 SDN学习/mininet
 ----------------
