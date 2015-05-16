@@ -8,8 +8,6 @@
 
 另外，可以使用 `Nutch <http://nutch.apache.org>`_ 来爬取，并用 `Solr <http://lucene.apache.org/solr/>`_ 来构建一个简单的搜索引擎，它们可以跟下一章节的Hadoop集成。 
 
-**在收集数据的时候，有时我想不出来要这些数据能统计出什么，直到我背后中了一箭，哦不，直到对象说租房要挑个性价比高地理位置又好的地方后，我才明白大量数据的重要性。当然，这跟大数据半毛钱关系没有。**
-
 还有一个比较重要的知识点，“Model Thinking”，你需要有一些建模的知识。
 
 4.1 数据收集
@@ -172,3 +170,5 @@ Microsoft Excel 2013 PowerView
 -----------------
 
 `Weka <http://www.cs.waikato.ac.nz/>`_
+
+`Netlogo <https://ccl.northwestern.edu/netlogo/>`_
