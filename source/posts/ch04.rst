@@ -172,3 +172,5 @@ Microsoft Excel 2013 PowerView
 `Weka <http://www.cs.waikato.ac.nz/>`_
 
 `Netlogo <https://ccl.northwestern.edu/netlogo/>`_
+
+`SciKit <http://scikit-learn.org/>`_
