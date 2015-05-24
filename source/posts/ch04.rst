@@ -8,7 +8,7 @@
 
 另外，可以使用 `Nutch <http://nutch.apache.org>`_ 来爬取，并用 `Solr <http://lucene.apache.org/solr/>`_ 来构建一个简单的搜索引擎，它们可以跟下一章节的Hadoop集成。 
 
-还有一个比较重要的知识点，“Model Thinking”，你需要有一些建模的知识。
+还有一个比较重要的知识点，“Model Thinking”，你需要有一些建模的知识，数据和算法不是最重要的，重要的是你如何利用这些数据通过你设计的模型来输出对你有用的结果。
 
 4.1 数据收集
 -------------
@@ -119,14 +119,113 @@ https://github.com/followyourheart/sina-weibo-crawler
     # 均分，奇数个元素的array不可分割为偶数。
     np.split(b,2)
 
+    # 创建单位矩阵
+    np.eye(3)
+
 4.4 机器学习常用分类算法及Python实现
 -------------------------------------
+
+信息分类基础
+~~~~~~~~~~~~~
+
+信息的不稳定性为熵（entropy），而信息增益为有无样本特征对分类问题影响的大小。比如，抛硬币正反两面各有50%概率，此时不稳定性最大，熵为1；太阳明天照常升起，则是必然，此事不稳定性最小，熵为0。
+
+假设事件X，发生概率为x，其信息期望值定义为：
+
+    l(X) = -log2(x)
+
+整个信息的熵为：
+
+    H = -sigma(i=1,n)x(log2(x))
+
+如何找到最好的分类特征：
+
+.. code::
+
+    def chooseBestFeatureToSplit(dataSet):
+        numFeatures = len(dataSet[0]) - 1      #the last column is used for the labels
+        baseEntropy = calcShannonEnt(dataSet)
+        bestInfoGain = 0.0; bestFeature = -1
+        for i in range(numFeatures):        #iterate over all the features
+            featList = [example[i] for example in dataSet]#create a list of all the examples of this feature
+            uniqueVals = set(featList)       #get a set of unique values
+            newEntropy = 0.0 
+            for value in uniqueVals:
+                subDataSet = splitDataSet(dataSet, i, value)
+                prob = len(subDataSet)/float(len(dataSet))
+                newEntropy += prob * calcShannonEnt(subDataSet)
+            infoGain = baseEntropy - newEntropy     #calculate the info gain; ie reduction in entropy
+            if (infoGain > bestInfoGain):       #compare this to the best gain so far
+                bestInfoGain = infoGain         #if better than current best, set to best
+                bestFeature = i
+        return bestFeature                      #returns an integer
+
+    其中，dataSet为所有特征向量，caclShannonEnt()计算特征向量的熵，splitDataSet()切除向量中的value列；infoGain即为信息增益，chooseBestFeatureToSplit返回最好的特征向量索引值。
 
 K邻近算法
 ~~~~~~~~~~
 
+kNN的算法模型如下：
+
+对于未知类别属性的数据且集中的每个点依次执行以下操作：
+
+- 计算已知类别数据集中的点与当前点之间的距离
+
+- 按照距离递增依次排序
+
+- 选取与当前点距离最小的k个点
+
+- 确定前k个点所在类别的出现频率
+
+- 返回前k个点出现频率最高的类别作为当前点的预测分类
+
+代码参考如下：
+
+.. code::
+
+    def classify0(inX, dataSet, labels, k): 
+        dataSetSize = dataSet.shape[0]
+        diffMat = tile(inX, (dataSetSize,1)) - dataSet
+        sqDiffMat = diffMat**2
+        sqDistances = sqDiffMat.sum(axis=1)
+        distances = sqDistances**0.5
+        sortedDistIndicies = distances.argsort()    
+        classCount={}    
+        for i in range(k):
+            voteIlabel = labels[sortedDistIndicies[i]]
+            classCount[voteIlabel] = classCount.get(voteIlabel,0) + 1 
+        sortedClassCount = sorted(classCount.iteritems(), key=operator.itemgetter(1), reverse=True)
+        return sortedClassCount[0][0]
+
+    其中，inX为输入向量，dataSet为数据集，labels为数据集的分类，可调。距离计算公式为d0 = ((x-x0)**2 + (y-y0)**2)**0.5。
+
+此种算法的优点为精度高、对异常值不敏感、但缺点也比较明显，即数据量大时开支相对较大，适用于数值－标称型数据。
+
 决策树
 ~~~~~~~~~~
+
+决策树即列出一系列选择，根据训练集中的大量形似（A、B、C）以及结果D的向量来预测新输入（A'、B'、C'）的结果D'。
+
+首先创建一个决策树：
+
+.. code::
+
+    def createTree(dataSet,labels):
+        classList = [example[-1] for example in dataSet]
+        if classList.count(classList[0]) == len(classList): 
+            return classList[0]#stop splitting when all of the classes are equal
+        if len(dataSet[0]) == 1: #stop splitting when there are no more features in dataSet
+            return majorityCnt(classList)
+        bestFeat = chooseBestFeatureToSplit(dataSet)
+        bestFeatLabel = labels[bestFeat]
+        myTree = {bestFeatLabel:{}}
+        del(labels[bestFeat])
+        featValues = [example[bestFeat] for example in dataSet]
+        uniqueVals = set(featValues)
+        for value in uniqueVals:
+            subLabels = labels[:]       #copy all of labels, so trees don't mess up existing labels
+            myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value),subLabels)
+        return myTree
 
 朴素贝叶斯
 ~~~~~~~~~~
