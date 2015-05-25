@@ -27,6 +27,5 @@ In the Cloud
     :maxdepth: 1
 
     posts/about.rst
-    TODO.rst
 
 * :ref:`search`
