@@ -213,8 +213,8 @@ kNN的算法模型如下：
     def createTree(dataSet,labels):
         classList = [example[-1] for example in dataSet]
         if classList.count(classList[0]) == len(classList): 
-            return classList[0]#stop splitting when all of the classes are equal
-        if len(dataSet[0]) == 1: #stop splitting when there are no more features in dataSet
+            return classList[0]     #stop splitting when all of the classes are equal
+        if len(dataSet[0]) == 1:    #stop splitting when there are no more features in dataSet
             return majorityCnt(classList)
         bestFeat = chooseBestFeatureToSplit(dataSet)
         bestFeatLabel = labels[bestFeat]
@@ -226,6 +226,33 @@ kNN的算法模型如下：
             subLabels = labels[:]       #copy all of labels, so trees don't mess up existing labels
             myTree[bestFeatLabel][value] = createTree(splitDataSet(dataSet, bestFeat, value),subLabels)
         return myTree
+
+    找到影响最大的特征bestFeat后，再创建此特征下的分类向量创建子树向量，然后将bestFeat分离后继续迭代，直至所有特征都转换成决策节点。
+
+    原始数据比如：
+
+        no-surfacing flippers  fish
+    1       yes         yes     yes
+    2       yes         yes     yes
+    3       yes         no      no
+    4       no          yes     no
+    5       no          yes     no
+
+    会生成如下决策树：
+
+    no-surfacing?
+        /    \
+     no/      \yes
+   fish(no)  flippers?
+               / \
+            no/   \yes
+        fish(no)  fish(yes)
+
+    表示成JSON格式，即python字典：
+
+    {'no surfacing':{0:'no',1:{'flippers':{0:'no',1:'yes'}}}
+
+    构建决策树的方法比较多，也可使用C4.5和CART算法。
 
 朴素贝叶斯
 ~~~~~~~~~~
