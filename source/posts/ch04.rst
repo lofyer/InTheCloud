@@ -8,16 +8,18 @@
 
 另外，可以使用 `Nutch <http://nutch.apache.org>`_ 来爬取，并用 `Solr <http://lucene.apache.org/solr/>`_ 来构建一个简单的搜索引擎，它们可以跟下一章节的Hadoop集成。 
 
-还有一个比较重要的知识点，“Model Thinking”，你需要有一些建模的知识，数据和算法不是最重要的，重要的是你如何利用这些数据通过你设计的模型来输出对你有用的结果。
+还有一个比较重要的知识点-- `Model Thinking <https://www.coursera.org/course/modelthinking>`_ ，你需要有一些建模的知识，数据和算法不是最重要的，重要的是你如何利用这些数据通过你设计的模型来输出对你有用的结果。
+
+**不要以编程开始你的机器学习之旅，这样容易使思维受限于语言，从模型和结果思考去完成你的目标，编程只是手段。**
 
 4.1 数据收集
 -------------
 
-为了省去一些学习的麻烦，我找了一些真正的“大”数据。
+为了省去一些学习的麻烦，我找了一些“大”数据。
 
 http://www.quora.com/Where-can-I-find-large-datasets-open-to-the-public
 
-有些上百TB的数据对非行业内的人来说可能毫无意义，但是，先来些数据吧。
+有些上百TB的数据对非行业内的人来说可能毫无意义，但是，先来些数据吧，但是对学习者来说还是比较实用的。
 
 简单抓取
 ~~~~~~~~
@@ -253,6 +255,36 @@ kNN的算法模型如下：
     {'no surfacing':{0:'no',1:{'flippers':{0:'no',1:'yes'}}}
 
     构建决策树的方法比较多，也可使用C4.5和CART算法。
+
+接下来使用决策树进行分类：
+
+.. code::
+
+    def classify(inputTree,featLabels,testVec):
+        firstStr = inputTree.keys()[0]
+        secondDict = inputTree[firstStr]
+        featIndex = featLabels.index(firstStr)
+        key = testVec[featIndex]
+        valueOfFeat = secondDict[key]
+        if isinstance(valueOfFeat, dict): 
+            classLabel = classify(valueOfFeat, featLabels, testVec)
+        else: classLabel = valueOfFeat
+        return classLabel
+
+    其中，featLabels为测试的判断节点，即特征，testVec为其值，比如classify[myTree,"['no-surfacing','flippers']",:[1,1]"]，如此结果便为'no'。
+
+使用pickle对决策树进行序列化存储    
+
+.. code::
+
+    def storeTree(inputTree,filename):
+        import pickle
+        fw = open(filename,'w')
+        pickle.dump(inputTree,fw)
+        fw.close()
+
+   其中，dump可选协议为0（ASCII），1（BINARY），默认为0；读取时使用pickle.load；同样可使用dumps，loads直接对字符变量进行操作。
+
 
 朴素贝叶斯
 ~~~~~~~~~~
