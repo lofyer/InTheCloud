@@ -1075,6 +1075,10 @@ UI 插件
 
        由于3.3到3.4之后链接的变化，shellinabox.json中的 **/webadmin/webadmin/plugin/ShellBoxPlugin/start.html** 需要替换为 **plugin/ShellBoxPlugin/start.html** 。
 
+    .. note:: shellinabox的root登陆问题
+
+       echo -e "pts0\npts1\npts2" >> /etc/securetty
+
 使用SysPrep/Cloud-Init重置虚拟机信息
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

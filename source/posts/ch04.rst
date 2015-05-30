@@ -273,7 +273,7 @@ kNN的算法模型如下：
 
     其中，featLabels为测试的判断节点，即特征，testVec为其值，比如classify[myTree,"['no-surfacing','flippers']",:[1,1]"]，如此结果便为'no'。
 
-使用pickle对决策树进行序列化存储    
+使用pickle对决策树进行序列化存储：
 
 .. code::
 
@@ -285,9 +285,79 @@ kNN的算法模型如下：
 
    其中，dump可选协议为0（ASCII），1（BINARY），默认为0；读取时使用pickle.load；同样可使用dumps，loads直接对字符变量进行操作。
 
+此种算法计算复杂度不高，对中间值缺失不敏感，但可能会产生over-fitting的问题？
+
 
 朴素贝叶斯
 ~~~~~~~~~~
+
+朴素贝叶斯模型是基于独立概率统计的，思想大概可以这么说：
+
+.. code::
+
+    总共7个石子在A、B两个桶中，A桶中有2黑2白，B桶中有2黑1白。已知条件为石子来自B桶，那么它是白色石子的概率可表示为：
+
+        P(white|B)=P(white*B)/P(B)
+
+    其中，P(B)为从B桶中取出石子的概率，P(white*B)为从B桶中取出白色石子的概率，P(B)为从B桶中取出石子的概率，即为(1/7)/(3/7)=1/3。
+
+首先构建一个分类训练函数（二元分类）：
+
+.. code::
+
+    def trainNB0(trainMatrix,trainCategory):
+        numTrainDocs = len(trainMatrix)
+        numWords = len(trainMatrix[0])
+        pBad = sum(trainCategory)/float(numTrainDocs)
+        p0Num = ones(numWords); p1Num = ones(numWords)      #change to ones() 
+        p0Denom = 2.0; p1Denom = 2.0                        #change to 2.0
+        for i in range(numTrainDocs):
+            if trainCategory[i] == 1:
+                p1Num += trainMatrix[i]
+                p1Denom += sum(trainMatrix[i])
+            else:
+                p0Num += trainMatrix[i]
+                p0Denom += sum(trainMatrix[i])
+        p1Vect = log(p1Num/p1Denom)          #change to log()
+        p0Vect = log(p0Num/p0Denom)          #change to log()
+        return p0Vect,p1Vect,pBad
+
+    其中，trainMatrix为所有训练集中的布尔向量，比如两本书A、B，其中A有两个单词x、y，B有两个单词x、z，并且A是好书（值计为0），B是烂书（值计为0），把所有单词进行排序后得向量['x','y','z']，则A的Matrix可表示为[1,1,0]，B的为[1,0,1]，所以此函数中的trainMatrix即[[1,1,0],[1,0,1]]，trainCategory为[0,1]。
+    函数返回的为概率集的向量。
+
+分类函数：
+
+.. code::
+
+    def classifyNB(vec2Classify, p0Vec, p1Vec, pClass1):
+        p1 = sum(vec2Classify * p1Vec) + log(pClass1)    #element-wise mult
+        p0 = sum(vec2Classify * p0Vec) + log(1.0 - pClass1)
+        if p1 > p0:
+            return 1
+        else:
+            return 0
+
+    vec2Classify即为要分类的向量，形如trainMatrix，随后的三个参数为trainNB0所返回。p1、p0可以理解为期望概率值，比较两者大小即可划分。
+
+测试用例：
+
+.. code::
+
+    def testingNB():
+        listOPosts,listClasses = loadDataSet()
+        myVocabList = createVocabList(listOPosts)
+        trainMat=[]
+        for postinDoc in listOPosts:
+            trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
+        p0V,p1V,pAb = trainNB0(array(trainMat),array(listClasses))
+        testEntry = ['love', 'my', 'dalmation']
+        thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+        print testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb)
+        testEntry = ['stupid', 'garbage']
+        thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
+        print testEntry,'classified as: ',classifyNB(thisDoc,p0V,p1V,pAb)
+
+整体来说，朴素贝叶斯分类方法在数据较少的情况下仍然有效，但是对数据输入比较敏感。
 
 Logistic和Sigmoid回归
 ~~~~~~~~~~~~~~~~~~~~~
