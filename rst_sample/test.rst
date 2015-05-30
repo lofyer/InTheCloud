@@ -94,3 +94,8 @@ tab测试
     :subtitle: 边栏
 
     边栏内容
+
+.. math::
+
+    (a + b)^2  &=  (a + b)(a + b) \\
+        &=  a^2 + 2ab + b^2
