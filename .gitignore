@@ -1,2 +1,4 @@
-build
+build/
+rst_sample/*.pdf
+rst_sample/*.html
 .DS_Store
