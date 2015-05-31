@@ -77,6 +77,7 @@ https://github.com/followyourheart/sina-weibo-crawler
     values = [('Arthur', 1.8, 41), ('Lancelot', 1.9, 38), 
                 ('Galahad', 1.7, 38)]
     b = np.array(values, dtype=data_type)
+    c = np.arange(6,10)
 
     # 符号
     np.sign(a)
@@ -124,6 +125,9 @@ https://github.com/followyourheart/sina-weibo-crawler
     # 创建单位矩阵
     np.eye(3)
 
+    # 最小二乘，参数为[x,y,degree]，degree为多项式的最高次幂，返回值为所有次幂的系数
+    np.polyfit(a,c,1)
+
 4.4 机器学习常用分类算法及Python实现
 -------------------------------------
 
@@ -140,7 +144,9 @@ https://github.com/followyourheart/sina-weibo-crawler
 
 整个信息的熵为：
 
-    H = -sigma(i=1,n)x(log2(x))
+.. math::
+
+    H = -\sum^n_{i=1} log_2 x
 
 如何找到最好的分类特征：
 
@@ -287,7 +293,7 @@ kNN的算法模型如下：
 
    其中，dump可选协议为0（ASCII），1（BINARY），默认为0；读取时使用pickle.load；同样可使用dumps，loads直接对字符变量进行操作。
 
-此种算法计算复杂度不高，对中间值缺失不敏感，但可能会产生over-fitting的问题？
+此种算法计算复杂度不高，对中间值缺失不敏感，但可能会产生过拟合的问题。
 
 
 朴素贝叶斯
@@ -513,10 +519,55 @@ Sigmoid函数具有单位阶跃函数的性质，公式表示为：
 
 .. math::
 
-    \sigma (z)=\cfrac{1}{1+e^-z}
+    \sigma (z)=\cfrac{1}{1+e^{-z}}
 
 .. image:: ../images/04-01.png
     :align: center
+
+我们将输入记为z，有下面的公式得出：
+
+.. math::
+
+    z=w_0 x_0 + w_1 x_1 + w_2 x_2 + \dots + w_n x_n
+
+使用向量写法：
+
+.. math::
+
+    z=w^T x
+
+其中向量x是分类器的输入数据，向量w就是我们要找到的最佳系数。
+
+*基于优化方法确定回归系数*
+
+**梯度上升/下降法**
+
+梯度上升法/下降法的思想是：要找到函数的最大值，最好的方法是沿着该函数的梯度方向探寻，函数f(x,y)的梯度如下表示：
+
+.. math::
+
+    {\nabla}f(x,y)=\begin{pmatrix} \cfrac{{\partial}f(x,y)}{{\partial}x} \\ \cfrac{{\partial}f(x,y)}{{\partial}y}\end{pmatrix}
+
+可以这样理解此算法：
+
+    从前有一座山，一个懒人要爬山，他从山脚下的任意位置向山顶出发，并且知道等高线图的每个环上都有一个宿营点，他希望在这些宿营点之间修建一条路，路到两旁的
+
+返回回归系数：
+
+.. code::
+
+    def gradAscent(dataMatIn, classLabels):
+        dataMatrix = mat(dataMatIn)             #convert to NumPy matrix
+        labelMat = mat(classLabels).transpose() #convert to NumPy matrix
+        m,n = shape(dataMatrix)
+        alpha = 0.001
+        maxCycles = 500 
+        weights = ones((n,1))
+        for k in range(maxCycles):              #heavy on matrix operations
+            h = sigmoid(dataMatrix*weights)     #matrix mult
+            error = (labelMat - h)              #vector subtraction
+            weights = weights + alpha * dataMatrix.transpose()* error #matrix mult
+        return weights 
 
 SVM
 ~~~~
