@@ -15,7 +15,7 @@ API使用请参考http://developer.openstack.org/api-ref.html 以及 http://docs
 关于在ubuntu/debian上部署OpenStack请参考 `Server-World <http://www.server-world.info/en/>`_ 。
 
 ---------------------
-OpenStack RDO快速部署
+OpenStack 快速部署
 ---------------------
 
 在开始之前需要将这些关键组件关系理清。
@@ -36,8 +36,11 @@ OpenStack RDO快速部署
 
 - keystone：身份认证服务。
 
-RDO快速部署
-------------
+Mirantis Fuel 部署
+-------------------
+
+RDO 快速部署
+-------------
 
 使用 `RDO <http://openstack.redhat.com/Main_Page>`_ 来部署OpenStack。
 
