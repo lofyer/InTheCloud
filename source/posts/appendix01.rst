@@ -36,11 +36,11 @@ OpenStack 部署
 
 - keystone：身份认证服务。
 
-- orchestration：
+- orchestration：业务自动化。
 
-- trove：数据库资源管理
+- trove：数据库资源管理。
 
-- sahara：Hadoop模块
+- sahara：Hadoop模块。
 
 Mirantis Fuel 部署
 ===================
