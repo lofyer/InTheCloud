@@ -1,78 +1,98 @@
-附录四 文档参考资源以及建议书单
+================================
+附录四  Docker 使用及自建repo
 ================================
 
-Server World
-------------
+Docker已经越来越流行了（IaaS平台开始支持它，PaaS平台也开始支持它），不介绍它总感觉过不去。
 
-一个非常好的网站，含有很多服务的很具体的搭建过程，在工程实施中参考意义比较大。
+它是基于LXC的容器类型虚拟化技术，从实现上说更类似于chroot，用户空间的信息被很好隔离的同时，又实现了网络相关的分离。它取代LXC的原因，我想是因为其REPO非常丰富，操作上类似git。
 
-OVF
-----
+另外，它有提供Windows/MacOSX的客户端 boot2docker。
 
-文中的全部资源，可以访问通过百度网盘进行下载。
+中文入门手册请参考 `Docker中文指南 <http://www.widuu.com/chinese_docker/>`_ ，另外它有一个WebUI `shipyard <https://github.com/shipyard/shipyard>`_ 。
 
-    链接: http://pan.baidu.com/s/1he23k 密码: bmfn
+官方repo `https://registry.hub.docker.com/ <https://registry.hub.docker.com/>`_ 。
 
-快速安装脚本
-------------
-
-https://github.com/lofyer/onekey-deploy.git
-
-目前包含：
-
-- Gitlab
-
-- Zabbix
-
-- oVirt
-
-- Jasper
-
-常用爬虫
+---------
+镜像操作
 ---------
 
-https://github.com/lofyer/myspiders.git
+运行简单命令
 
-Django based WebAdmin
-----------------------
+.. code::
 
-https://github.com/lofyer/webadmin.git
+    docker run ubuntu /bin/echo "Hello world!"
 
-书单
-----
+运行交互shell
 
-虽然现在的移动设备很适合阅读，但我还是推荐多看些实体书，尤其是一些大部头。
+.. code::
+    
+    docker run -t -i ubuntu /bin/bash
 
-当然，下面的书目我会尽量提供适合移动设备阅读的版本（PDF、MOBI、EPUB、TXT）。
+运行Django程序
 
-TCP/IP Vol. 1/2/3
+.. code::
+    
+    docker run -d -P training/webapp python app.py
 
-Machine Learning in Action
+获取container信息
 
-Elements of Information Theory
+.. code::
+    
+    docker ps
 
-The Design of UNIX Operating System
+获取container内部信息
 
-Understanding the Linux Kernel
+.. code::
+    
+    docker inspect -f '{{ .NetworkSettings.IPAddress }}' my_container
 
-The Art of Computer Programming Vol. 1/2/3/4
+获取container历史
 
-Linux内核完全注释
+.. code::
+    
+    docker log my_container
 
-浪潮之巅
+commit/save/load
 
-数学之美
+.. note:: 保存
 
-UNIX环境高级编程
+    只有commit，对docker做的修改才会保存，形如docker run centos yum install -y nmap不会保存。
 
-存储技术原理分析
+.. code::
 
-Hadoop权威指南
+    docker images
+    docker commit $image_id$ myimage
+    docker save myimage > myimage.tar
+    docker load < myimage.tar
 
-Weka应用技术与实践
+-------------
+Registry操作
+-------------
 
-Python机器学习时间
+登录，默认为DockerHub
 
-Model Thinking
+.. code::
 
-Practice Lisp
+    docker login 
+
+创建Registry
+
+参考 https://www.digitalocean.com/community/tutorials/how-to-set-up-a-private-docker-registry-on-ubuntu-14-04 以及 http://blog.docker.com/2013/07/how-to-use-your-own-registry/ 。
+
+.. code::
+
+    # 获取docker-registry，从github或者直接 pip install docker-registry
+    # git clone https://github.com/dotcloud/docker-registry.git
+    # cd docker-registry
+    # cp config_sample.yml config.yml
+    # pip install -r requirements.txt
+    # gunicorn --access-logfile - --log-level debug --debug 
+    -b 0.0.0.0:5000 -w 1 wsgi:application
+    
+push/pull
+
+.. code::
+
+    # docker pull ubuntu
+    # docker tag ubuntu localhost:5000/ubuntu
+    # docker push localhost:5000/ubuntu

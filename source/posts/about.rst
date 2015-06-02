@@ -18,10 +18,6 @@ Github: https://github.com/lofyer/InTheCloud
 
 ReadTheDocs: https://inthecloud.readthedocs.org
 
-朴素的官网
-
-ProjectSite: http://blog.lofyer.org/InTheCloud
-
 .. raw:: html
 
     <embed>

@@ -1,6 +1,6 @@
-=====================================================
-附录一 OpenStack/Docker/Foreman 以及其他很有用的资源
-=====================================================
+===========================================
+附录一 OpenStack概念、部署、与高级网络应用
+===========================================
 
 首先在这里我会使用RDO快速部署一个具有基本功能的OpenStack环境，如果你想要更完整的部署（比如Heat、Trove组件），可以参考 `官方文档 <http://docs.openstack.org/icehouse/install-guide/install/yum/content>`_ 。
 
@@ -14,9 +14,9 @@ API使用请参考http://developer.openstack.org/api-ref.html 以及 http://docs
 
 关于在ubuntu/debian上部署OpenStack请参考 `Server-World <http://www.server-world.info/en/>`_ 。
 
----------------------
-OpenStack 快速部署
----------------------
+---------------
+OpenStack 部署
+---------------
 
 在开始之前需要将这些关键组件关系理清。
 
@@ -36,11 +36,17 @@ OpenStack 快速部署
 
 - keystone：身份认证服务。
 
+- orchestration：
+
+- trove：数据库资源管理
+
+- sahara：Hadoop模块
+
 Mirantis Fuel 部署
--------------------
+===================
 
 RDO 快速部署
--------------
+=============
 
 使用 `RDO <http://openstack.redhat.com/Main_Page>`_ 来部署OpenStack。
 
@@ -82,8 +88,20 @@ RDO 快速部署
     假如更换了admin/demo/services的密码，不要忘记在此配置文件中将其修改为新密码。
     # packstack --answer-file=/root/packstack-answers-20140730-110621.txt
 
+基于CentOS 7的分布详细部署
+============================
+
+----------
+使用示例
+----------
+
+基本操作
+==========
+
+一些常用操作。
+
 添加镜像
----------
+----------
 
 以admin或者demo用户身份登录dashboard后，选择“镜像”，上传ISO。
 
@@ -100,7 +118,7 @@ RDO 快速部署
     :align: center
 
 与owncloud集成
-----------------
+===============
 
 1. 创建一个指定region的endpoint于swift服务中
 
@@ -138,7 +156,7 @@ RDO 快速部署
         :align: center
 
 oVirt使用Glance与Neutron服务
------------------------------
+=============================
 
 oVirt自3.3版本起，便可以添加外部组件，比如Foreman、OpenStack的网络或镜像服务。
 
@@ -150,7 +168,7 @@ oVirt自3.3版本起，便可以添加外部组件，比如Foreman、OpenStack�
     # service ovirt-engine restart
 
 添加OpenStack镜像服务Glance至oVirt
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------
 
 1. 在OpenStack的控制台中，添加一个新镜像，比如my_test_image，格式为raw。
 
@@ -176,7 +194,7 @@ oVirt自3.3版本起，便可以添加外部组件，比如Foreman、OpenStack�
     :align: center
 
 Neutron
-~~~~~~~
+--------
 
 .. image:: ../images/apx01-06.jpeg
     :align: center
@@ -209,8 +227,9 @@ Neutron
 
     agent 配置相同
 
+----------------------
 OpenStack常见问题集锦
-~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 Q：管理界面Swift不能删除目录。
 
@@ -224,215 +243,6 @@ Q：OpenStack组件间的通信是靠什么？
 
 A：AMQP，比如RabbitMQ、Apache的ActiveMQ，部署时候可以选择，如果对这种消息传输工具有兴趣可以参考 `rabbitmq tutorial <http://www.rabbitmq.com/getstarted.html>`_ 以及 `各种有用的插件（web监视等） <http://www.rabbitmq.com/plugins.html>`_ 。
 
-------------------------
-Docker 使用以及相关集成
-------------------------
+Q：Swift有什么好用的客户端么？
 
-Docker已经越来越流行了（IaaS平台开始支持它，PaaS平台也开始支持它），不介绍它总感觉过不去。
-
-它是基于LXC的容器类型虚拟化技术，从实现上说更类似于chroot，用户空间的信息被很好隔离的同时，又实现了网络相关的分离。它取代LXC的原因，我想是因为其REPO非常丰富，操作上类似git。
-
-另外，它有提供Windows/MacOSX的客户端 boot2docker。
-
-中文入门手册请参考 `Docker中文指南 <http://www.widuu.com/chinese_docker/>`_ ，另外它有一个WebUI `shipyard <https://github.com/shipyard/shipyard>`_ 。
-
-官方repo `https://registry.hub.docker.com/ <https://registry.hub.docker.com/>`_ 。
-
-镜像操作
----------
-
-运行简单命令
-
-.. code::
-
-    docker run ubuntu /bin/echo "Hello world!"
-
-运行交互shell
-
-.. code::
-    
-    docker run -t -i ubuntu /bin/bash
-
-运行Django程序
-
-.. code::
-    
-    docker run -d -P training/webapp python app.py
-
-获取container信息
-
-.. code::
-    
-    docker ps
-
-获取container内部信息
-
-.. code::
-    
-    docker inspect -f '{{ .NetworkSettings.IPAddress }}' my_container
-
-获取container历史
-
-.. code::
-    
-    docker log my_container
-
-commit/save/load
-
-.. note:: 保存
-
-    只有commit，对docker做的修改才会保存，形如docker run centos yum install -y nmap不会保存。
-
-.. code::
-
-    docker images
-    docker commit $image_id$ myimage
-    docker save myimage > myimage.tar
-    docker load < myimage.tar
-
-Registry操作
--------------
-
-登录，默认为DockerHub
-
-.. code::
-
-    docker login 
-
-创建Registry
-
-参考 https://www.digitalocean.com/community/tutorials/how-to-set-up-a-private-docker-registry-on-ubuntu-14-04 以及 http://blog.docker.com/2013/07/how-to-use-your-own-registry/ 。
-
-.. code::
-
-    # 获取docker-registry，从github或者直接 pip install docker-registry
-    # git clone https://github.com/dotcloud/docker-registry.git
-    # cd docker-registry
-    # cp config_sample.yml config.yml
-    # pip install -r requirements.txt
-    # gunicorn --access-logfile - --log-level debug --debug 
-    -b 0.0.0.0:5000 -w 1 wsgi:application
-    
-push/pull
-
-.. code::
-
-    # docker pull ubuntu
-    # docker tag ubuntu localhost:5000/ubuntu
-    # docker push localhost:5000/ubuntu
-
------------------
-Foreman 部署指导
------------------
-
------------------------
-常用性能测量及优化工具
------------------------
-
-- 优化
-
-.. image:: ../images/apx01-09.jpg
-
-- 监视
-
-.. image:: ../images/apx01-10.jpg
-
-- 测试
-
-.. image:: ../images/apx01-11.jpg
-
-另外针对qemu/libvirt相关的测试工具，可以参考 `virt-test <https://github.com/autotest/virt-test>`_ ，当然，仅作参考。
-
-----------------
-SDN学习/mininet
-----------------
-
-SDN广泛用来内容加速以及虚拟机网络。
-
-现代SDN来自OpenFlow，关于SDN有一个个人认为最佳的学习工具： `mininet <http://mininet.org>`_ 。
-
-----------------
-HAProxy
-----------------
-
-没错，我就是要把这个东西单列出来讲，因为你可以用这个东西来做几乎全部应用的HA或者LoadBalancer， `这里是配置说明 <http://www.haproxy.org/download/1.4/doc/configuration.txt>` 。
-
-代理http:
-
-.. code::
-
-    ...
-
-    backend webbackend
-        balance roundrobin
-        server web1 192.168.0.130:80 check
-
-    frontend http
-        bind *:80
-        mode http
-        default_backend webbackend
-
-    listen  stats :8080
-        balance
-        mode http
-        stats enable
-        stats auth me:password
-
-代理tcp:
-
-.. code::
-
-    listen *:3306
-        mode tcp
-        option tcplog
-        balance roundrobin
-        server smtp 192.168.0.1:3306 check
-        server smtp1 192.168.0.2:3306 check
-
-
-------------
-常用运维工具
-------------
-
-Ganglia
---------
-
-一款专门针对虚拟机的监视工具。
-http://blog.sflow.com/2012/01/using-ganglia-to-monitor-virtual.html
-
-zabbix
--------
-
-类似Nagios，不过图形绘制很强，在一键脚本中提供安装。
-
-`移动客户端下载 <http://www.zabbix.com/third_party_tools.php>`_  。
-
-关于zabbix的更多介绍可以参考 `itnihao的相关著作 <http://www.zhihu.com/question/19973178>`_ 。
-
-nagios
--------
-
-使用UI Plugin可以将在oVirt管理界面中查看Nagios监控状态，可参考 `oVirt_Monitoring_UI_Plugin <http://www.ovirt.org/Features/UIPlugins#oVirt_Monitoring_UI_Plugin>`_ 以及 `Nagios_Intergration <http://www.ovirt.org/Features/Nagios_Integration>`_ 。
-
-foreman
---------
-
-使用Foreman的主要目的是更方便地部署宿主机以及创建虚拟机。
-
-参考 `ForemanIntegration <http://www.ovirt.org/Features/ForemanIntegration>`_ 、 `foreman_ovirt <https://github.com/oourfali/foreman_ovirt>`_ 以及UIPlugin相关内容。
-
-chef
-----
-
-简单理解为一些列安装脚本（cookbook）。
-
-访问 `http://gettingstartedwithchef.com/ <http://gettingstartedwithchef.com/first-steps-with-chef.html>`_ 开始快速上手学习。
-
-`获取更多cookbook <https://supermarket.getchef.com/cookbooks-directory>`_ 。
-
-puppet
-------
-
-功能上与chef类似，但是影响力更大。
-
-`下载虚拟机 <https://puppetlabs.com/download-learning-vm>`_ 并按照里面的教程来快速上手。
+A：`python-swiftclient <https://github.com/openstack/python-swiftclient>`_ 、 `Gladient Cloud Desktop <http://www.gladient.com/>`_ 、 `Cloudberry <http://www.cloudberrylab.com/>`_ 、 `Cyberduck <http://cyberduck.ch/>`_ 、 `WebDrive <http://www.webdrive.com/>`_ 、 `S3 Browser <http://s3browser.com/>`_ 等。

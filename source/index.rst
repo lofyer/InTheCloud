@@ -18,6 +18,8 @@ In the Cloud
     posts/appendix02.rst
     posts/appendix03.rst
     posts/appendix04.rst
+    posts/appendix05.rst
+    posts/appendix06.rst
     posts/exp.rst
 
 链接
@@ -27,5 +29,3 @@ In the Cloud
     :maxdepth: 1
 
     posts/about.rst
-
-* :ref:`search`
