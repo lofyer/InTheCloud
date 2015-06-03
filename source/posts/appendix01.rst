@@ -36,7 +36,7 @@ OpenStack 部署
 
 - keystone：身份认证服务。
 
-- orchestration：业务自动化。
+- orchestration：业务自动化模块。
 
 - trove：数据库资源管理。
 
@@ -90,6 +90,8 @@ RDO 快速部署
 
 基于CentOS 7的分布详细部署
 ============================
+
+CentOS 7以及Ubuntu等发行版部署OpenStack的过程基本一致，在此近以CentOS 7示例。
 
 ----------
 使用示例
