@@ -24,23 +24,23 @@ OpenStack 部署
 
 - neutron：提供network服务，同时提供Open vSwitch、L3、DHCP代理服务。
 
-- cinder：提供块存储服务，配合swift使用。
+- cinder：提供块存储服务，可配合swift使用。
 
 - swift：提供对象存储服务，目录与文件皆视为对象，外部可以方便取用。
 
 - glance：提供镜像管理服务。
 
-- ceilometer：主要功能是监测、收集用户对资源的使用情况，以方便计费等。
+- ceilometer：主要功能是监测、收集用户对资源的使用情况，以方便计费、报警等。
 
-- heat：用于模板化部署的服务。
+- heat：orchestration模块驱动服务，即从模板根据需求更改配置创建新虚拟机。
 
 - keystone：身份认证服务。
 
-- orchestration：业务自动化模块。
-
-- trove：数据库资源管理。
+- trove：数据库服务。
 
 - sahara：Hadoop模块。
+
+- ironic：类似Foreman，提供物理机管理、安装等服务。
 
 Mirantis Fuel 部署
 ===================
@@ -88,10 +88,58 @@ RDO 快速部署
     假如更换了admin/demo/services的密码，不要忘记在此配置文件中将其修改为新密码。
     # packstack --answer-file=/root/packstack-answers-20140730-110621.txt
 
-基于CentOS 7的分布详细部署
-============================
+分步详细部署
+=============
 
-CentOS 7以及Ubuntu等发行版部署OpenStack的过程基本一致，在此近以CentOS 7示例。
+CentOS 7以及Ubuntu等发行版部署OpenStack的过程基本一致，在此以CentOS 7示例。
+
+机器准备
+---------
+
+配置KeyStone
+-------------
+
+配置Glance
+-----------
+
+配置Nova
+---------
+
+添加镜像
+~~~~~~~~~
+
+配置Nova Networking（可选）
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+启动实例
+~~~~~~~~~~
+
+配置Horizon
+------------
+
+添加计算节点
+------------
+
+配置Neutron（推荐）
+-------------------
+
+配置Cinder存储
+---------------
+
+配置Swift
+----------
+
+配置Heat（可选）
+----------------
+
+配置Ceilometer
+---------------
+
+配置Sahara（可选）
+------------------
+
+配置Ironic（可选）
+------------------
 
 ----------
 使用示例
