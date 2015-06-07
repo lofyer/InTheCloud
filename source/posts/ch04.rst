@@ -15,11 +15,9 @@
 4.1 数据收集
 -------------
 
-为了省去一些学习的麻烦，我找了一些“大”数据。
+数据收集是学习数据分析的开始。我们每一天
 
-http://www.quora.com/Where-can-I-find-large-datasets-open-to-the-public
-
-有些上百TB的数据对非行业内的人来说可能毫无意义，但是，先来些数据吧，但是对学习者来说还是比较实用的。
+为了省去一些学习的麻烦，我找了一些 `“大”数据 <http://www.quora.com/Where-can-I-find-large-datasets-open-to-the-public>`_ ，有些上百TB的数据对非行业内的人来说可能毫无意义，但是，先来些数据吧，但是对学习者来说还是比较实用的。
 
 简单抓取
 ~~~~~~~~

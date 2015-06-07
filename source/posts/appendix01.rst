@@ -93,6 +93,8 @@ RDO 快速部署
 
 CentOS 7以及Ubuntu等发行版部署OpenStack的过程基本一致，在此以CentOS 7示例。
 
+
+
 机器准备
 ---------
 
