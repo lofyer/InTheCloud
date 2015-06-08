@@ -2,6 +2,7 @@
 第三章 一个合适的虚拟化平台
 ============================
 
+------------------
 3.1 虚拟化平台简介
 ------------------
 
@@ -30,7 +31,7 @@ IaaS云计算平台，综合来说具有以下特性：
 - 需求导向性：在计算水平上，优质资源最先提供给重要服务；服务水平上，平台具有可定制能力。
 
 oVirt
-~~~~~~
+-----
 
 oVirt目前两种部署方式：
 
@@ -65,17 +66,18 @@ oVirt目前两种部署方式：
     **电源管理**： 如果没有物理电源控制器，可以直接指定某一台主机为代理机，以构建更稳健的集群。
 
 OpenStack
-~~~~~~~~~~
+---------
 
 OpenStack云计算中引入的概念已经先入为主，让国内许多较晚接触云计算的人认为这就是标准概念。
 
 更多内容请参考附录一。
 
 CloudStack
-~~~~~~~~~~
+----------
 
 可能也不错，我没用过。
 
+----------------------
 3.2 搭建oVirt管理引擎
 ----------------------
 
@@ -92,7 +94,7 @@ CloudStack
 5. 创建虚拟机
 
 系统准备
-~~~~~~~~
+---------
 
 所有机器的SELINUX都设置为permissive。
 
@@ -157,7 +159,7 @@ CloudStack
     # service NetworkManager stop; service network restart
 
 添加repo
-~~~~~~~~
+---------
 
 .. note:: **oVirt3.4.2 特别说明**
 
@@ -219,7 +221,7 @@ CloudStack
 .. _label2:
 
 搭建普通oVirt虚拟化平台
-~~~~~~~~~~~~~~~~~~~~~~~
+------------------------
 
 笔者写此文时oVirt已经更新到3.4。
 
@@ -361,7 +363,7 @@ CloudStack
 .. _label3:
 
 搭建管理端高可用oVirt（hosted engine）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------------
 
 高可用，我们可以这么划分：
 
@@ -589,13 +591,14 @@ CloudStack
 
 .. _label1:
 
+----------------------
 3.3 添加节点以及存储域
 ----------------------
 
-我想，你看到这的话应该已经有了一个数据中心、几个宿主机，也可能有一个虚拟机（engine），还差一个存储虚拟机镜像的地方就可以拥有基本的oVirt平台了。
+你看到这的话应该已经有了一个数据中心、几个宿主机，也可能有一个虚拟机（engine），还差一个存储虚拟机镜像的地方就可以拥有基本的oVirt平台了。
 
 添加节点（宿主机）
-~~~~~~~~~~~~~~~~~~
+------------------
 
 对于第11节的普通oVirt、第12节的ha平台，你可能需要添加更多节点以支持更好的SLA（service level agreement）。
 添加节点目前有三种方式：
@@ -612,7 +615,7 @@ CloudStack
     :align: center
 
 添加存储域
-~~~~~~~~~~
+-----------
 
 存储域有3种，Data（数据域）、ISO（ISO域）、Export（导出域）。
 
@@ -628,6 +631,7 @@ CloudStack
     导出域在已加入数据中心后不可共享，如果它意外损坏，请参考 http://blog.lofyer.org/blog/2014/05/11/cloud-6-5-advanced-ovirt/ 手动修复。
     若要使用oVirt的gluster支持，请安装vdsm-gluster包。
 
+-----------------
 3.4 连接虚拟机
 -----------------
 
@@ -637,7 +641,7 @@ CloudStack
     :align: center
 
 Spice-Html5
-~~~~~~~~~~~~
+------------
 
    首先在服务器端打开spice代理：
 
@@ -658,17 +662,17 @@ Spice-Html5
    然后点击控制台按钮即可在浏览器的新标签中打开spice-html5桌面。
 
 浏览器插件
-~~~~~~~~~~~~
+-----------
 
    对于Redhat系列系统，可安装spice-xpi插件；Windows系统可以安装SpiceX的控件。
 
 本地客户端
-~~~~~~~~~~~~
+-----------
 
    访问 `virt-manager官网 <http://virt-manager.org/download/>`_ 下载virt-viewer客户端，使用它打开下载到本地的console.vv文件。
 
-spice proxy - gateway - squid代理
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+spice proxy/gateway - squid代理
+--------------------------------
 
    设置squid代理，将所有spice端口代理至3128端口。
 
@@ -701,20 +705,21 @@ spice proxy - gateway - squid代理
     可通过集群设置中设置所有宿主机的Spice代理，或者在虚拟机设置中单一设置某台虚拟机通过代理访问。
 
 RDP插件（仅适用于Windows虚机及IE浏览器）
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------------
 
    如果虚拟机的操作系统选择为Windows，并且内部启动了远程桌面服务，使用IE浏览器访问用户或者管理员入口时，可以启用RDP控件。
 
+-----------------
 3.5 oVirt使用进阶
 -----------------
 
-engine-config参数配置
-~~~~~~~~~~~~~~~~~~~~~~
+数据库修改非同步数据
+----------------------
 
-如果出现网络错误，很有可能导致数据不同步，从而导致界面上虚拟机状态一直处于异常状态，修改数据库中的vm_dynamic, image, vm_static等数据表即可。
+如果出现网络错误，很有可能导致数据不同步，从而导致界面上虚拟机状态一直处于异常状态，这点OpenStack也有一样的缺点。连接引擎数据库，修改其中的vm_dynamic, image, vm_static等数据表即可。
 
 engine-config参数配置
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 平台安装完以后，可用通过engine-config命令进行详细参数配置。
 
@@ -734,7 +739,7 @@ engine-config参数配置
         Please reenter password: # 密码
 
 ovirt-shell与API
-~~~~~~~~~~~~~~~~~
+-----------------
 
 Restful API（Application User Interface）是oVirt的一大特点，用户可以通过它将其与第三方的界面或者应用进行集成。访问 http://192.168.10.100/api?rsdl 以获取其用法。
 
@@ -855,7 +860,7 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
         # remote-viewer --spice-ca-file=ca.crt spice://192.168.10.100?port=5912&tls-port=5913&password=jRUqhrks6JiT
 
 主机hooks
-~~~~~~~~~~
+----------
 
 主机hooks位于各个宿主机上，用于扩展oVirt的平台功能，比如网络、USB设备、SRIOV等。原理是在某一事件触发时（比如虚拟机启动之前），修改libvirt启动XML文件、环境变量或者主机配置，从而改变qemu的启动参数。
 
@@ -891,14 +896,14 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
         # saslpasswd2 -a libvirt root
 
 主机策略
-~~~~~~~~~
+---------
 
 参考这个 `PDF <http://www.ovirt.org/images/2/2a/Scheduler-Deep-Dive-oVirt.pdf>`_ 。（没记错的话，里面那个显卡透穿的问题，是当初我问的。。）
 
 **示例：**
 
 虚拟机文件系统扩容
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 oVirt 3.4 磁盘可以进行在线扩容，但是对于磁盘内的文件系统需要单独支持，在此列出常用Linux以及Windows扩容方法。
 
@@ -981,7 +986,7 @@ oVirt 3.4 磁盘可以进行在线扩容，但是对于磁盘内的文件系统�
     XP使用Paragon Partion Manager；Windows 7 在磁盘管理中即可扩容。
 
 P2V/V2P
-~~~~~~~~~~~~
+--------
 
 **V2V**
 
@@ -1053,7 +1058,7 @@ P2V/V2P
     5. 转换完成后关闭计算机，并修改虚拟机的配置以完全适应OS。
 
 UI 插件
-~~~~~~~~
+--------
 
 详细内容请参考 `oVirt官网关于UI插件的介绍 <http://www.ovirt.org/Features/UIPlugins>`_ 以及附录部分内容，在此我仅使用ShellInABox举例，你可以考虑将上面的libguestfs扩容加进来，更多UI Plugin请 **git clone git://gerrit.ovirt.org/samples-uiplugins.git** 。
 
@@ -1095,7 +1100,7 @@ UI 插件
        echo -e "pts0\npts1\npts2" >> /etc/securetty
 
 使用SysPrep/Cloud-Init重置虚拟机信息
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------
 
 参考 https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Virtualization/3.4/html/Administration_Guide/sect-Sealing_Templates_in_Preparation_for_Deployment.html .
 
@@ -1118,14 +1123,14 @@ UI 插件
         :align: center
 
 与其他平台集成、与认证服务器集成
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------
 
 oVirt平台目前可以使用Foreman，OpenStack Network，OpenStack Image的部分功能，具体实施请参阅附录一内容。
 
 与认证服务器集成时很有可能遇到各种问题，比如与AD集成时不能使用Administrator用户进行engine-manage-domains，与IPA集成时需要修改minss之类的参数，与LDAP集成时需要Kerberos或者使用3.5版本中的aaa认证插件。
 
 后端（libvirt/qemu/kernel）优化
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 如果你觉得现有平台的性能达不到预期，或者有其他的需求，可以从以下几方面进行调节或优化。
 
