@@ -75,3 +75,160 @@ CPU
 oVirt可以参考ovirt-reports，OpenStack参考其Ceilometer。
 
 计费模块OpenStack可参考新浪云的 `dough项目 <https://github.com/sinacloud/dough>`_ 。
+
+--------------------------
+DeltaCloud/Libcloud混合云
+--------------------------
+
+**DeltaCloud支持：**
+
+arubacloud
+
+azure
+
+ec2
+
+rackspace
+
+terremark
+
+openstack
+
+fgcp
+
+eucalyptus
+
+digitalocean
+
+sbc
+
+mock
+
+condor
+
+rhevm
+
+google
+
+opennebula
+
+vsphere
+
+gogrid
+
+rimuhosting
+
+**Libcloud支持：**
+
+biquo
+
+PCextreme
+
+Azure Virtual machines
+
+Bluebox Blocks
+
+Brightbox
+
+CloudFrames
+
+CloudSigma (API v2.0)
+
+CloudStack
+
+DigitalOcean    
+
+Dreamhost
+
+Amazon EC2  
+
+Enomaly Elastic Computing Platform
+
+ElasticHosts
+
+Eucalyptus   
+
+Exoscale    
+
+Gandi
+
+Google Compute Engine   
+
+GoGrid
+
+HostVirtual
+
+HP Public Cloud (Helion)    
+
+IBM SmartCloud Enterprise   
+
+Ikoula  
+
+Joyent
+
+Kili Public Cloud   
+
+KTUCloud
+
+Libvirt 
+
+Linode
+
+NephoScale
+
+Nimbus  
+
+Ninefold
+
+OpenNebula (v3.8)
+
+OpenStack   
+
+Opsource   
+
+Outscale INC    
+
+Outscale SAS    
+
+ProfitBricks
+
+Rackspace Cloud
+
+RimuHosting  
+
+ServerLove  
+
+skalicloud 
+
+SoftLayer 
+
+vCloud   
+
+VCL     
+
+vCloud 
+
+Voxel VoxCLOUD      
+
+vps.net   
+
+VMware vSphere  
+
+Vultr
+
+DeltaCloud示例：
+----------------
+
+Libcloud示例：
+----------------
+
+----------------
+SDN学习/mininet
+----------------
+
+SDN广泛用来内容加速以及虚拟机网络。
+
+现代SDN来自OpenFlow，关于SDN有一个个人认为最佳的学习工具： `mininet <http://mininet.org>`_ 。
+
+
+

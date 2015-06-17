@@ -40,7 +40,7 @@ OpenStack 部署
 
 - sahara：Hadoop模块。
 
-- ironic：类似Foreman，提供物理机管理、安装等服务。
+- ironic：提供从模板创建新应用程序。
 
 Mirantis Fuel 部署
 ===================
@@ -93,13 +93,163 @@ RDO 快速部署
 
 CentOS 7以及Ubuntu等发行版部署OpenStack的过程基本一致，在此以CentOS 7示例。
 
-
-
 机器准备
 ---------
 
+控制节点：controller0
+
+计算节点：controller0，compute0
+
+网络节点：neutron0
+
+存储节点：stor0，stor1，stor2，swift0
+
+Heat节点：heat0
+
+每台机器首先将selinux设置为permissive或者disable、打开ssh服务、禁用防火墙、关闭NetworkManager服务、打开network服务并配置IP。
+
 配置KeyStone
 -------------
+
+初始化数据库等
+~~~~~~~~~~~~~~~
+
+在控制节点controller0，配置源、数据库、RabbitMQ、Memcached。
+
+.. code::
+
+    [root@controller0 ~]# yum -y install http://repos.fedorapeople.org/repos/openstack/openstack-kilo/rdo-release-kilo.rpm epel-release
+    [root@controller0 ~]# yum install -y galera mariadb-galera-server rabbitmq-server memcached
+    [root@controller0 ~]# systemctl start mariadb
+    [root@controller0 ~]# systemctl enable mariadb
+    [root@controller0 ~]# systemctl start rabbitmq-server
+    [root@controller0 ~]# systemctl enable rabbitmq-server
+    [root@controller0 ~]# systemctl start memcached
+    [root@controller0 ~]# systemctl enable memcached
+
+    # 初始化mysql
+    [root@controller0 ~]# mysql_secure_installation 
+    /usr/bin/mysql_secure_installation: line 379: find_mysql_client: command not found
+
+    NOTE: RUNNING ALL PARTS OF THIS SCRIPT IS RECOMMENDED FOR ALL MariaDB
+          SERVERS IN PRODUCTION USE!  PLEASE READ EACH STEP CAREFULLY!
+
+          In order to log into MariaDB to secure it, we'll need the current
+          password for the root user.  If you've just installed MariaDB, and
+          you haven't set the root password yet, the password will be blank,
+          so you should just press enter here.
+
+          Enter current password for root (enter for none):
+          OK, successfully used password, moving on...
+
+          Setting the root password ensures that nobody can log into the MariaDB
+          root user without the proper authorisation.
+
+          # set root password
+          Set root password? [Y/n] y
+          New password:
+          Re-enter new password:
+          Password updated successfully!
+          Reloading privilege tables..
+           ... Success!
+
+        By default, a MariaDB installation has an anonymous user, allowing anyone
+        to log into MariaDB without having to have a user account created for
+        them.  This is intended only for testing, and to make the installation
+        go a bit smoother.  You should remove them before moving into a
+        production environment.
+        # remove anonymous users
+        Remove anonymous users? [Y/n] y
+         ... Success!
+
+      Normally, root should only be allowed to connect from 'localhost'.  This
+      ensures that someone cannot guess at the root password from the network.
+
+      # disallow root login remotely
+      Disallow root login remotely? [Y/n] y
+       ... Success!
+
+    By default, MariaDB comes with a database named 'test' that anyone can
+    access.  This is also intended only for testing, and should be removed
+    before moving into a production environment.
+
+    # remove test database
+    Remove test database and access to it? [Y/n] y
+     - Dropping test database...
+        ... Success!
+         - Removing privileges on test database...
+            ... Success!
+
+         Reloading the privilege tables will ensure that all changes made so far
+         will take effect immediately.
+
+         # reload privilege tables
+         Reload privilege tables now? [Y/n] y
+          ... Success!
+
+       Cleaning up...
+
+       All done!  If you've completed all of the above steps, your MariaDB
+       installation should now be secure.
+
+       Thanks for using MariaDB!
+
+    # 重置rabbitmq密码
+    [root@controller0 ~]# rabbitmqctl change_password guest password 
+
+初始化Keystone
+~~~~~~~~~~~~~~~
+
+.. code::
+
+    [root@controller0 ~]# yum install -y openstack-keystone openstack-utils
+    [root@controller0 ~]# mysql -u root -p 
+    Enter password:
+    Welcome to the MariaDB monitor.  Commands end with ; or \g.
+    Your MariaDB connection id is 10
+    Server version: 5.5.40-MariaDB-wsrep MariaDB Server, wsrep_25.11.r4026
+
+    Copyright (c) 2000, 2014, Oracle, Monty Program Ab and others.
+
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+    MariaDB [(none)]> create database keystone;
+    Query OK, 1 row affected (0.00 sec)
+    MariaDB [(none)]> grant all privileges on keystone.* to keystone@'localhost' identified by 'password';
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> grant all privileges on keystone.* to keystone@'%' identified by 'password';
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> flush privileges;
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> exit
+    Bye
+
+    [root@controller0 ~]# vi /etc/keystone/keystone.conf
+
+    # line 13: 修改admin密码为admin
+    admin_token=admin
+
+    # line 633: 数据库连接信息
+    connection=mysql://keystone:password@10.0.0.30/keystone
+
+    # line 1434: token格式
+    token_format=PKI
+
+    # line 1440: 证书信息
+    certfile=/etc/keystone/ssl/certs/signing_cert.pem
+    keyfile=/etc/keystone/ssl/private/signing_key.pem
+    ca_certs=/etc/keystone/ssl/certs/ca.pem
+    ca_key=/etc/keystone/ssl/private/cakey.pem
+    key_size=2048
+    valid_days=3650
+    cert_subject=/C=CN/ST=Di/L=Jiang/O=InTheCloud/CN=controller0.inthecloud
+
+    [root@controller0 ~]# keystone-manage pki_setup --keystone-user keystone --keystone-group keystone 
+    [root@controller0 ~]# keystone-manage db_sync 
+    [root@controller0 ~]# systemctl start openstack-keystone 
+    [root@controller0 ~]# systemctl enable openstack-keystone 
+    * remove the log file if keystone will not start.
+    [root@controller0 ~]# rm /var/log/keystone/keystone.log 
 
 配置Glance
 -----------

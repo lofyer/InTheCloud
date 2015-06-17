@@ -81,7 +81,7 @@
 功能介绍
 ---------
 
-关于Gluterfs的更多功能特性请参考 `Glusterfs features <https://www.gluster.org/documentation/architecture/Features_Overview/>`_ 。
+具体功能特性请参考 `Glusterfs features <http://gluster.readthedocs.org/en/latest/>`_ 。
 
 组合方式
 ---------
