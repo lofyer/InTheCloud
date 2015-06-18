@@ -325,11 +325,11 @@ Heat节点：heat0
       | 9acf83020ae34047b6f1e320c352ae44 | service |   True  |
       +----------------------------------+---------+---------+
 
-添加角色：
+创建角色：
 
 .. code::
 
-    # 添加admin角色
+    # 创建admin角色
     [root@controller0 ~]# keystone role-create --name admin 
       +----------+----------------------------------+
       | Property |              Value               |
@@ -338,7 +338,7 @@ Heat节点：heat0
       |   name   |              admin               |
       +----------+----------------------------------+
 
-    # 添加Member角色
+    # 创建Member角色
     [root@controller0 ~]# keystone role-create --name Member 
       +----------+----------------------------------+
       | Property |              Value               |
@@ -348,12 +348,13 @@ Heat节点：heat0
       +----------+----------------------------------+
       
     [root@controller0 ~]# keystone role-list
-      +----------------------------------+--------+
-      |                id                |  name  |
-      +----------------------------------+--------+
-      | aa8c08c0ff63422881c7662472b173e6 | Member |
-      | 95c4b8fb8d97424eb52a4e8a00a357e7 | admin  |
-      +----------------------------------+--------+
+      +----------------------------------+----------+
+      |                id                |   name   |
+      +----------------------------------+----------+
+      | aa8c08c0ff63422881c7662472b173e6 |  Member  |
+      | 9fe2ff9ee4384b1894a90878d3e92bab | _member_ |
+      | 95c4b8fb8d97424eb52a4e8a00a357e7 |  admin   |
+      +----------------------------------+----------+
 
 添加用户并赋予角色：
 
@@ -744,6 +745,40 @@ Heat节点：heat0
     | ID | Name | Disk Format | Container Format | Size | Status |
     +----+------+-------------+------------------+------+--------+
     +----+------+-------------+------------------+------+--------+
+
+导入之前已经创建好的镜像：
+
+.. code::
+
+    [root@controller0 ~(keystone)]# glance image-create --name="centos7" --is-public=true --disk-format=qcow2 --container-format=bare < rhel7.0.qcow2
+    +------------------+--------------------------------------+
+    | Property         | Value                                |
+    +------------------+--------------------------------------+
+    | checksum         | 0ffb6f101c28af38804f79287f15e7e9     |
+    | container_format | bare                                 |
+    | created_at       | 2015-06-18T09:34:50.000000           |
+    | deleted          | False                                |
+    | deleted_at       | None                                 |
+    | disk_format      | qcow2                                |
+    | id               | 7f1f376c-0dff-44a3-87e8-d13883f795fc |
+    | is_public        | True                                 |
+    | min_disk         | 0                                    |
+    | min_ram          | 0                                    |
+    | name             | centos7                              |
+    | owner            | c0c4e7b797bb41798202b55872fba074     |
+    | protected        | False                                |
+    | size             | 21478375424                          |
+    | status           | active                               |
+    | updated_at       | 2015-06-18T09:41:28.000000           |
+    | virtual_size     | None                                 |
+    +------------------+--------------------------------------+
+
+    [root@controller0 ~(keystone)]# glance image-list
+    +--------------------------------------+---------+-------------+------------------+-------------+--------+
+    | ID                                   | Name    | Disk Format | Container Format | Size        | Status |
+    +--------------------------------------+---------+-------------+------------------+-------------+--------+
+    | 7f1f376c-0dff-44a3-87e8-d13883f795fc | centos7 | qcow2       | bare             | 21478375424 | active |
+    +--------------------------------------+---------+-------------+------------------+-------------+--------+
 
 配置Nova Networking（可选）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
