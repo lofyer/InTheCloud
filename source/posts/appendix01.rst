@@ -102,17 +102,35 @@ CentOS 7以及Ubuntu等发行版部署OpenStack的过程基本一致，在此以
 
 网络节点：neutron0
 
-存储节点：stor0，stor1，stor2，swift0
+存储节点：stor0，stor1，swift0
 
 Heat节点：heat0
 
-每台机器首先将selinux设置为permissive或者disable、打开ssh服务、禁用防火墙、关闭NetworkManager服务、打开network服务并配置IP。
+每台机器首先将selinux设置为permissive或者disable、打开ssh服务、禁用防火墙（可安装iptables-services服务，关闭firewalld，iptables -F后再service iptables save）、关闭NetworkManager服务、打开network服务并配置IP。
 
-配置KeyStone
--------------
+.. note:: bash_rc文件用例
 
-初始化数据库等
-~~~~~~~~~~~~~~~
+    bash_rc文件比如os_bootstrap、admin_keystone，其中os_bootstrap用于创建基本keystone服务使用，admin_keystone为创建的admin用户。
+
+.. note:: 认证服务
+
+    OpenStack中的keystone服务负责绝大部分authentication的工作，其中属于service组的用户（nova、glance）也是基于keystone认证的，所以不要认为service中的服务仅仅是一个服务而已。
+
+.. code::
+
+    # cat os_bootstrap
+    export SERVICE_TOKEN=admin
+    export SERVICE_ENDPOINT=http://192.168.77.50:35357/v2.0/
+
+    # cat admin_keystone
+    export OS_USERNAME=admin
+    export OS_PASSWORD=admin
+    export OS_TENANT_NAME=admin
+    export OS_AUTH_URL=http://localhost:35357/v2.0/
+    export PS1='[\u@\h \W(keystone)]\$ '
+
+初始化控制节点
+---------------
 
 在控制节点controller0，配置源、数据库、RabbitMQ、Memcached。
 
@@ -145,7 +163,7 @@ Heat节点：heat0
           Setting the root password ensures that nobody can log into the MariaDB
           root user without the proper authorisation.
 
-          # set root password
+          # 设置mysql的root密码
           Set root password? [Y/n] y
           New password:
           Re-enter new password:
@@ -197,12 +215,17 @@ Heat节点：heat0
     # 重置rabbitmq密码
     [root@controller0 ~]# rabbitmqctl change_password guest password 
 
+配置KeyStone
+-------------
+
 初始化Keystone
 ~~~~~~~~~~~~~~~
 
 .. code::
 
+    # 安装keystone
     [root@controller0 ~]# yum install -y openstack-keystone openstack-utils
+    # 添加数据库
     [root@controller0 ~]# mysql -u root -p 
     Enter password:
     Welcome to the MariaDB monitor.  Commands end with ; or \g.
@@ -224,41 +247,503 @@ Heat节点：heat0
     MariaDB [(none)]> exit
     Bye
 
+配置keystone
+~~~~~~~~~~~~~
+
+.. code::
+
     [root@controller0 ~]# vi /etc/keystone/keystone.conf
 
-    # line 13: 修改admin密码为admin
+    # line 13:  超级管理员密码为admin，此密码仅供设置keystone，在生产环境中应该禁用
     admin_token=admin
 
-    # line 633: 数据库连接信息
-    connection=mysql://keystone:password@10.0.0.30/keystone
+    # line 418: database
+    connection=mysql://keystone:password@localhost/keystone
 
     # line 1434: token格式
+    # 可能不要
     token_format=PKI
 
-    # line 1440: 证书信息
+    # line 1624: signing
     certfile=/etc/keystone/ssl/certs/signing_cert.pem
     keyfile=/etc/keystone/ssl/private/signing_key.pem
     ca_certs=/etc/keystone/ssl/certs/ca.pem
     ca_key=/etc/keystone/ssl/private/cakey.pem
     key_size=2048
     valid_days=3650
-    cert_subject=/C=CN/ST=Di/L=Jiang/O=InTheCloud/CN=controller0.inthecloud
+    cert_subject=/C=CN/ST=Di/L=Jiang/O=InTheCloud/CN=controller0.lofyer.org
 
+    # 设置证书，同步数据库
     [root@controller0 ~]# keystone-manage pki_setup --keystone-user keystone --keystone-group keystone 
     [root@controller0 ~]# keystone-manage db_sync 
+    # 删除日志文件并启动，否则可能因为log文件权限问题而报错
+    [root@controller0 ~]# rm /var/log/keystone/keystone.log 
     [root@controller0 ~]# systemctl start openstack-keystone 
     [root@controller0 ~]# systemctl enable openstack-keystone 
-    * remove the log file if keystone will not start.
-    [root@controller0 ~]# rm /var/log/keystone/keystone.log 
+
+添加用户、角色、服务与endpoint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+将超级管理员配置保存到文件，方便以后管理：
+
+.. code::
+    
+    [root@controller0 ~]# cat os_bootstrap
+    export SERVICE_TOKEN=admin
+    export SERVICE_ENDPOINT=http://192.168.77.50:35357/v2.0/ 
+    [root@controller0 ~]# source os_bootstrap
+
+添加admin及service的tenant组：
+
+.. code::
+
+    [root@controller0 ~]# keystone tenant-create --name admin --description "Admin Tenant" --enabled true
+      +-------------+----------------------------------+
+      |   Property  |              Value               |
+      +-------------+----------------------------------+
+      | description |           Admin Tenant           |
+      |   enabled   |               True               |
+      |      id     | c0c4e7b797bb41798202b55872fba074 |
+      |     name    |              admin               |
+      +-------------+----------------------------------+
+
+    [root@controller0 ~]# keystone tenant-create --name service --description "Service Tenant" --enabled true
+      +-------------+----------------------------------+
+      |   Property  |              Value               |
+      +-------------+----------------------------------+
+      | description |          Service Tenant          |
+      |   enabled   |               True               |
+      |      id     | 9acf83020ae34047b6f1e320c352ae44 |
+      |     name    |             service              |
+      +-------------+----------------------------------+
+
+    [root@controller0 ~]# keystone tenant-list 
+      +----------------------------------+---------+---------+
+      |                id                |   name  | enabled |
+      +----------------------------------+---------+---------+
+      | c0c4e7b797bb41798202b55872fba074 |  admin  |   True  |
+      | 9acf83020ae34047b6f1e320c352ae44 | service |   True  |
+      +----------------------------------+---------+---------+
+
+添加角色：
+
+.. code::
+
+    # 添加admin角色
+    [root@controller0 ~]# keystone role-create --name admin 
+      +----------+----------------------------------+
+      | Property |              Value               |
+      +----------+----------------------------------+
+      |    id    | 95c4b8fb8d97424eb52a4e8a00a357e7 |
+      |   name   |              admin               |
+      +----------+----------------------------------+
+
+    # 添加Member角色
+    [root@controller0 ~]# keystone role-create --name Member 
+      +----------+----------------------------------+
+      | Property |              Value               |
+      +----------+----------------------------------+
+      |    id    | aa8c08c0ff63422881c7662472b173e6 |
+      |   name   |              Member              |
+      +----------+----------------------------------+
+      
+    [root@controller0 ~]# keystone role-list
+      +----------------------------------+--------+
+      |                id                |  name  |
+      +----------------------------------+--------+
+      | aa8c08c0ff63422881c7662472b173e6 | Member |
+      | 95c4b8fb8d97424eb52a4e8a00a357e7 | admin  |
+      +----------------------------------+--------+
+
+添加用户并赋予角色：
+
+.. code::
+
+    # 添加admin用户至admin组，此处的密码仅仅是admin用户密码，与之前的admin_token可以不同
+    [root@controller0 ~]# keystone user-create --tenant admin --name admin --pass admin --enabled true
+      +----------+----------------------------------+
+      | Property |              Value               |
+      +----------+----------------------------------+
+      |  email   |                                  |
+      | enabled  |               True               |
+      |    id    | cf11b4425218431991f095c2f58578a0 |
+      |   name   |              admin               |
+      | tenantId | c0c4e7b797bb41798202b55872fba074 |
+      | username |              admin               |
+      +----------+----------------------------------+
+    # 赋予admin用户以admin角色
+    [root@controller0 ~]# keystone user-role-add --user admin --tenant admin --role admin
+
+    # 添加即将用到的glance、nova用户与服务
+    [root@controller0 ~]# keystone user-create --tenant service --name glance --pass servicepassword --enabled true 
+      +----------+----------------------------------+
+      | Property |              Value               |
+      +----------+----------------------------------+
+      |  email   |                                  |
+      | enabled  |               True               |
+      |    id    | 2dcaa8929688442dbc1df30bee8921eb |
+      |   name   |              glance              |
+      | tenantId | 9acf83020ae34047b6f1e320c352ae44 |
+      | username |              glance              |
+      +----------+----------------------------------+
+    [root@controller0 ~]# keystone user-role-add --user glance --tenant service --role admin
+
+    [root@controller0 ~]# keystone user-create --tenant service --name nova --pass servicepassword --enabled true
+      +----------+----------------------------------+
+      | Property |              Value               |
+      +----------+----------------------------------+
+      |  email   |                                  |
+      | enabled  |               True               |
+      |    id    | 566fe34145af4390b0aadb906131a9e8 |
+      |   name   |               nova               |
+      | tenantId | 9acf83020ae34047b6f1e320c352ae44 |
+      | username |               nova               |
+      +----------+----------------------------------+
+    [root@controller0 ~]# keystone user-role-add --user nova --tenant service --role admin
+
+添加服务：
+
+.. code::
+    
+    [root@controller0 ~]# keystone service-create --name=keystone --type=identity --description="Keystone Identity Service"
+      +-------------+----------------------------------+
+      |   Property  |              Value               |
+      +-------------+----------------------------------+
+      | description |    Keystone Identity Service     |
+      |   enabled   |               True               |
+      |      id     | b3ea5d31edce4c10b3b4c18359de0d09 |
+      |     name    |             keystone             |
+      |     type    |             identity             |
+      +-------------+----------------------------------+
+
+    [root@controller0 ~]# keystone service-create --name=glance --type=image --description="Glance Image Service" 
+      +-------------+----------------------------------+
+      |   Property  |              Value               |
+      +-------------+----------------------------------+
+      | description |       Glance Image Service       |
+      |   enabled   |               True               |
+      |      id     | 6afe8a067e2945fca023f85c7760ae53 |
+      |     name    |              glance              |
+      |     type    |              image               |
+      +-------------+----------------------------------+
+
+    [root@controller0 ~]# keystone service-create --name=nova --type=compute --description="Nova Compute Service"
+      +-------------+----------------------------------+
+      |   Property  |              Value               |
+      +-------------+----------------------------------+
+      | description |       Nova Compute Service       |
+      |   enabled   |               True               |
+      |      id     | 80edb3d3914644c4b0570fd8d8dabdaa |
+      |     name    |               nova               |
+      |     type    |             compute              |
+      +-------------+----------------------------------+
+
+    [root@controller0 ~]# keystone service-list
+      +----------------------------------+----------+----------+---------------------------+
+      |                id                |   name   |   type   |        description        |
+      +----------------------------------+----------+----------+---------------------------+
+      | 6afe8a067e2945fca023f85c7760ae53 |  glance  |  image   |    Glance Image Service   |
+      | b3ea5d31edce4c10b3b4c18359de0d09 | keystone | identity | Keystone Identity Service |
+      | 80edb3d3914644c4b0570fd8d8dabdaa |   nova   | compute  |    Nova Compute Service   |
+      +----------------------------------+----------+----------+---------------------------+
+
+添加endpoint：
+
+.. code::
+
+    [root@controller0 ~]# export my_host=192.168.77.50
+
+    # 添加keystone的endpoint
+    [root@controller0 ~]# keystone endpoint-create --region RegionOne \
+    > --service keystone \
+    > --publicurl "http://$my_host:\$(public_port)s/v2.0" \
+    > --internalurl "http://$my_host:\$(public_port)s/v2.0" \
+    > --adminurl "http://$my_host:\$(admin_port)s/v2.0"
+      +-------------+-------------------------------------------+
+      |   Property  |                   Value                   |
+      +-------------+-------------------------------------------+
+      |   adminurl  |  http://192.168.77.50:$(admin_port)s/v2.0 |
+      |      id     |      09c263fa9b3c4a58bcead0b2f5aba1a1     |
+      | internalurl | http://192.168.77.50:$(public_port)s/v2.0 |
+      |  publicurl  | http://192.168.77.50:$(public_port)s/v2.0 |
+      |    region   |                 RegionOne                 |
+      |  service_id |      b3ea5d31edce4c10b3b4c18359de0d09     |
+      +-------------+-------------------------------------------+
+
+    # 添加glance的endpoint
+    [root@controller0 ~]# keystone endpoint-create --region RegionOne \
+    > --service glance \
+    > --publicurl "http://$my_host:9292/v1" \
+    > --internalurl "http://$my_host:9292/v1" \
+    > --adminurl "http://$my_host:9292/v1" 
+      +-------------+----------------------------------+
+      |   Property  |              Value               |
+      +-------------+----------------------------------+
+      |   adminurl  |   http://192.168.77.50:9292/v1   |
+      |      id     | 975ff2836b264e299c669372076666ee |
+      | internalurl |   http://192.168.77.50:9292/v1   |
+      |  publicurl  |   http://192.168.77.50:9292/v1   |
+      |    region   |            RegionOne             |
+      |  service_id | 6afe8a067e2945fca023f85c7760ae53 |
+      +-------------+----------------------------------+
+
+    # 添加nova的endpoint
+    keystone endpoint-create --region RegionOne \
+    > --service nova \
+    > --publicurl "http://$my_host:\$(compute_port)s/v2/\$(tenant_id)s" \
+    > --internalurl "http://$my_host:\$(compute_port)s/v2/\$(tenant_id)s" \
+    > --adminurl "http://$my_host:\$(compute_port)s/v2/\$(tenant_id)s" 
+      +-------------+--------------------------------------------------------+
+      |   Property  |                         Value                          |
+      +-------------+--------------------------------------------------------+
+      |   adminurl  | http://192.168.77.50:$(compute_port)s/v2/$(tenant_id)s |
+      |      id     |            194b7ddd24c94a0ebf79cd7275478dfc            |
+      | internalurl | http://192.168.77.50:$(compute_port)s/v2/$(tenant_id)s |
+      |  publicurl  | http://192.168.77.50:$(compute_port)s/v2/$(tenant_id)s |
+      |    region   |                       RegionOne                        |
+      |  service_id |            80edb3d3914644c4b0570fd8d8dabdaa            |
+      +-------------+--------------------------------------------------------+
+
+    [root@controller0 ~]# keystone endpoint-list 
+      +----------------------------------+-----------+--------------------------------------------------------+--------------------------------------------------------+--------------------------------------------------------+----------------------------------+
+      |                id                |   region  |                       publicurl                        |                      internalurl                       |                        adminurl                        |            service_id            |
+      +----------------------------------+-----------+--------------------------------------------------------+--------------------------------------------------------+--------------------------------------------------------+----------------------------------+
+      | 09c263fa9b3c4a58bcead0b2f5aba1a1 | RegionOne |       http://192.168.77.50:$(public_port)s/v2.0        |       http://192.168.77.50:$(public_port)s/v2.0        |        http://192.168.77.50:$(admin_port)s/v2.0        | b3ea5d31edce4c10b3b4c18359de0d09 |
+      | 194b7ddd24c94a0ebf79cd7275478dfc | RegionOne | http://192.168.77.50:$(compute_port)s/v2/$(tenant_id)s | http://192.168.77.50:$(compute_port)s/v2/$(tenant_id)s | http://192.168.77.50:$(compute_port)s/v2/$(tenant_id)s | 80edb3d3914644c4b0570fd8d8dabdaa |
+      | 975ff2836b264e299c669372076666ee | RegionOne |              http://192.168.77.50:9292/v1              |              http://192.168.77.50:9292/v1              |              http://192.168.77.50:9292/v1              | 6afe8a067e2945fca023f85c7760ae53 |
+      +----------------------------------+-----------+--------------------------------------------------------+--------------------------------------------------------+--------------------------------------------------------+----------------------------------+
 
 配置Glance
 -----------
 
+初始化glance
+~~~~~~~~~~~~~
+
+.. code::
+
+    # 安装glance
+    [root@controller0 ~]# yum install -y openstack-glance
+    
+    # 初始化数据库
+    [root@controller0 ~]# mysql -u root -p 
+    Enter password:
+    Welcome to the MariaDB monitor.  Commands end with ; or \g.
+    Your MariaDB connection id is 16
+    Server version: 5.5.40-MariaDB-wsrep MariaDB Server, wsrep_25.11.r4026
+
+    Copyright (c) 2000, 2014, Oracle, Monty Program Ab and others.
+
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+    MariaDB [(none)]> create database glance;
+    Query OK, 1 row affected (0.00 sec)
+    MariaDB [(none)]> grant all privileges on glance.* to glance@'localhost' identified by 'password';
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> grant all privileges on glance.* to glance@'%' identified by 'password';
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> flush privileges;
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> exit
+    Bye
+
+配置glance
+~~~~~~~~~~~
+
+.. code::
+
+    [root@controller0 ~]# vi /etc/glance/glance-registry.conf
+
+    # line 165: database
+    connection=mysql://glance:password@localhost/glance
+
+    # line 245: 添加keystone认证信息
+    [keystone_authtoken]
+    identity_uri=http://192.168.77.50:35357
+    admin_tenant_name=service
+    admin_user=glance
+    admin_password=servicepassword
+
+    # line 259: paste_deploy
+    flavor=keystone
+
+    [root@controller0 ~]# vi /etc/glance/glance-api.conf
+
+    # line 240: 修改rabbit用户密码
+    rabbit_userid=guest
+    rabbit_password=password
+    # line 339: database
+    connection=mysql://glance:password@localhost/glance
+    # line 433: 添加keystone认证信息
+    [keystone_authtoken]
+    identity_uri=http://192.168.77.50:35357
+    admin_tenant_name=service
+    admin_user=glance
+    admin_password=servicepassword
+    revocation_cache_time=10
+    # line 448: paste_deploy
+    flavor=keystone
+
+    [root@controller0 ~]# glance-manage db_sync 
+
+    # 删除日志文件并启动，否则可能因为log文件权限问题而报错
+    [root@controller0 ~]# rm /var/log/glance/api.log
+    [root@controller0 ~]# for service in api registry; do
+    systemctl start openstack-glance-$service
+    systemctl enable openstack-glance-$service
+    done
+
 配置Nova
 ---------
 
+初始化nova
+~~~~~~~~~~~
+
+.. code::
+    
+    [root@controller0 ~]# yum install -y openstack-nova
+    [root@controller0 ~]# mysql -u root -p 
+    Enter password:
+    Welcome to the MariaDB monitor.  Commands end with ; or \g.
+    Your MariaDB connection id is 18
+    Server version: 5.5.40-MariaDB-wsrep MariaDB Server, wsrep_25.11.r4026
+
+    Copyright (c) 2000, 2014, Oracle, Monty Program Ab and others.
+
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+    MariaDB [(none)]> create database nova;
+    Query OK, 1 row affected (0.00 sec)
+    MariaDB [(none)]> grant all privileges on nova.* to nova@'localhost' identified by 'password';
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> grant all privileges on nova.* to nova@'%' identified by 'password';
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> flush privileges;
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> exit
+    Bye
+
+配置nova
+~~~~~~~~~
+
+基本配置：
+
+.. code::
+
+    [root@controller0 ~]# mv /etc/nova/nova.conf /etc/nova/nova.conf.org 
+    [root@controller0 ~]# vi /etc/nova/nova.conf
+    # 新建
+    [DEFAULT]
+    # RabbitMQ服务信息
+    rabbit_host=192.168.77.50
+    rabbit_port=5672
+    rabbit_userid=guest
+    rabbit_password=password
+    notification_driver=nova.openstack.common.notifier.rpc_notifier
+    rpc_backend=rabbit
+    # 本计算节点IP
+    my_ip=192.168.77.50
+    # 是否支持ipv6
+    use_ipv6=false
+    state_path=/var/lib/nova
+    enabled_apis=ec2,osapi_compute,metadata
+    osapi_compute_listen=0.0.0.0
+    osapi_compute_listen_port=8774
+    rootwrap_config=/etc/nova/rootwrap.conf
+    api_paste_config=api-paste.ini
+    auth_strategy=keystone
+    # Glance服务信息
+    glance_host=192.168.77.50
+    glance_port=9292
+    glance_protocol=http
+    lock_path=/var/lib/nova/tmp
+    log_dir=/var/log/nova
+    # Memcached服务信息
+    memcached_servers=192.168.77.50:11211
+    scheduler_driver=nova.scheduler.filter_scheduler.FilterScheduler
+    [database]
+    # connection info for MariaDB
+    connection=mysql://nova:password@localhost/nova
+    [keystone_authtoken]
+    # Keystone server's hostname or IP
+    auth_host=192.168.77.50
+    auth_port=35357
+    auth_protocol=http
+    auth_version=v2.0
+    admin_user=nova
+    # Nova user's password added in Keystone
+    admin_password=servicepassword
+    admin_tenant_name=service
+    signing_dir=/var/lib/nova/keystone-signing
+    [root@controller0 ~]# chmod 640 /etc/nova/nova.conf 
+    [root@controller0 ~]# chgrp nova /etc/nova/nova.conf 
+
+接下来配置network服务，虽然nova-network并不是官方推荐的配置，但是它配置较为简单，所以在此仍然写出，可待后来 :ref:`neutron` 时再修改或则直接略过（注意服务以及配置文件）：
+
+.. code::
+
+    [root@controller0 ~]# vi /etc/nova/nova.conf
+    # 在DEFAULT段中添加如下内容
+    # nova-network
+    network_driver=nova.network.linux_net
+    libvirt_vif_driver=nova.virt.libvirt.vif.LibvirtGenericVIFDriver
+    linuxnet_interface_driver=nova.network.linux_net.LinuxBridgeInterfaceDriver
+    firewall_driver=nova.virt.libvirt.firewall.IptablesFirewallDriver
+    network_api_class=nova.network.api.API
+    security_group_api=nova
+    network_manager=nova.network.manager.FlatDHCPManager
+    network_size=254
+    allow_same_net_traffic=False
+    multi_host=True
+    send_arp_for_ha=True
+    share_dhcp_address=True
+    force_dhcp_release=True
+    # 指定public网络接口
+    public_interface=eno16777736
+    # 任意桥接接口
+    flat_network_bridge=br100
+    # 创建dummy接口
+    flat_interface=dummy0
+
+    # 添加用于flat-DHCP的虚拟接口
+    [root@controller0 ~]# cat > /etc/sysconfig/network-scripts/ifcfg-dummy0 <<EOF
+    DEVICE=dummy0
+    BOOTPROTO=none
+    ONBOOT=yes
+    TYPE=Ethernet
+    NM_CONTROLLED=no
+    EOF
+
+    # 加载dummy模块，用于虚拟机内网流量路由
+    [root@controller0 ~]# echo "alias dummy0 dummy" > /etc/modprobe.d/dummy.conf 
+    [root@controller0 ~]# ifconfig dummy0 up
+
+    # 启用服务，如果没用使用nova-network，请忽略数组中的network
+    [root@controller0 ~]# nova-manage db sync 
+    [root@controller0 ~]# for service in api objectstore conductor scheduler cert consoleauth compute network; do
+    systemctl start openstack-nova-$service
+    systemctl enable openstack-nova-$service
+    done
+
 添加镜像
 ~~~~~~~~~
+
+至此我们可以使用keystone来进行正常的认证了。
+
+.. code::
+
+    [root@controller0 ~]# vi ~/admin_keystone
+    export OS_USERNAME=admin
+    export OS_PASSWORD=admin
+    export OS_TENANT_NAME=admin
+    export OS_AUTH_URL=http://192.168.77.50:35357/v2.0/
+    export PS1='[\u@\h \W(keystone)]\$ '
+
+    [root@controller0 ~]# source ~/admin_keystone
+    [root@controller0 ~(keystone)]# glance image-list
+    +----+------+-------------+------------------+------+--------+
+    | ID | Name | Disk Format | Container Format | Size | Status |
+    +----+------+-------------+------------------+------+--------+
+    +----+------+-------------+------------------+------+--------+
 
 配置Nova Networking（可选）
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -271,6 +756,8 @@ Heat节点：heat0
 
 添加计算节点
 ------------
+
+.. _neutron:
 
 配置Neutron（推荐）
 -------------------

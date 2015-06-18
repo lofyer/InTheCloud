@@ -902,6 +902,25 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
 
 **示例：**
 
+使用virt-install安装系统
+--------------------------
+
+**示例：**
+
+.. code::
+
+    # virt-install \
+    --name centos7 \
+    --ram 2048 \
+    --disk path=/var/kvm/images/centos7.img,format=qcow2 \
+    --vcpus 2 \
+    --os-type linux \
+    --os-variant rhel7 \
+    --graphics none \
+    --console pty,target_type=serial \
+    --location 'http://mirrors.aliyun.com/centos/7/os/x86_64/' \
+    --extra-args 'console=ttyS0,115200n8 serial'
+
 虚拟机文件系统扩容
 -------------------
 
