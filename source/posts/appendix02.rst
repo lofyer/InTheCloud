@@ -216,11 +216,11 @@ VMware vSphere
 
 Vultr
 
-DeltaCloud示例：
-----------------
+DeltaCloud示例
+--------------
 
-Libcloud示例：
-----------------
+Libcloud示例
+--------------
 
 ----------------
 SDN学习/mininet
