@@ -226,9 +226,12 @@ Libcloud示例
 SDN学习/mininet
 ----------------
 
-SDN广泛用来内容加速以及虚拟机网络。
+SDN广泛用在内容加速、虚拟网络、监控等领域。
 
-现代SDN来自OpenFlow，关于SDN有一个个人认为最佳的学习工具： `mininet <http://mininet.org>`_ 。
+关于SDN有许多学习工具： `mininet <http://mininet.org>`_ 、 `POX <https://github.com/noxrepo/pox>`_  、 `Netwrok Heresy Blog <http://networkheresy.com/>`_ 。
+
+动手创建一个控制器
+~~~~~~~~~~~~~~~~~~~
 
 
 
