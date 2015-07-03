@@ -230,8 +230,4 @@ SDN广泛用在内容加速、虚拟网络、监控等领域。
 
 关于SDN有许多学习工具： `mininet <http://mininet.org>`_ 、 `POX <https://github.com/noxrepo/pox>`_  、 `Netwrok Heresy Blog <http://networkheresy.com/>`_ 。
 
-动手创建一个控制器
-~~~~~~~~~~~~~~~~~~~
-
-
-
+学习视频： `Coursera SDN <https://www.coursera.org/course/sdn1>`_ 。

@@ -576,7 +576,8 @@ Heat节点：heat0
     connection=mysql://glance:password@localhost/glance
     # line 433: 添加keystone认证信息
     [keystone_authtoken]
-    identity_uri=http://192.168.77.50:35357
+    auth_uri = http://192.168.77.50:35357/v2.0
+    identity_uri=http://192.168.77.50:5000
     admin_tenant_name=service
     admin_user=glance
     admin_password=servicepassword
@@ -666,10 +667,8 @@ Heat节点：heat0
     connection=mysql://nova:password@localhost/nova
     [keystone_authtoken]
     # Keystone server's hostname or IP
-    auth_host=192.168.77.50
-    auth_port=35357
-    auth_protocol=http
-    auth_version=v2.0
+    auth_uri = http://192.168.77.50:35357/v2.0
+    identity_uri=http://192.168.77.50:5000
     admin_user=nova
     # Nova user's password added in Keystone
     admin_password=servicepassword
@@ -988,11 +987,8 @@ Heat节点：heat0
     [database]
     connection=mysql://nova:password@192.168.77.50/nova
     [keystone_authtoken]
-    # Keystone server's hostname or IP
-    auth_host=192.168.77.50
-    auth_port=35357
-    auth_protocol=http
-    auth_version=v2.0
+    auth_uri = http://192.168.77.50:35357/v2.0
+    identity_uri=http://192.168.77.50:5000
     admin_user=nova
     # Nova user's password added in Keystone
     admin_password=servicepassword
@@ -1147,6 +1143,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
 
     # 配置neutron
     [root@controller0 ~(keystone)]# vi /etc/neutron/neutron.conf
+    # [DEFAULT]
     # line 62: 后端插件
     core_plugin=ml2
     # line 69: 服务插件
@@ -1165,6 +1162,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     nova_admin_password=servicepassword
     # line 360: keystone认证端
     nova_admin_auth_url=http://192.168.77.50:35357/v2.0
+    # [oslo_messaging_rabbit]
     # line 445: rabbitMQ服务器
     rabbit_host=192.168.77.50
     # line 449: rabbitMQ端口
@@ -1176,11 +1174,10 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     rpc_backend=rabbit
     # line 551: 控制信息交换格式
     control_exchange=neutron
-    # line 688: keystone认证信息
+    # line 688: keystone认证信息，由于auth_uri以后会被identity_uri代替，并且auth_host等信息也不必要了，但为兼容性起见，此处我给予保留
     [keystone_authtoken]
-    auth_host = 192.168.77.50
-    auth_port = 35357
-    auth_protocol = http
+    auth_uri = http://192.168.77.50:35357/v2.0
+    identity_uri=http://192.168.77.50:5000
     admin_tenant_name = service
     admin_user = neutron
     admin_password = servicepassword
@@ -1224,6 +1221,15 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     # neutron-network
     network_api_class=nova.network.neutronv2.api.API
     security_group_api=neutron
+
+    # 在末尾添加neutron用户认证信息
+    [neutron]
+    url = http://192.168.77.50:9696
+    auth_strategy = keystone
+    admin_auth_url = http://192.168.77.50:35357/v2.0
+    admin_tenant_name = service
+    admin_username = neutron
+    admin_password = servicepassword
 
     [root@controller0 ~(keystone)]# ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini 
     [root@controller0 ~(keystone)]# neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugin.ini upgrade head 
@@ -1275,9 +1281,8 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     control_exchange=neutron
     # line 687: keystone认证信息
     [keystone_authtoken]
-    auth_host = 192.168.77.50
-    auth_port = 35357
-    auth_protocol = http
+    auth_uri = http://192.168.77.50:35357/v2.0
+    identity_uri=http://192.168.77.50:5000
     admin_tenant_name = service
     admin_user = neutron
     admin_password = servicepassword
@@ -1375,9 +1380,8 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     control_exchange=neutron
     # line 687: keystone认证信息
     [keystone_authtoken]
-    auth_host = 192.168.77.50
-    auth_port = 35357
-    auth_protocol = http
+    auth_uri = http://192.168.77.50:35357/v2.0
+    identity_uri=http://192.168.77.50:5000
     admin_tenant_name = service
     admin_user = neutron
     admin_password = servicepassword
@@ -1430,6 +1434,198 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     [root@compute0 ~]# systemctl restart openstack-nova-metadata-api 
     [root@compute0 ~]# systemctl start neutron-openvswitch-agent 
     [root@compute0 ~]# systemctl enable neutron-openvswitch-agent 
+
+使用Neutron
+~~~~~~~~~~~~
+
+.. code::
+
+    +-------------+                    +----+----+
+    | Name Server |                    | Gateway |
+    +------+------+                    +----+----+
+           |192.168.77.2                    |192.168.77.2
+           |                                |
+           +--------------+-----------------+------------------------+
+           |              |                 |                        |
+           |              |                 |                        |192.168.77.200-192.168.77.254
+       eth0|192.168.77.50 |    192.168.77.50| eth0          +--------+-------+
+  +--------+---------+    |     +-----------+----------+    | Virtual Router |
+  | [ controller0 ]  |    |     |   [   network0   ]   |    +--------+-------+
+  |     Keystone     |    |     |       DHCP Agent     |       192.168.100.1
+  |      Glance      |    | eth2|       L3 Agent       |eth1         |            192.168.100.0/24
+  |     Nova API     |    |     |       L2 Agent       |             |           +-----------------+
+  |  Neutron Server  |    |     |    Metadata Agent    |             |       +---| Virtual Machine |
+  +------------------+    |     +----------------------+             |       |   +-----------------+
+                          |                                          |       |   +-----------------+
+                          |     +----------------------+             +-------+---| Virtual Machine |
+                          | eth0|     [ compute0  ]    |eth1                 |   +-----------------+
+                          +-----|     Nova Compute     |                     |   +-----------------+
+                       10.0.0.51|       L2 Agent       |                     |---| Virtual Machine |
+                                +----------------------+                         +-----------------+
+
+    其中，controller0、compute0都有两个物理网口，network0有三个物理网口。
+
+修改控制节点配置：
+
+.. code::
+
+    [root@controller0 ~(keystone)]# vi /etc/neutron/plugins/ml2/ml2_conf.ini
+    # line 64
+    [ml2_type_vlan]
+    network_vlan_ranges = physnet1:1000:2999
+    # 末尾添加
+    [ovs]
+    tenant_network_type = vlan
+    bridge_mappings = physnet1:br-eth1
+    [root@controller0 ~(keystone)]# systemctl restart neutron-server 
+
+在网络节点和计算节点同时添加eth1作内网：
+
+.. code::
+
+    # 添加一个桥
+    [root@network0 ~]# ovs-vsctl add-br br-eth1
+    # 将eno33554984网口附加到桥，即对应eth1
+    [root@network0 ~]# ovs-vsctl add-port br-eth1 eno33554984
+    [root@network0 ~]# vi /etc/neutron/plugins/ml2/ml2_conf.ini
+    # line 64
+    [ml2_type_vlan]
+    network_vlan_ranges = physnet1:1000:2999
+    # 末尾添加
+    [ovs]
+    tenant_network_type = vlan
+    bridge_mappings = physnet1:br-eth1
+    [root@network0 ~]# systemctl restart neutron-openvswitch-agent 
+
+在网络节点添加eth2作外网：
+
+.. code::
+
+    [root@network0 ~]# ovs-vsctl add-br br-ext 
+    # eno50332208对应eth2
+    [root@network0 ~]# ovs-vsctl add-port br-ext eno50332208
+    [root@network0 ~]# vi /etc/neutron/l3_agent.ini
+    # line 63
+    external_network_bridge = br-ext
+    [root@network0 ~]# systemctl restart neutron-l3-agent 
+
+在任意节点修改（neutron的配置属于集群全局配置，此处在控制节点修改，其他节点也可）：
+
+.. code::
+
+    # create a virtual router
+    [root@controller0 ~(keystone)]# neutron router-create router01
+    Created a new router:
+    +-----------------------+--------------------------------------+
+    | Field                 | Value                                |
+    +-----------------------+--------------------------------------+
+    | admin_state_up        | True                                 |
+    | distributed           | False                                |
+    | external_gateway_info |                                      |
+    | ha                    | False                                |
+    | id                    | 8bf0184c-1cd8-4993-b3e0-7be94aaf2757 |
+    | name                  | router01                             |
+    | routes                |                                      |
+    | status                | ACTIVE                               |
+    | tenant_id             | c0c4e7b797bb41798202b55872fba074     |
+    +-----------------------+--------------------------------------+
+
+    [root@controller0 ~(keystone)]# Router_ID=`neutron router-list | grep router01 | awk '{ print $2 }'` 
+
+    # 创建内网
+    [root@controller0 ~(keystone)]# neutron net-create int_net 
+    Created a new network:
+    +---------------------------+--------------------------------------+
+    | Field                     | Value                                |
+    +---------------------------+--------------------------------------+
+    | admin_state_up            | True                                 |
+    | id                        | 532e391d-562d-4499-8dee-48ca31345466 |
+    | mtu                       | 0                                    |
+    | name                      | int_net                              |
+    | provider:network_type     | vlan                                 |
+    | provider:physical_network | physnet1                             |
+    | provider:segmentation_id  | 1000                                 |
+    | router:external           | False                                |
+    | shared                    | False                                |
+    | status                    | ACTIVE                               |
+    | subnets                   |                                      |
+    | tenant_id                 | c0c4e7b797bb41798202b55872fba074     |
+    +---------------------------+--------------------------------------+
+
+    # 创建内网子网
+    [root@controller0 ~(keystone)]# neutron subnet-create --gateway 192.168.100.1 --dns-nameserver 192.168.77.2 int_net 192.168.100.0/24
+    Created a new subnet:
+    +-------------------+------------------------------------------------------+
+    | Field             | Value                                                |
+    +-------------------+------------------------------------------------------+
+    | allocation_pools  | {"start": "192.168.100.2", "end": "192.168.100.254"} |
+    | cidr              | 192.168.100.0/24                                     |
+    | dns_nameservers   | 192.168.77.2                                         |
+    | enable_dhcp       | True                                                 |
+    | gateway_ip        | 192.168.100.1                                        |
+    | host_routes       |                                                      |
+    | id                | c08dcadf-f632-44b7-9a10-8a3a89c86853                 |
+    | ip_version        | 4                                                    |
+    | ipv6_address_mode |                                                      |
+    | ipv6_ra_mode      |                                                      |
+    | name              |                                                      |
+    | network_id        | 532e391d-562d-4499-8dee-48ca31345466                 |
+    | subnetpool_id     |                                                      |
+    | tenant_id         | c0c4e7b797bb41798202b55872fba074                     |
+    +-------------------+------------------------------------------------------+
+    [root@controller0 ~(keystone)]# Int_Subnet_ID=`neutron net-list | grep int_net | awk '{ print $6 }'`
+
+    # 将内网实例附加到路由
+    [root@controller0 ~(keystone)]# neutron router-interface-add $Router_ID $Int_Subnet_ID 
+    Added interface a2e9bedc-0505-45da-8f87-4a82928a6206 to router 8bf0184c-1cd8-4993-b3e0-7be94aaf2757.
+
+    # 创建外网
+    [root@controller0 ~(keystone)]# neutron net-create ext_net --router:external
+    Created a new network:
+    +---------------------------+--------------------------------------+
+    | Field                     | Value                                |
+    +---------------------------+--------------------------------------+
+    | admin_state_up            | True                                 |
+    | id                        | e041481d-f8b8-42a7-b87b-3d346167ef21 |
+    | mtu                       | 0                                    |
+    | name                      | ext_net                              |
+    | provider:network_type     | vlan                                 |
+    | provider:physical_network | physnet1                             |
+    | provider:segmentation_id  | 1001                                 |
+    | router:external           | True                                 |
+    | shared                    | False                                |
+    | status                    | ACTIVE                               |
+    | subnets                   |                                      |
+    | tenant_id                 | c0c4e7b797bb41798202b55872fba074     |
+    +---------------------------+--------------------------------------+
+
+    # 创建外网子网
+    [root@controller0 ~(keystone)]# neutron subnet-create ext_net --allocation-pool start=192.168.77.200,end=192.168.77.254 --gateway 192.168.77.2 --dns-nameserver 192.168.77.2 192.168.77.0/24 --disable-dhcp 
+    Created a new subnet:
+    +-------------------+------------------------------------------------------+
+    | Field             | Value                                                |
+    +-------------------+------------------------------------------------------+
+    | allocation_pools  | {"start": "192.168.77.200", "end": "192.168.77.254"} |
+    | cidr              | 192.168.77.0/24                                      |
+    | dns_nameservers   | 192.168.77.2                                         |
+    | enable_dhcp       | False                                                |
+    | gateway_ip        | 192.168.77.2                                         |
+    | host_routes       |                                                      |
+    | id                | 98f97e64-94d8-4743-b8a1-a715f2c07e08                 |
+    | ip_version        | 4                                                    |
+    | ipv6_address_mode |                                                      |
+    | ipv6_ra_mode      |                                                      |
+    | name              |                                                      |
+    | network_id        | e041481d-f8b8-42a7-b87b-3d346167ef21                 |
+    | subnetpool_id     |                                                      |
+    | tenant_id         | c0c4e7b797bb41798202b55872fba074                     |
+    +-------------------+------------------------------------------------------+
+
+    # 将外网实例附加到路由
+    [root@controller0 ~(keystone)]# Ext_Net_ID=`neutron net-list | grep ext_net | awk '{ print $2 }'` 
+    [root@controller0 ~(keystone)]# neutron router-gateway-set $Router_ID $Ext_Net_ID 
+    Set gateway for router 8bf0184c-1cd8-4993-b3e0-7be94aaf2757
+
 
 配置Cinder
 -----------
@@ -1589,7 +1785,11 @@ Neutron
 OpenStack常见问题
 ------------------
 
-Q：管理界面Swift不能删除目录。
+Q：如何校验密码是否正确？
+
+A：keystone --os-username=neutron --os-password=servicepassword --os-auth-url=http://localhost:35357/v2.0 token-get
+
+Q：管理界面Swift不能删除目录？
 
 A：使用命令 swift delete public_container aaa/ 进行删除。
 

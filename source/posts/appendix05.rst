@@ -67,10 +67,25 @@ HAProxy
 常用运维工具
 ------------
 
+Monit
+-----
+
+小型监控工具，不推荐使用。
+
+Munin
+-----
+
+轻量级的监控工具。
+
+Cacti
+-----
+
+与Zabbix在某些方面很像。
+
 Ganglia
 --------
 
-一款专门针对虚拟机的监视工具。
+比较专业的监控工具，并有一款专门针对虚拟机的应用。
 http://blog.sflow.com/2012/01/using-ganglia-to-monitor-virtual.html
 
 zabbix
