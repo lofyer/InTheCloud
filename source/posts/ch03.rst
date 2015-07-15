@@ -895,6 +895,11 @@ ovirt-shell则是全部使用Restful API写成的shell，通过它可以完成�
         
         # saslpasswd2 -a libvirt root
 
+第三方界面
+-----------
+
+oVirt现在自带的gwt界面对浏览器和客户的要求较高，有一些人由于这个原因抛弃它使用第三方的web界面，参考 `oVirt Dash <https://github.com/jennykang/oVirtDash>`_ 、 `ovirt sample-portals <https://gerrit.ovirt.org/gitweb?p=samples-portals.git;a=shortlog;h=HEAD>`_ 。
+
 主机策略
 ---------
 
