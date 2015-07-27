@@ -102,9 +102,9 @@ CentOS 7以及Ubuntu等发行版部署OpenStack的过程基本一致，在此以
 
 网络节点：network0(192.168.77.30)
 
-存储节点：stor0，stor1，swift0
+存储节点：cinder0(192.168.77.60)，swift0(192.168.77.70)
 
-Heat节点：heat0
+Heat节点：heat0(192.168.77.80)
 
 每台机器首先将selinux设置为permissive或者disable、打开ssh服务、禁用防火墙（可安装iptables-services服务，关闭firewalld，iptables -F后再service iptables save）、关闭NetworkManager服务、打开network服务并配置IP。
 
@@ -923,7 +923,7 @@ Heat节点：heat0
     [root@controller0 ~(keystone)]# yum --enablerepo=openstack-juno,epel -y install openstack-dashboard openstack-nova-novncproxy
 
     # 配置vnc
-    [root@dlp ~(keystone)]# vi /etc/nova/nova.conf
+    [root@controller0 ~(keystone)]# vi /etc/nova/nova.conf
     # 于DEFAULT段中添加
     vnc_enabled=true
     novncproxy_host=0.0.0.0
@@ -934,18 +934,18 @@ Heat节点：heat0
     vncserver_proxyclient_address=192.168.77.50
 
     # 使能dashboard
-    [root@dlp ~(keystone)]# vi /etc/openstack-dashboard/local_settings
+    [root@controller0 ~(keystone)]# vi /etc/openstack-dashboard/local_settings
     # line 15: 允许所有人访问
     ALLOWED_HOSTS = ['*']
     # line 134:
     OPENSTACK_HOST = "192.168.77.50"
 
     # 启用服务
-    [root@dlp ~(keystone)]# systemctl start openstack-nova-novncproxy 
-    [root@dlp ~(keystone)]# systemctl restart openstack-nova-compute 
-    [root@dlp ~(keystone)]# systemctl restart httpd 
-    [root@dlp ~(keystone)]# systemctl enable openstack-nova-novncproxy 
-    [root@dlp ~(keystone)]# systemctl enable httpd
+    [root@controller0 ~(keystone)]# systemctl start openstack-nova-novncproxy 
+    [root@controller0 ~(keystone)]# systemctl restart openstack-nova-compute 
+    [root@controller0 ~(keystone)]# systemctl restart httpd 
+    [root@controller0 ~(keystone)]# systemctl enable openstack-nova-novncproxy 
+    [root@controller0 ~(keystone)]# systemctl enable httpd
 
 
 添加计算节点
@@ -1448,7 +1448,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
            +--------------+-----------------+------------------------+
            |              |                 |                        |
            |              |                 |                        |192.168.77.200-192.168.77.254
-       eth0|192.168.77.50 |    192.168.77.50| eth0          +--------+-------+
+       eth0|192.168.77.50 |    192.168.77.30| eth0          +--------+-------+
   +--------+---------+    |     +-----------+----------+    | Virtual Router |
   | [ controller0 ]  |    |     |   [   network0   ]   |    +--------+-------+
   |     Keystone     |    |     |       DHCP Agent     |       192.168.100.1
@@ -1460,7 +1460,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
                           |     +----------------------+             +-------+---| Virtual Machine |
                           | eth0|     [ compute0  ]    |eth1                 |   +-----------------+
                           +-----|     Nova Compute     |                     |   +-----------------+
-                       10.0.0.51|       L2 Agent       |                     |---| Virtual Machine |
+                   192.168.77.51|       L2 Agent       |                     |---| Virtual Machine |
                                 +----------------------+                         +-----------------+
 
     其中，controller0、compute0都有两个物理网口，network0有三个物理网口。
@@ -1626,9 +1626,698 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     [root@controller0 ~(keystone)]# neutron router-gateway-set $Router_ID $Ext_Net_ID 
     Set gateway for router 8bf0184c-1cd8-4993-b3e0-7be94aaf2757
 
+    # 创建并启动虚拟机
+    [root@controller0 ~(keystone)]# Int_Net_ID=`neutron net-list | grep int_net | awk '{ print $2 }'` 
+    [root@controller0 ~(keystone)]# nova image-list 
+    +--------------------------------------+---------+--------+--------+
+    | ID                                   | Name    | Status | Server |
+    +--------------------------------------+---------+--------+--------+
+    | 4a663fce-97eb-42d3-93d6-415e477bc0a4 | CentOS7 | ACTIVE |        |
+    +--------------------------------------+---------+--------+--------+
+
+    [root@controller0 ~(keystone)]# nova boot --flavor 2 --image CentOS7 --security_group default --nic net-id=$Int_Net_ID CentOS_70 
+    [root@controller0 ~(keystone)]# nova list 
+    +-----------+-----------+--------+------------+-------------+-----------------------+
+    | ID        | Name      | Status | Task State | Power State | Networks              |
+    +-----------+-----------+--------+------------+-------------+-----------------------+
+    | 33bb9427- | CentOS_70 | ACTIVE | -          | Running     | int_net=192.168.100.2 |
+    +-----------+-----------+--------+------------+-------------+-----------------------+
+
+    # 添加浮动IP
+    [root@controller0 ~(keystone)]# neutron floatingip-create ext_net 
+    Created a new floatingip:
+    +---------------------+--------------------------------------+
+    | Field               | Value                                |
+    +---------------------+--------------------------------------+
+    | fixed_ip_address    |                                      |
+    | floating_ip_address | 10.0.0.201                           |
+    | floating_network_id | bd216cab-c07b-4475-90ef-e9ad402bd57b |
+    | id                  | da8eef0d-5bc8-488e-8fd4-0c6df1f5922a |
+    | port_id             |                                      |
+    | router_id           |                                      |
+    | status              | DOWN                                 |
+    | tenant_id           | e8f6ac69de5f46afa189fcefd99c8a1a     |
+    +---------------------+--------------------------------------+
+
+    [root@controller0 ~(keystone)]# Device_ID=`nova list | grep CentOS_70 | awk '{ print $2 }'` 
+    [root@controller0 ~(keystone)]# Port_ID=`neutron port-list -- --device_id $Device_ID | grep 192.168.100.2 | awk '{ print $2 }'` 
+    [root@controller0 ~(keystone)]# Floating_ID=`neutron floatingip-list | grep 10.0.0.201 | awk '{ print $2 }'` 
+    [root@controller0 ~(keystone)]# neutron floatingip-associate $Floating_ID $Port_ID 
+    Associated floating IP da8eef0d-5bc8-488e-8fd4-0c6df1f5922a
+    # confirm settings
+    [root@controller0 ~(keystone)]# neutron floatingip-show $Floating_ID 
+    +---------------------+--------------------------------------+
+    | Field               | Value                                |
+    +---------------------+--------------------------------------+
+    | fixed_ip_address    | 192.168.100.2                        |
+    | floating_ip_address | 10.0.0.201                           |
+    | floating_network_id | bd216cab-c07b-4475-90ef-e9ad402bd57b |
+    | id                  | da8eef0d-5bc8-488e-8fd4-0c6df1f5922a |
+    | port_id             | d4f17f91-c4e9-45ec-af2d-223907e891ea |
+    | router_id           | a0d08cb3-bf96-4872-ab95-b24a697b080a |
+    | status              | ACTIVE                               |
+    | tenant_id           | e8f6ac69de5f46afa189fcefd99c8a1a     |
+    +---------------------+--------------------------------------+
+
+    # 添加安全组
+    # permit SSH
+    [root@controller0 ~(keystone)]# nova secgroup-add-rule default tcp 22 22 0.0.0.0/0 
+    +-------------+-----------+---------+-----------+--------------+
+    | IP Protocol | From Port | To Port | IP Range  | Source Group |
+    +-------------+-----------+---------+-----------+--------------+
+    | tcp         | 22        | 22      | 0.0.0.0/0 |              |
+    +-------------+-----------+---------+-----------+--------------+
+
+    # permit ICMP
+    [root@controller0 ~(keystone)]# nova secgroup-add-rule default icmp -1 -1 0.0.0.0/0 
+    +-------------+-----------+---------+-----------+--------------+
+    | IP Protocol | From Port | To Port | IP Range  | Source Group |
+    +-------------+-----------+---------+-----------+--------------+
+    | icmp        | -1        | -1      | 0.0.0.0/0 |              |
+    +-------------+-----------+---------+-----------+--------------+
+
+    [root@controller0 ~(keystone)]# nova secgroup-list-rules default 
+    +-------------+-----------+---------+-----------+--------------+
+    | IP Protocol | From Port | To Port | IP Range  | Source Group |
+    +-------------+-----------+---------+-----------+--------------+
+    | tcp         | 22        | 22      | 0.0.0.0/0 |              |
+    | icmp        | -1        | -1      | 0.0.0.0/0 |              |
+    +-------------+-----------+---------+-----------+--------------+
+
 
 配置Cinder
 -----------
+
+结构图如下：
+
+.. code::
+
+                                             +------------------+
+                                192.168.77.60|   [ cinder0 ]    |
+    +------------------+               +-----+   Cinder-Volume  |
+    | [ controller0 ]  |               | eth0|                  |
+    |     Keystone     |192.168.77.50  |     +------------------+
+    |      Glance      |---------------+
+    |     Nova API     |eth0           |     +------------------+
+    |    Cinder API    |               | eth0|   [ compute0 ]   |
+    +------------------+               +-----+   Nova Compute   |
+                                192.168.77.51|                  |
+                                             +------------------+
+
+控制节点初始化Cinder信息：
+
+.. code::
+
+    # 安装Cinder服务
+    [root@controller0 ~(keystone)]# yum install -y openstack-cinder
+
+    # 配置keystone，添加endpoint
+    [root@controller0 ~(keystone)]# keystone user-create --tenant service --name cinder --pass servicepassword --enabled true 
+    +----------+----------------------------------+
+    | Property |              Value               |
+    +----------+----------------------------------+
+    |  email   |                                  |
+    | enabled  |               True               |
+    |    id    | 6c6438aac109473d92ba22ed64ef7f4a |
+    |   name   |              cinder              |
+    | tenantId | 9acf83020ae34047b6f1e320c352ae44 |
+    | username |              cinder              |
+    +----------+----------------------------------+
+    [root@controller0 ~(keystone)]# keystone user-role-add --user cinder --tenant service --role admin
+    [root@controller0 ~(keystone)]# keystone service-create --name=cinder --type=volume --description="Cinder Service" 
+    +-------------+----------------------------------+
+    |   Property  |              Value               |
+    +-------------+----------------------------------+
+    | description |          Cinder Service          |
+    |   enabled   |               True               |
+    |      id     | f9745ca8657f40d188a464c706d1d923 |
+    |     name    |              cinder              |
+    |     type    |              volume              |
+    +-------------+----------------------------------+
+    [root@controller0 ~(keystone)]# keystone service-create --name=cinderv2 --type=volumev2 --description="Cinder Service" 
+    +-------------+----------------------------------+
+    |   Property  |              Value               |
+    +-------------+----------------------------------+
+    | description |          Cinder Service          |
+    |   enabled   |               True               |
+    |      id     | b11416c99c274ed9872ed5eaffad83b7 |
+    |     name    |             cinderv2             |
+    |     type    |             volumev2             |
+    +-------------+----------------------------------+
+    [root@controller0 ~(keystone)]# export cinder_api=192.168.77.50
+    [root@controller0 ~(keystone)]#  keystone endpoint-create --region RegionOne \
+    > --service cinder \
+    > --publicurl "http://$cinder_api:8776/v1/\$(tenant_id)s" \
+    > --internalurl "http://$cinder_api:8776/v1/\$(tenant_id)s" \
+    > --adminurl "http://$cinder_api:8776/v1/\$(tenant_id)s" 
+    +-------------+--------------------------------------------+
+    |   Property  |                   Value                    |
+    +-------------+--------------------------------------------+
+    |   adminurl  | http://192.168.77.50:8776/v1/$(tenant_id)s |
+    |      id     |      073dafcb7ee049cb8bfd3ebbe149dbc0      |
+    | internalurl | http://192.168.77.50:8776/v1/$(tenant_id)s |
+    |  publicurl  | http://192.168.77.50:8776/v1/$(tenant_id)s |
+    |    region   |                 RegionOne                  |
+    |  service_id |      f9745ca8657f40d188a464c706d1d923      |
+    +-------------+--------------------------------------------+
+    [root@controller0 ~(keystone)]# keystone endpoint-create --region RegionOne \
+    > --service cinderv2 \
+    > --publicurl "http://$cinder_api:8776/v2/\$(tenant_id)s" \
+    > --internalurl "http://$cinder_api:8776/v2/\$(tenant_id)s" \
+    > --adminurl "http://$cinder_api:8776/v2/\$(tenant_id)s" 
+    +-------------+--------------------------------------------+
+    |   Property  |                   Value                    |
+    +-------------+--------------------------------------------+
+    |   adminurl  | http://192.168.77.50:8776/v2/$(tenant_id)s |
+    |      id     |      3f00de1ec9474183971ba3c1c0d35c7d      |
+    | internalurl | http://192.168.77.50:8776/v2/$(tenant_id)s |
+    |  publicurl  | http://192.168.77.50:8776/v2/$(tenant_id)s |
+    |    region   |                 RegionOne                  |
+    |  service_id |      b11416c99c274ed9872ed5eaffad83b7      |
+    +-------------+--------------------------------------------+
+
+    # 添加数据库
+    [root@controller0 ~(keystone)]# mysql -u root -p 
+    Enter password:
+    Welcome to the MariaDB monitor.  Commands end with ; or \g.
+    Your MariaDB connection id is 16
+    Server version: 5.5.40-MariaDB-wsrep MariaDB Server, wsrep_25.11.r4026
+
+    Copyright (c) 2000, 2014, Oracle, Monty Program Ab and others.
+
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+    MariaDB [(none)]> create database cinder; 
+    Query OK, 1 row affected (0.00 sec)
+    MariaDB [(none)]> grant all privileges on cinder.* to cinder@'localhost' identified by 'password'; 
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> grant all privileges on cinder.* to cinder@'%' identified by 'password'; 
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> flush privileges; 
+    Query OK, 0 rows affected (0.00 sec)
+    MariaDB [(none)]> exit 
+    Bye
+
+    # 配置cinder参数
+    [root@controller0 ~(keystone)]# mv /etc/cinder/cinder.conf /etc/cinder/cinder.conf.org
+    [root@controller0 ~(keystone)]# vi /etc/cinder/cinder.conf
+    [DEFAULT]
+    state_path=/var/lib/cinder
+    api_paste_config=api-paste.ini
+    enable_v1_api=true
+    rootwrap_config=/etc/cinder/rootwrap.conf
+    auth_strategy=keystone
+    # specify RabbitMQ server
+    rabbit_host=192.168.77.50
+    rabbit_port=5672
+    # specify RabbitMQ user for auth
+    rabbit_userid=guest
+    # specify RabbitMQ user's password above
+    rabbit_password=password
+    rpc_backend=rabbit
+    scheduler_driver=cinder.scheduler.filter_scheduler.FilterScheduler
+    volume_manager=cinder.volume.manager.VolumeManager
+    volume_api_class=cinder.volume.api.API
+    volumes_dir=$state_path/volumes
+    # auth info for MariaDB
+
+    [database]
+    connection=mysql://cinder:password@192.168.77.50/cinder
+    # auth info for Keystone
+    [keystone_authtoken]
+    auth_host=192.168.77.50
+    auth_port=35357
+    auth_protocol=http
+    admin_user=cinder
+    admin_password=servicepassword
+    admin_tenant_name=service
+
+    # 启用服务
+    [root@controller0 ~(keystone)]# chmod 640 /etc/cinder/cinder.conf 
+    [root@controller0 ~(keystone)]# chgrp cinder /etc/cinder/cinder.conf 
+    [root@controller0 ~(keystone)]# cinder-manage db sync 
+    [root@controller0 ~(keystone)]# for service in api scheduler; do
+    systemctl start openstack-cinder-$service
+    systemctl enable openstack-cinder-$service
+    done 
+    [root@controller0 ~(keystone)]# cinder-manage service list
+    Binary           Host                                 Zone             Status     State Updated At
+    cinder-scheduler controller0                          nova             enabled    :-)   None
+
+配置Cinder节点：
+
+.. code::
+
+    # 安装Cinder服务
+    [root@cinder0 ~(keystone)]# yum install -y openstack-cinder
+    [root@cinder0 ~]# mv /etc/cinder/cinder.conf /etc/cinder/cinder.conf.org 
+    [root@cinder0 ~]# vi /etc/cinder/cinder.conf
+    [DEFAULT]
+    state_path=/var/lib/cinder
+    api_paste_config=api-paste.ini
+    enable_v1_api=true
+    osapi_volume_listen=0.0.0.0
+    osapi_volume_listen_port=8776
+    rootwrap_config=/etc/cinder/rootwrap.conf
+    auth_strategy=keystone
+    # specify Glance server
+    glance_host=192.168.77.50
+    glance_port=9292
+    # specify RabbitMQ server
+    rabbit_host=192.168.77.50
+    rabbit_port=5672
+    # RabbitMQ user for auth
+    rabbit_userid=guest
+    # RabbitMQ user's password for auth
+    rabbit_password=password
+    rpc_backend=rabbit
+    # specify iSCSI target (it's just the own IP)
+    iscsi_ip_address=192.168.77.60
+    iscsi_port=3260
+    iscsi_helper=tgtadm
+    scheduler_driver=cinder.scheduler.filter_scheduler.FilterScheduler
+    volume_manager=cinder.volume.manager.VolumeManager
+    volume_api_class=cinder.volume.api.API
+    volumes_dir=$state_path/volumes
+    # auth info for MariaDB
+
+    [database]
+    connection=mysql://cinder:password@192.168.77.50/cinder
+    # auth info for Keystone
+    [keystone_authtoken]
+    auth_host=192.168.77.50
+    auth_port=35357
+    auth_protocol=http
+    admin_user=cinder
+    admin_password=servicepassword
+    admin_tenant_name=service
+
+    # 启用服务
+    [root@cinder0 ~]# chmod 640 /etc/cinder/cinder.conf
+    [root@cinder0 ~]# chgrp cinder /etc/cinder/cinder.conf 
+    [root@cinder0 ~]# systemctl start openstack-cinder-volume 
+    [root@cinder0 ~]# systemctl enable openstack-cinder-volume
+    ln -s '/usr/lib/systemd/system/openstack-cinder-volume.service' '/etc/systemd/system/multi-user.target.wants/openstack-cinder-volume.service'
+    [root@cinder0 ~]# cinder-manage service list 
+    Binary           Host                                 Zone             Status     State Updated At
+    cinder-scheduler controller0                          nova             enabled    :-)   2015-07-21 03:29:39
+    cinder-volume    cinder0                              nova             enabled    :-)   None
+
+配置LVM后端
+~~~~~~~~~~~~
+
+存储节点配置
+
+.. code::
+
+    # 创建PV
+    [root@cinder0 ~]# pvcreate /dev/sdb
+      Physical volume "/dev/sdb" successfully created
+    [root@cinder0 ~]# pvcreate /dev/sdb1
+      Device /dev/sdb1 not found (or ignored by filtering).
+    [root@cinder0 ~]# pvdisplay 
+      "/dev/sdb" is a new physical volume of "20.00 GiB"
+      --- NEW Physical volume ---
+      PV Name               /dev/sdb
+      VG Name               
+      PV Size               20.00 GiB
+      Allocatable           NO
+      PE Size               0   
+      Total PE              0
+      Free PE               0
+      Allocated PE          0
+      PV UUID               lDpf6L-zPJT-6Uth-lcPA-KtAS-TYNS-B5LH4c
+      
+    [root@cinder0 ~]# vgcreate -s 32M vg_volume01 /dev/sdb
+      Volume group "vg_volume01" successfully created
+    [root@cinder0 ~]# vgdisplay 
+      --- Volume group ---
+      VG Name               vg_volume01
+      System ID             
+      Format                lvm2
+      Metadata Areas        1
+      Metadata Sequence No  1
+      VG Access             read/write
+      VG Status             resizable
+      MAX LV                0
+      Cur LV                0
+      Open LV               0
+      Max PV                0
+      Cur PV                1
+      Act PV                1
+      VG Size               19.97 GiB
+      PE Size               32.00 MiB
+      Total PE              639
+      Alloc PE / Size       0 / 0   
+      Free  PE / Size       639 / 19.97 GiB
+      VG UUID               IYI8rR-d0u4-p58f-h1Bp-afAW-EPRK-21qSdv
+
+    # 修改cinder配置
+    [root@cinder0 ~]# vi /etc/cinder/cinder.conf
+    # 在DEFAULT段中添加
+    enabled_backends = lvm
+    # 在末尾添加
+    [lvm]
+    iscsi_helper = lioadm
+    # volume group name just created
+    volume_group = vg_volume01
+    # IP address of Storage Node
+    iscsi_ip_address = 192.168.77.60
+    volume_driver = cinder.volume.drivers.lvm.LVMVolumeDriver
+    volumes_dir = $state_path/volumes
+    iscsi_protocol = iscsi
+
+    # 重启服务
+    [root@cinder0 ~]# systemctl restart openstack-cinder-volume
+
+计算节点配置，在所有计算节点中都要配置
+
+.. code::
+
+    [root@controller0 ~]# vi /etc/nova/nova.conf
+    # add follows into [DEFAULT] section
+    osapi_volume_listen=0.0.0.0
+    volume_api_class=nova.volume.cinder.API
+    [root@controller0 ~]# systemctl restart openstack-nova-compute 
+
+创建测试磁盘
+
+.. code::
+
+    # 在任意计算节点中都可执行cinder命令创建磁盘
+    [root@controller0 ~]# echo "export OS_VOLUME_API_VERSION=2" >> ~/keystonerc 
+    [root@controller0 ~]# source admin_keystone
+    [root@controller0 ~(keystone)]# cinder create --display_name disk01 10 
+    +---------------------------------------+--------------------------------------+
+    |                Property               |                Value                 |
+    +---------------------------------------+--------------------------------------+
+    |              attachments              |                  []                  |
+    |           availability_zone           |                 nova                 |
+    |                bootable               |                false                 |
+    |          consistencygroup_id          |                 None                 |
+    |               created_at              |      2015-07-27T08:24:32.000000      |
+    |              description              |                 None                 |
+    |               encrypted               |                False                 |
+    |                   id                  | 7a974afe-a71a-479f-b63d-b208daae1707 |
+    |                metadata               |                  {}                  |
+    |              multiattach              |                False                 |
+    |                  name                 |                disk01                |
+    |         os-vol-host-attr:host         |                 None                 |
+    |     os-vol-mig-status-attr:migstat    |                 None                 |
+    |     os-vol-mig-status-attr:name_id    |                 None                 |
+    |      os-vol-tenant-attr:tenant_id     |   c0c4e7b797bb41798202b55872fba074   |
+    |   os-volume-replication:driver_data   |                 None                 |
+    | os-volume-replication:extended_status |                 None                 |
+    |           replication_status          |               disabled               |
+    |                  size                 |                  10                  |
+    |              snapshot_id              |                 None                 |
+    |              source_volid             |                 None                 |
+    |                 status                |               creating               |
+    |                user_id                |   cf11b4425218431991f095c2f58578a0   |
+    |              volume_type              |                 None                 |
+    +---------------------------------------+--------------------------------------+
+    [root@controller0 ~(keystone)]# cinder list
+    +--------------------------------------+-----------+--------+------+-------------+----------+-------------+
+    |                  ID                  |   Status  |  Name  | Size | Volume Type | Bootable | Attached to |
+    +--------------------------------------+-----------+--------+------+-------------+----------+-------------+
+    | 7a974afe-a71a-479f-b63d-b208daae1707 | available | disk01 |  10  |     None    |  false   |             |
+    +--------------------------------------+-----------+--------+------+-------------+----------+-------------+
+
+存储节点上查看
+
+.. code::
+
+    [root@cinder0 ~]# lvdisplay 
+      --- Logical volume ---
+      LV Path                /dev/vg_volume01/volume-7a974afe-a71a-479f-b63d-b208daae1707
+      LV Name                volume-7a974afe-a71a-479f-b63d-b208daae1707
+      VG Name                vg_volume01
+      LV UUID                Pp91xd-Kj0M-J5eI-tUXY-0iMH-MdJ6-PryIq7
+      LV Write Access        read/write
+      LV Creation host, time cinder0, 2015-07-27 16:24:33 +0800
+      LV Status              available
+      # open                 0
+      LV Size                10.00 GiB
+      Current LE             320
+      Segments               1
+      Allocation             inherit
+      Read ahead sectors     auto
+      - currently set to     8192
+      Block device           253:0
+
+计算节点上附加磁盘到虚拟机
+
+.. code::
+
+    [root@controller0 ~(keystone)]# nova list 
+    +----------------+----------+---------+------------+-------------+-----------------------+
+    | ID             | Name     | Status  | Task State | Power State | Networks              |
+    +----------------+----------+---------+------------+-------------+-----------------------+
+    | 16971b4c-c901- | CentOS_7 | SHUTOFF | -          | Shutdown    | int_net=192.168.100.4 |
+    +----------------+----------+---------+------------+-------------+-----------------------+
+
+    [root@controller0 ~(keystone)]# nova volume-attach CentOS_7 7a974afe-a71a-479f-b63d-b208daae1707 auto 
+    +----------+--------------------------------------+
+    | Property | Value                                |
+    +----------+--------------------------------------+
+    | device   | /dev/vdb                             |
+    | id       | 7a974afe-a71a-479f-b63d-b208daae1707 |
+    | serverId | 16971b4c-c901-4e95-8334-b2ff36b99633 |
+    | volumeId | 7a974afe-a71a-479f-b63d-b208daae1707 |
+    +----------+--------------------------------------+
+
+    # the status of attached disk turns "in-use" like follows
+    [root@controller0 ~(keystone)]# cinder list 
+
+配置NFS、Glusterfs混合后端
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+此处使用NFS、Glusterfs混合后端，也可根据实际需求添加LVM后端或者使用三者之一。
+
+.. code::
+
+                                              +------------------+                +------------------+
+                                 192.168.77.60|   [ cinder0 ]    |  192.168.77.100|                  |
+    +------------------+                +-----+   Cinder-Volume  |     +----------+   GlusterFS #1   |
+    |  [ controller0 ] |                | eth0|                  |     |      eth0| gfs01.lofyer.org |
+    |     Keystone     |192.168.77.50   |     +------------------+     |          +------------------+
+    |      Glance      |----------------+------------------------------+
+    |     Nova API     |eth0            |     +------------------+     |          +------------------+
+    |    Cinder API    |                | eth0|   [ compute0 ]   |     |      eth0|                  |
+    +------------------+                +-----+   Nova Compute   |     +----------+   GlusterFS #2   |
+                                 192.168.77.51|                  |  192.168.77.101| gfs02.lofyer.org |
+                                              +------------------+     |          +------------------+
+                                                                   |
+                                                                   |          +------------------+
+                                                                   |      eth0|                  |
+                                                                   +----------+        NFS       |
+                                                                192.168.77.110|  nfs.lofyer.org  |
+                                                                              +------------------+
+
+存储节点配置
+
+.. code::
+
+    # 安装软件包
+    [root@cinder0 ~]# yum -y install nfs-utils glusterfs glusterfs
+
+    # 修改cinder配置
+    [root@cinder0 ~]# vi /etc/cinder/cinder.conf
+    # 于DEFAULT段中添加
+    enabled_backends=nfs,glusterfs
+    # 于末尾添加
+    [nfs]
+    volume_driver = cinder.volume.drivers.nfs.NfsDriver
+    volume_backend_name = NFS
+    nfs_shares_config = /etc/cinder/nfs_shares
+    nfs_mount_point_base = $state_path/nfs
+    [glusterfs]
+    volume_driver = cinder.volume.drivers.glusterfs.GlusterfsDriver
+    volume_backend_name = GlusterFS
+    glusterfs_shares_config = /etc/cinder/glusterfs_shares
+    glusterfs_mount_point_base = $state_path/glusterfs
+
+    # 修改存储信息
+    [root@cinder0 ~]# vi /etc/cinder/nfs_shares
+    # 指定NFS存储路径
+    nfs.lofyer.org:/storage
+    [root@cinder0 ~]# vi /etc/cinder/glusterfs_shares
+    # 指定Glusterfs存储路径
+    gfs01.lofyer.org:/vol_replica
+    [root@cinder0 ~]# chmod 640 /etc/cinder/nfs_shares 
+    [root@cinder0 ~]# chgrp cinder /etc/cinder/nfs_shares 
+    [root@cinder0 ~]# chmod 640 /etc/cinder/glusterfs_shares 
+    [root@cinder0 ~]# chgrp cinder /etc/cinder/glusterfs_shares 
+    [root@cinder0 ~]# systemctl restart openstack-cinder-volume 
+
+计算节点配置，所有计算节点都要配置
+
+.. code::
+
+    # 安装软件包
+    [root@controller0 ~]# yum --enablerepo=epel -y install nfs-utils glusterfs glusterfs-fuse
+    [root@controller0 ~]# vi /etc/nova/nova.conf
+    # 于DEFAULT段中添加
+    osapi_volume_listen=0.0.0.0
+    volume_api_class=nova.volume.cinder.API
+    # 重启计算服务
+    [root@controller0 ~]# systemctl restart openstack-nova-compute 
+
+添加卷种类
+
+.. code::
+
+    # 在任意计算节点中都可执行cinder命令创建磁盘
+    [root@controller0 ~]# echo "export OS_VOLUME_API_VERSION=2" >> ~/keystonerc 
+    [root@controller0 ~]# source admin_keystone
+    [root@controller0 ~(keystone)]# cinder type-create nfs 
+    +--------------------------------------+------+
+    |                  ID                  | Name |
+    +--------------------------------------+------+
+    | 7ac3a255-cf70-498d-97d8-2a7fcdd84d2c | nfs  |
+    +--------------------------------------+------+
+
+    [root@controller0 ~(keystone)]# cinder type-create glusterfs 
+    +--------------------------------------+-----------+
+    |                  ID                  |    Name   |
+    +--------------------------------------+-----------+
+    | e2608bee-cc52-48e8-ba72-b94124f36a57 | glusterfs |
+    +--------------------------------------+-----------+
+
+    [root@controller0 ~(keystone)]# cinder type-list 
+    +--------------------------------------+-----------+
+    |                  ID                  |    Name   |
+    +--------------------------------------+-----------+
+    | 7ac3a255-cf70-498d-97d8-2a7fcdd84d2c |    nfs    |
+    | e2608bee-cc52-48e8-ba72-b94124f36a57 | glusterfs |
+    +--------------------------------------+-----------+
+
+添加存储种类别名
+
+.. code::
+
+    [root@controller0 ~(keystone)]# cinder type-key nfs set volume_backend_name=NFS 
+    [root@controller0 ~(keystone)]# cinder type-key glusterfs set volume_backend_name=GlusterFS 
+    [root@controller0 ~(keystone)]# cinder extra-specs-list 
+    +--------------------------------------+-----------+----------------------------------------+
+    |                  ID                  |    Name   |              extra_specs               |
+    +--------------------------------------+-----------+----------------------------------------+
+    | 7ac3a255-cf70-498d-97d8-2a7fcdd84d2c |    nfs    |    {u'volume_backend_name': u'NFS'}    |
+    | e2608bee-cc52-48e8-ba72-b94124f36a57 | glusterfs | {u'volume_backend_name': u'GlusterFS'} |
+    +--------------------------------------+-----------+----------------------------------------+
+
+添加磁盘
+
+.. code::
+
+    [root@controller0 ~(keystone)]# cinder create --display_name disk_nfs --volume-type nfs 10 
+    +---------------------------------------+--------------------------------------+
+    |                Property               |                Value                 |
+    +---------------------------------------+--------------------------------------+
+    |              attachments              |                  []                  |
+    |           availability_zone           |                 nova                 |
+    |                bootable               |                false                 |
+    |          consistencygroup_id          |                 None                 |
+    |               created_at              |      2015-06-20T18:23:23.000000      |
+    |              description              |                 None                 |
+    |               encrypted               |                False                 |
+    |                   id                  | 1e92b9ca-20d7-4f63-881e-dea3f8b6b523 |
+    |                metadata               |                  {}                  |
+    |              multiattach              |                False                 |
+    |                  name                 |               disk_nfs               |
+    |         os-vol-host-attr:host         |                 None                 |
+    |     os-vol-mig-status-attr:migstat    |                 None                 |
+    |     os-vol-mig-status-attr:name_id    |                 None                 |
+    |      os-vol-tenant-attr:tenant_id     |   98ea1b896d3a48438922c0dfa9f6bc52   |
+    |   os-volume-replication:driver_data   |                 None                 |
+    | os-volume-replication:extended_status |                 None                 |
+    |           replication_status          |               disabled               |
+    |                  size                 |                  10                  |
+    |              snapshot_id              |                 None                 |
+    |              source_volid             |                 None                 |
+    |                 status                |               creating               |
+    |                user_id                |   704a7f5cf84a479796e10f47c30bb629   |
+    |              volume_type              |                 nfs                  |
+    +---------------------------------------+--------------------------------------+
+
+    [root@controller0 ~(keystone)]# cinder create --display_name disk_glusterfs --volume-type glusterfs 10 
+    +---------------------------------------+--------------------------------------+
+    |                Property               |                Value                 |
+    +---------------------------------------+--------------------------------------+
+    |              attachments              |                  []                  |
+    |           availability_zone           |                 nova                 |
+    |                bootable               |                false                 |
+    |          consistencygroup_id          |                 None                 |
+    |               created_at              |      2015-06-20T18:23:49.000000      |
+    |              description              |                 None                 |
+    |               encrypted               |                False                 |
+    |                   id                  | d8dbaed2-e857-4162-baab-0178fbef4593 |
+    |                metadata               |                  {}                  |
+    |              multiattach              |                False                 |
+    |                  name                 |            disk_glusterfs            |
+    |         os-vol-host-attr:host         |                 None                 |
+    |     os-vol-mig-status-attr:migstat    |                 None                 |
+    |     os-vol-mig-status-attr:name_id    |                 None                 |
+    |      os-vol-tenant-attr:tenant_id     |   98ea1b896d3a48438922c0dfa9f6bc52   |
+    |   os-volume-replication:driver_data   |                 None                 |
+    | os-volume-replication:extended_status |                 None                 |
+    |           replication_status          |               disabled               |
+    |                  size                 |                  10                  |
+    |              snapshot_id              |                 None                 |
+    |              source_volid             |                 None                 |
+    |                 status                |               creating               |
+    |                user_id                |   704a7f5cf84a479796e10f47c30bb629   |
+    |              volume_type              |              glusterfs               |
+    +---------------------------------------+--------------------------------------+
+
+    [root@controller0 ~(keystone)]# cinder list 
+    +--------------------------+-----------+----------------+------+-------------+----------+-------------+
+    |                  ID      |   Status  |      Name      | Size | Volume Type | Bootable | Attached to |
+    +--------------------------+-----------+----------------+------+-------------+----------+-------------+
+    | 1e92b9ca-20d7-4f63-881e- | available |    disk_nfs    |  10  |     nfs     |  false   |             |
+    | d8dbaed2-e857-4162-baab- | available | disk_glusterfs |  10  |  glusterfs  |  false   |             |
+    +--------------------------+-----------+----------------+------+-------------+----------+-------------+
+
+附加磁盘到虚拟机
+
+.. code::
+
+    [root@controller0 ~(keystone)]# nova list 
+    +----------------+----------+---------+------------+-------------+-----------------------------------+
+    | ID             | Name     | Status  | Task State | Power State | Networks                          |
+    +----------------+----------+---------+------------+-------------+-----------------------------------+
+    | 2c7a1025-30d6- | CentOS_7 | SHUTOFF | -          | Shutdown    | int_net=192.168.100.3, 10.0.0.201 |
+    +----------------+----------+---------+------------+-------------+-----------------------------------+
+
+    [root@controller0 ~(keystone)]# nova volume-attach CentOS_7 1e92b9ca-20d7-4f63-881e-dea3f8b6b523 auto 
+    +----------+--------------------------------------+
+    | Property | Value                                |
+    +----------+--------------------------------------+
+    | device   | /dev/vdc                             |
+    | id       | 1e92b9ca-20d7-4f63-881e-dea3f8b6b523 |
+    | serverId | 2c7a1025-30d6-446a-a4ff-309347b64eca |
+    | volumeId | 1e92b9ca-20d7-4f63-881e-dea3f8b6b523 |
+    +----------+--------------------------------------+
+
+    [root@controller0 ~(keystone)]# nova volume-attach CentOS_7 d8dbaed2-e857-4162-baab-0178fbef4593 auto 
+    +----------+--------------------------------------+
+    | Property | Value                                |
+    +----------+--------------------------------------+
+    | device   | /dev/vdd                             |
+    | id       | d8dbaed2-e857-4162-baab-0178fbef4593 |
+    | serverId | 2c7a1025-30d6-446a-a4ff-309347b64eca |
+    | volumeId | d8dbaed2-e857-4162-baab-0178fbef4593 |
+    +----------+--------------------------------------+
+
+    # the status of attached disk turns "in-use" like follows
+    [root@controller0 ~(keystone)]# cinder list 
+    +--------------------------+--------+----------------+------+-------------+----------+-----------------------------+
+    |                  ID      | Status |      Name      | Size | Volume Type | Bootable |             Attached to     |
+    +--------------------------+--------+----------------+------+-------------+----------+-----------------------------+
+    | 1e92b9ca-20d7-4f63-881e- | in-use |    disk_nfs    |  10  |     nfs     |  false   | 2c7a1025-30d6-446a-a4ff-309 |
+    | d8dbaed2-e857-4162-baab- | in-use | disk_glusterfs |  10  |  glusterfs  |  false   | 2c7a1025-30d6-446a-a4ff-309 |
+    +--------------------------+--------+----------------+------+-------------+----------+-----------------------------+
+
 
 配置Swift
 ----------
