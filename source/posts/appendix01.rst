@@ -653,15 +653,16 @@ Heat节点：heat0(192.168.77.80)
     rootwrap_config=/etc/nova/rootwrap.conf
     api_paste_config=api-paste.ini
     auth_strategy=keystone
-    # Glance服务信息
-    glance_host=192.168.77.50
-    glance_port=9292
-    glance_protocol=http
     lock_path=/var/lib/nova/tmp
     log_dir=/var/log/nova
     # Memcached服务信息
     memcached_servers=192.168.77.50:11211
     scheduler_driver=nova.scheduler.filter_scheduler.FilterScheduler
+    [glance]
+    # Glance服务信息
+    host=192.168.77.50
+    port=9292
+    protocol=http
     [database]
     # connection info for MariaDB
     connection=mysql://nova:password@localhost/nova
@@ -977,13 +978,14 @@ Heat节点：heat0(192.168.77.80)
     rootwrap_config=/etc/nova/rootwrap.conf
     api_paste_config=api-paste.ini
     auth_strategy=keystone
-    glance_host=192.168.77.50
-    glance_port=9292
-    glance_protocol=http
     lock_path=/var/lib/nova/tmp
     log_dir=/var/log/nova
     memcached_servers=192.168.77.50:11211
     scheduler_driver=nova.scheduler.filter_scheduler.FilterScheduler
+    [glance]
+    host=192.168.77.50
+    port=9292
+    protocol=http
     [database]
     connection=mysql://nova:password@192.168.77.50/nova
     [keystone_authtoken]
@@ -1407,7 +1409,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     network_api_class=nova.network.neutronv2.api.API
     security_group_api=neutron
     # specify the Neutron endpoint
-    neutron_url=http://192.168.77.59:9696
+    neutron_url=http://192.168.77.50:9696
     # specify the auth info for keystone
     neutron_auth_strategy=keystone
     neutron_admin_tenant_name=service
