@@ -102,7 +102,7 @@ CentOS 7以及Ubuntu等发行版部署OpenStack的过程基本一致，在此以
 
 网络节点：network0(192.168.77.30)
 
-存储节点：cinder0(192.168.77.60)，swift0(192.168.77.70)
+存储节点：cinder0(192.168.77.60)，swift0(192.168.77.70)，swift-stor0(192.168.77.71)，swift-stor1(192.168.77.72)，swift-stor2(192.168.77.73)
 
 Heat节点：heat0(192.168.77.80)
 
@@ -2102,17 +2102,17 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     |  [ controller0 ] |                | eth0|                  |     |      eth0| gfs01.lofyer.org |
     |     Keystone     |192.168.77.50   |     +------------------+     |          +------------------+
     |      Glance      |----------------+------------------------------+
-    |     Nova API     |eth0            |     +------------------+     |          +------------------+
-    |    Cinder API    |                | eth0|   [ compute0 ]   |     |      eth0|                  |
-    +------------------+                +-----+   Nova Compute   |     +----------+   GlusterFS #2   |
-                                 192.168.77.51|                  |  192.168.77.101| gfs02.lofyer.org |
-                                              +------------------+     |          +------------------+
-                                                                   |
-                                                                   |          +------------------+
-                                                                   |      eth0|                  |
-                                                                   +----------+        NFS       |
-                                                                192.168.77.110|  nfs.lofyer.org  |
-                                                                              +------------------+
+    |     Nova API     |eth0            |     +------------------+     |                +------------------+
+    |    Cinder API    |                | eth0|   [ compute0 ]   |     |            eth0|                  |
+    +------------------+                +-----+   Nova Compute   |     +----------------+   GlusterFS #2   |
+                                 192.168.77.51|                  |     |  192.168.77.101| gfs02.lofyer.org |
+                                              +------------------+     |                +------------------+
+                                                                       |
+                                                                       |          +------------------+
+                                                                       |      eth0|                  |
+                                                                       +----------+        NFS       |
+                                                                    192.168.77.110|  nfs.lofyer.org  |
+                                                                                  +------------------+
 
 存储节点配置
 
@@ -2322,11 +2322,369 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
 配置Swift
 ----------
 
+在此我们有三个存储节点作为swift backend，swift0作为swift访问入口。
+
+.. code::
+
+                                        |
+     +------------------+               |               +-----------------+
+     | [ controller0 ]  |192.168.77.50  |  192.168.77.70|    [ swift0 ]   |
+     |     Keystone     |---------------+---------------|      Proxy      |
+     +------------------+               |               +-----------------+
+                                        |
+            +---------------------------+--------------------------+
+            |                           |                          |
+            |192.168.77.71              |192.168.77.72             |192.168.77.73
+    +-------+----------+       +--------+---------+       +--------+---------+
+    | [ swift-stor0 ]  |       | [ swift-stor1 ]  |       | [ swift-stor2 ]  |
+    |                  |-------|                  |-------|                  |
+    +------------------+       +------------------+       +------------------+
+
+配置控制节点
+
+.. code::
+
+    # 添加swift用户
+    [root@controller0 ~(keystone)]# openstack user create --project service --password servicepassword swift 
+    +------------+----------------------------------+
+    | Field      | Value                            |
+    +------------+----------------------------------+
+    | email      | None                             |
+    | enabled    | True                             |
+    | id         | 9e19bc053b0f44bdbabf751b279c9afd |
+    | name       | swift                            |
+    | project_id | 9acf83020ae34047b6f1e320c352ae44 |
+    | username   | swift                            |
+    +------------+----------------------------------+
+    # 赋予swift用户admin角色
+    [root@controller0 ~(keystone)]# openstack role add --project service --user swift admin
+    +-------+----------------------------------+
+    | Field | Value                            |
+    +-------+----------------------------------+
+    | id    | 95c4b8fb8d97424eb52a4e8a00a357e7 |
+    | name  | admin                            |
+    +-------+----------------------------------+
+    # 创建swift服务
+    [root@controller0 ~(keystone)]# openstack service create --name swift --description "OpenStack Object Storage" object-store
+    +-------------+----------------------------------+
+    | Field       | Value                            |
+    +-------------+----------------------------------+
+    | description | OpenStack Object Storage         |
+    | enabled     | True                             |
+    | id          | c8d07b32376a4e2780d8ec9b2b836e41 |
+    | name        | swift                            |
+    | type        | object-store                     |
+    +-------------+----------------------------------+
+    [root@controller0 ~(keystone)]# export swift_proxy=192.168.77.70
+    # 添加endpoint
+    root@controller0 ~(keystone)]# openstack endpoint create \
+     --publicurl http://$swift_proxy:8080/v1/AUTH_%\(tenant_id\)s \
+     --internalurl http://$swift_proxy:8080/v1/AUTH_%\(tenant_id\)s \
+     --adminurl http://$swift_proxy:8080 \
+     --region RegionOne \
+     object-store
+    +--------------+-------------------------------------------------+
+    | Field        | Value                                           |
+    +--------------+-------------------------------------------------+
+    | adminurl     | http://192.168.77.70:8080                       |
+    | id           | d7e1f6a5f7064f3690181f7bd8922ac4                |
+    | internalurl  | http://192.168.77.70:8080/v1/AUTH_%(tenant_id)s |
+    | publicurl    | http://192.168.77.70:8080/v1/AUTH_%(tenant_id)s |
+    | region       | RegionOne                                       |
+    | service_id   | c8d07b32376a4e2780d8ec9b2b836e41                |
+    | service_name | swift                                           |
+    | service_type | object-store                                    |
+    +--------------+-------------------------------------------------+
+
+配置swift代理节点
+
+.. code::
+
+    [root@swift0 ~]# vi /etc/swift/proxy-server.conf
+    # 第53行
+    [filter:authtoken]
+    paste.filter_factory = keystoneclient.middleware.auth_token:filter_factory
+    # 注释如下部分
+    #admin_tenant_name = %SERVICE_TENANT_NAME%
+    #admin_user = %SERVICE_USER%
+    #admin_password = %SERVICE_PASSWORD%
+    #
+    #identity_uri = http://localhost:35357/
+    #auth_uri = http://localhost:5000/
+    #
+    signing_dir = /tmp/keystone-signing-swift
+    # 添加认证
+    auth_uri = http://192.168.77.50:5000
+    auth_url = http://192.168.77.50:35357
+    auth_plugin = password
+    project_domain_id = default
+    user_domain_id = default
+    project_name = service
+    username = swift
+    password = servicepassword
+    delay_auth_decision = true
+
+    [root@swift0 ~]# vi /etc/swift/swift.conf
+    # 更改为任意
+    [swift-hash]
+    swift_hash_path_suffix = swift_shared_path
+
+    # 创建swift哈希环
+    # swift-ring-builder builder-file create <part_power> <replicas> <min_part_hours>
+    # Creates <builder_file> with 2^<part_power> partitions and <replicas>.
+    # <min_part_hours> is number of hours to restrict moving a partition more
+    # than once
+    [root@swift0 ~]# swift-ring-builder /etc/swift/account.builder create 12 3 1 
+    [root@swift0 ~]# swift-ring-builder /etc/swift/container.builder create 12 3 1 
+    [root@swift0 ~]# swift-ring-builder /etc/swift/object.builder create 12 3 1
+    [root@swift0 ~]# swift-ring-builder /etc/swift/account.builder add r0z0-192.168.77.71:6002/device0 100 
+    Device d0r0z0-192.168.77.71:6002R192.168.77.71:6002/device0_"" with 100.0 weight got id 0
+    [root@swift0 ~]# swift-ring-builder /etc/swift/account.builder add r0z0-192.168.77.72:6002/device0 100 
+    Device d1r0z0-192.168.77.72:6002R192.168.77.72:6002/device0_"" with 100.0 weight got id 1
+    [root@swift0 ~]# swift-ring-builder /etc/swift/account.builder add r0z0-192.168.77.73:6002/device0 100 
+    Device d2r0z0-192.168.77.73:6002R192.168.77.73:6002/device0_"" with 100.0 weight got id 2
+    [root@swift0 ~]# swift-ring-builder /etc/swift/container.builder add r0z0-192.168.77.71:6001/device0 100 
+    Device d0r0z0-192.168.77.71:6001R192.168.77.71:6001/device0_"" with 100.0 weight got id 0
+    [root@swift0 ~]# swift-ring-builder /etc/swift/container.builder add r0z0-192.168.77.72:6001/device0 100 
+    Device d1r0z0-192.168.77.72:6001R192.168.77.72:6001/device0_"" with 100.0 weight got id 1
+    [root@swift0 ~]# swift-ring-builder /etc/swift/container.builder add r0z0-192.168.77.73:6001/device0 100 
+    Device d2r0z0-192.168.77.73:6001R192.168.77.73:6001/device0_"" with 100.0 weight got id 2
+    [root@swift0 ~]# swift-ring-builder /etc/swift/object.builder add r0z0-192.168.77.71:6000/device0 100
+    Device d0r0z0-192.168.77.71:6000R192.168.77.71:6000/device0_"" with 100.0 weight got id 0
+    [root@swift0 ~]# swift-ring-builder /etc/swift/object.builder add r0z0-192.168.77.72:6000/device0 100
+    Device d1r0z0-192.168.77.72:6000R192.168.77.72:6000/device0_"" with 100.0 weight got id 1
+    [root@swift0 ~]# swift-ring-builder /etc/swift/object.builder add r0z0-192.168.77.73:6000/device0 100
+    Device d2r0z0-192.168.77.73:6000R192.168.77.73:6000/device0_"" with 100.0 weight got id 2
+    [root@swift0 ~]# swift-ring-builder /etc/swift/account.builder rebalance 
+    Reassigned 4096 (100.00%) partitions. Balance is now 0.00.  Dispersion is now 0.00
+    [root@swift0 ~]# swift-ring-builder /etc/swift/container.builder rebalance 
+    Reassigned 4096 (100.00%) partitions. Balance is now 0.00.  Dispersion is now 0.00
+    [root@swift0 ~]# swift-ring-builder /etc/swift/object.builder rebalance
+    Reassigned 4096 (100.00%) partitions. Balance is now 0.00.  Dispersion is now 0.00
+    [root@swift0 ~]# chown swift. /etc/swift/*.gz 
+    [root@swift0 ~]# systemctl start memcached openstack-swift-proxy
+    [root@swift0 ~]# systemctl enable memcached openstack-swift-proxy 
+    ln -s '/usr/lib/systemd/system/memcached.service' '/etc/systemd/system/multi-user.target.wants/memcached.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-proxy.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-proxy.service'
+
+配置存储节点，每个节点都要配置，注意selinux策略，否则会操作失败。
+
+.. code::
+
+    # 禁用selinux
+    [root@swift-stor0 ~]# setenforce permissive
+    [root@swift-stor0 ~]# vi /etc/selinux/config
+    SELINUX=enforcing
+
+
+    # 安装所需包
+    [root@swift-stor0 ~]# yum install -y openstack-swift-account openstack-swift-container openstack-swift-object xfsprogs rsync openssh-clients
+
+    # 格式化存储磁盘为xfs
+    [root@swift-stor0 ~]# mkfs.xfs -i size=1024 -s size=4096 /dev/sdb -f
+    meta-data=/dev/sdb               isize=1024   agcount=4, agsize=1310720 blks
+             =                       sectsz=4096  attr=2, projid32bit=1
+             =                       crc=0        finobt=0
+    data     =                       bsize=4096   blocks=5242880, imaxpct=25
+             =                       sunit=0      swidth=0 blks
+    naming   =version 2              bsize=4096   ascii-ci=0 ftype=0
+    log      =internal log           bsize=4096   blocks=2560, version=2
+             =                       sectsz=4096  sunit=1 blks, lazy-count=1
+    realtime =none                   extsz=4096   blocks=0, rtextents=0
+
+    # 创建目录并添加fstab
+    [root@swift-stor0 ~]# mkdir -p /srv/node/device0 
+    [root@swift-stor0 ~]# mount -o noatime,nodiratime,nobarrier /dev/sdb /srv/node/device0
+    [root@swift-stor0 ~]# chown -R swift. /srv/node
+    [root@swift-stor0 ~]# vi /etc/fstab 
+
+    # 拷贝hash环文件
+    [root@swift-stor0 ~]# scp root@192.168.77.70:/etc/swift/*.gz /etc/swift/
+    root@192.168.77.70's password: 
+    account.ring.gz                            100% 3862     3.8KB/s   00:00    
+    container.ring.gz                          100% 3861     3.8KB/s   00:00    
+    object.ring.gz                             100% 3887     3.8KB/s   00:00
+    [root@swift-stor0 ~]# chown swift. /etc/swift/*.gz 
+
+    # 修改后缀为proxy设置值
+    [root@swift-stor0 ~]# vi /etc/swift/swift.conf
+    [swift-hash] swift_hash_path_suffix = swift_shared_path
+    # 修改account、container、object服务端口
+    [root@swift-stor0 ~]# vi /etc/swift/account-server.conf
+    bind_ip = 192.168.77.71
+    bind_port = 6002
+    [root@swift-stor0 ~]# vi /etc/swift/container-server.conf
+    bind_ip = 192.168.77.71
+    bind_port = 6002
+    [root@swift-stor0 ~]# vi /etc/swift/object-server.conf
+    bind_ip = 192.168.77.71
+    bind_port = 6000
+    # 配置rsync
+    [root@swift-stor0 ~]# vi /etc/rsyncd.conf
+    # 在末尾添加
+    # add to the end
+     pid file = /var/run/rsyncd.pid
+     log file = /var/log/rsyncd.log
+     uid = swift
+     gid = swift
+     address = 192.168.77.71
+
+     [account]
+     path            = /srv/node
+     read only       = false
+     write only      = no
+     list            = yes
+     incoming chmod  = 0644
+     outgoing chmod  = 0644
+     max connections = 25
+     lock file =     /var/lock/account.lock
+
+     [container]
+     path            = /srv/node
+     read only       = false
+     write only      = no
+     list            = yes
+     incoming chmod  = 0644
+     outgoing chmod  = 0644
+     max connections = 25
+     lock file =     /var/lock/container.lock
+
+     [object]
+     path            = /srv/node
+     read only       = false
+     write only      = no
+     list            = yes
+     incoming chmod  = 0644
+     outgoing chmod  = 0644
+     max connections = 25
+     lock file =     /var/lock/object.lock
+
+     [swift_server]
+     path            = /etc/swift
+     read only       = true
+     write only      = no
+     list            = yes
+     incoming chmod  = 0644
+     outgoing chmod  = 0644
+     max connections = 5
+     lock file =     /var/lock/swift_server.lock
+
+     # 开启服务
+    [root@swift-stor0 ~]# systemctl start rsyncd 
+    [root@swift-stor0 ~]# systemctl enable rsyncd 
+    ln -s '/usr/lib/systemd/system/rsyncd.service' '/etc/systemd/system/multi-user.target.wants/rsyncd.service'
+    [root@swift-stor0 ~]# for ringtype in account container object; do 
+         systemctl start openstack-swift-$ringtype
+         systemctl enable openstack-swift-$ringtype
+         for service in replicator updater auditor; do
+             if [ $ringtype != 'account' ] || [ $service != 'updater' ]; then
+                 systemctl start openstack-swift-$ringtype-$service
+                 systemctl enable openstack-swift-$ringtype-$service
+             fi
+         done
+     done 
+    ln -s '/usr/lib/systemd/system/openstack-swift-account.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-account.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-account-replicator.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-account-replicator.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-account-auditor.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-account-auditor.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-container.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-container.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-container-replicator.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-container-replicator.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-container-updater.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-container-updater.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-container-auditor.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-container-auditor.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-object.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-object.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-object-replicator.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-object-replicator.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-object-updater.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-object-updater.service'
+    ln -s '/usr/lib/systemd/system/openstack-swift-object-auditor.service' '/etc/systemd/system/multi-user.target.wants/openstack-swift-object-auditor.service'
+
+添加用户
+
+.. code::
+
+    # 添加工程
+    [root@controller0 ~(keystone)]# openstack project create --description "Swift Service Project" swiftservice 
+    +-------------+----------------------------------+
+    | Field       | Value                            |
+    +-------------+----------------------------------+
+    | description | Swift Service Project            |
+    | enabled     | True                             |
+    | id          | 65e95f038a654db3a2ee0ae93daaf2b3 |
+    | name        | swiftservice                     |
+    +-------------+----------------------------------+
+    # 创建客户端角色
+    [root@controller0 ~(keystone)]# openstack role create swiftoperator 
+    +-------+----------------------------------+
+    | Field | Value                            |
+    +-------+----------------------------------+
+    | id    | dbcb21e865ae435da39507bea32fe312 |
+    | name  | swiftoperator                    |
+    +-------+----------------------------------+
+    # 添加工程用户
+    [root@controller0 ~(keystone)]# openstack user create --project swiftservice --password userpassword user01 
+    +------------+----------------------------------+
+    | Field      | Value                            |
+    +------------+----------------------------------+
+    | email      | None                             |
+    | enabled    | True                             |
+    | id         | c1d2e56e9d72447096221a4542e17e58 |
+    | name       | user01                           |
+    | project_id | 65e95f038a654db3a2ee0ae93daaf2b3 |
+    | username   | user01                           |
+    +------------+----------------------------------+
+    # 赋予用户客户端角色
+    [root@controller0 ~(keystone)]# openstack role add --project swiftservice --user user01 swiftoperator 
+    +-------+----------------------------------+
+    | Field | Value                            |
+    +-------+----------------------------------+
+    | id    | dbcb21e865ae435da39507bea32fe312 |
+    | name  | swiftoperator                    |
+    +-------+----------------------------------+
+
+客户端操作
+
+.. code::
+
+    # 安装所需包
+    [root@controller0 ~(keystone)]# yum install -y python-keystoneclient python-swiftclient
+
+    # 添加keystone_rc文件
+    [root@controller0 ~(swift)]# cat swift_keystone 
+    export OS_PROJECT_DOMAIN_ID=default
+    export OS_USER_DOMAIN_ID=default
+    export OS_PROJECT_NAME=swiftservice
+    export OS_TENANT_NAME=swiftservice
+    export OS_USERNAME=user01
+    export OS_PASSWORD=userpassword
+    export OS_AUTH_URL=http://192.168.77.50:35357/v2.0
+    export PS1='[\u@\h \W(swift)]\$ '
+
+    [root@controller0 ~(keystone)]# source swift_keystone
+    [root@controller0 ~(swift)]# swift stat
+            Account: AUTH_65e95f038a654db3a2ee0ae93daaf2b3
+         Containers: 0
+            Objects: 0
+              Bytes: 0
+    X-Put-Timestamp: 1438064191.81736
+         Connection: keep-alive
+        X-Timestamp: 1438064191.81736
+         X-Trans-Id: txe9426af85d424b7185086-0055b71e3e
+       Content-Type: text/plain; charset=utf-8
+
+    # 创建测试容器
+    [root@controller0 ~(swift)]# swift post test_container
+    [root@controller0 ~(swift)]# swift list
+    test_container
+    # 上传文件
+    [root@controller0 ~(swift)]# swift upload test_container admin_keystone
+    [root@controller0 ~(swift)]# swift list test_container
+    admin_keystone
+    # 下载文件
+    [root@controller0 ~(swift)]# swift download test_container admin_keystone > admin_keystone.txt
+
+
 配置Heat（可选）
 ----------------
 
-配置Ceilometer
----------------
+配置Ceilometer（可选）
+----------------------
 
 配置Sahara（可选）
 ------------------
