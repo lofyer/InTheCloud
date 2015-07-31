@@ -609,7 +609,7 @@ Microsoft Excel 2013 PowerView
 
 `MaxMind GeoIP <http://dev.maxmind.com/geoip/geoip2/geolite2/>`_
 
-Microsoft Excel 2013 PowerView
+Microsoft Excel 2013 PowerView使用示例
 
 -----------------
 4.7 机器学习工具
