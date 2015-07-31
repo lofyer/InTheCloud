@@ -100,7 +100,7 @@ CentOS 7以及Ubuntu等发行版部署OpenStack的过程基本一致，在此以
 
 计算节点：controller0(192.168.77.50)，compute0(192.168.77.51)
 
-网络节点：network0(192.168.77.30)
+网络节点：neutron0(192.168.77.30)
 
 存储节点：cinder0(192.168.77.60)，swift0(192.168.77.70)，swift-stor0(192.168.77.71)，swift-stor1(192.168.77.72)，swift-stor2(192.168.77.73)
 
@@ -456,10 +456,10 @@ Heat节点：heat0(192.168.77.80)
 
     # 添加keystone的endpoint
     [root@controller0 ~]# keystone endpoint-create --region RegionOne \
-    > --service keystone \
-    > --publicurl "http://$my_host:\$(public_port)s/v2.0" \
-    > --internalurl "http://$my_host:\$(public_port)s/v2.0" \
-    > --adminurl "http://$my_host:\$(admin_port)s/v2.0"
+    --service keystone \
+    --publicurl "http://$my_host:\$(public_port)s/v2.0" \
+    --internalurl "http://$my_host:\$(public_port)s/v2.0" \
+    --adminurl "http://$my_host:\$(admin_port)s/v2.0"
       +-------------+-------------------------------------------+
       |   Property  |                   Value                   |
       +-------------+-------------------------------------------+
@@ -473,10 +473,10 @@ Heat节点：heat0(192.168.77.80)
 
     # 添加glance的endpoint
     [root@controller0 ~]# keystone endpoint-create --region RegionOne \
-    > --service glance \
-    > --publicurl "http://$my_host:9292/v1" \
-    > --internalurl "http://$my_host:9292/v1" \
-    > --adminurl "http://$my_host:9292/v1" 
+    --service glance \
+    --publicurl "http://$my_host:9292/v1" \
+    --internalurl "http://$my_host:9292/v1" \
+    --adminurl "http://$my_host:9292/v1" 
       +-------------+----------------------------------+
       |   Property  |              Value               |
       +-------------+----------------------------------+
@@ -490,10 +490,10 @@ Heat节点：heat0(192.168.77.80)
 
     # 添加nova的endpoint
     keystone endpoint-create --region RegionOne \
-    > --service nova \
-    > --publicurl "http://$my_host:\$(compute_port)s/v2/\$(tenant_id)s" \
-    > --internalurl "http://$my_host:\$(compute_port)s/v2/\$(tenant_id)s" \
-    > --adminurl "http://$my_host:\$(compute_port)s/v2/\$(tenant_id)s" 
+    --service nova \
+    --publicurl "http://$my_host:\$(compute_port)s/v2/\$(tenant_id)s" \
+    --internalurl "http://$my_host:\$(compute_port)s/v2/\$(tenant_id)s" \
+    --adminurl "http://$my_host:\$(compute_port)s/v2/\$(tenant_id)s" 
       +-------------+--------------------------------------------------------+
       |   Property  |                         Value                          |
       +-------------+--------------------------------------------------------+
@@ -814,7 +814,7 @@ Heat节点：heat0(192.168.77.80)
     [root@controller0 ~]# source ~/admin_keystone
 
     # 创建实例的内网
-    [root@controller0 ~(keystone)]# nova-manage network create --label network01 --dns1 10.0.0.1 --fixed_range_v4=10.1.0.0/24 
+    [root@controller0 ~(keystone)]# nova-manage network create --label neutron01 --dns1 10.0.0.1 --fixed_range_v4=10.1.0.0/24 
     [root@controller0 ~(keystone)]# nova-manage network list
     id      IPv4                IPv6            start address   DNS1            DNS2            VlanID          project         uuid           
     1       10.1.0.0/24         None            10.1.0.2        10.0.0.1        None            None            None            d5bac5d4-7d1f-49ea-98d7-ea9039e75740
@@ -901,7 +901,7 @@ Heat节点：heat0(192.168.77.80)
     +--------------------------------------+------------+--------+------------+-------------+-------------------------------+
     | ID                                   | Name       | Status | Task State | Power State | Networks                      |
     +--------------------------------------+------------+--------+------------+-------------+-------------------------------+
-    | a0cae25e-4629-48da-a054-99aed02baff9 | centos7iso | BUILD  | spawning   | NOSTATE     | network01=10.1.0.2, 10.0.0.249|
+    | a0cae25e-4629-48da-a054-99aed02baff9 | centos7iso | BUILD  | spawning   | NOSTATE     | neutron01=10.1.0.2, 10.0.0.249|
     +--------------------------------------+------------+--------+------------+-------------+-------------------------------+
     
     # 添加另一个floating-ip
@@ -910,7 +910,7 @@ Heat节点：heat0(192.168.77.80)
     +--------------------------------------+------------+--------+------------+-------------+--------------------------------------------+
     | ID                                   | Name       | Status | Task State | Power State | Networks                                   |
     +--------------------------------------+------------+--------+------------+-------------+--------------------------------------------+
-    | a0cae25e-4629-48da-a054-99aed02baff9 | centos7iso | BUILD  | spawning   | NOSTATE     | network01=10.1.0.2, 10.0.0.249, 10.0.0.250 |
+    | a0cae25e-4629-48da-a054-99aed02baff9 | centos7iso | BUILD  | spawning   | NOSTATE     | neutron01=10.1.0.2, 10.0.0.249, 10.0.0.250 |
     +--------------------------------------+------------+--------+------------+-------------+--------------------------------------------+
 
 配置Horizon
@@ -1058,7 +1058,7 @@ Heat节点：heat0(192.168.77.80)
 
                                     
     +------------------+               |               +------------------------+
-    | [ contoller0   ] |               |               |     [  network0  ]     |
+    | [ contoller0   ] |               |               |     [  neutron0  ]     |
     |     Keystone     |192.168.77.50  |  192.168.77.30|        DHCP Agent      |
     |      Glance      |---------------+---------------|        L3 Agent        |
     |     Nova API     |eth0           |           eth0|        L2 Agent        |
@@ -1243,21 +1243,21 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     [root@controller0 ~(keystone)]# systemctl restart openstack-nova-api 
 
 
-网络节点network0配置
+网络节点neutron0配置
 ~~~~~~~~~~~~~~~~~~~~~
 
-在节点network0上，我们进行如下配置。
+在节点neutron0上，我们进行如下配置。
 
 .. code::
 
     # 安装必需包
-    [root@network0 ~]# yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch
+    [root@neutron0 ~]# yum install openstack-neutron openstack-neutron-ml2 openstack-neutron-openvswitch
 
     # 打开ip_forward
-    [root@network0 ~]# echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf 
-    [root@network0 ~]# echo 'net.ipv4.conf.default.rp_filter=0' >> /etc/sysctl.conf 
-    [root@network0 ~]# echo 'net.ipv4.conf.all.rp_filter=0' >> /etc/sysctl.conf 
-    [root@network0 ~]# sysctl -p 
+    [root@neutron0 ~]# echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf 
+    [root@neutron0 ~]# echo 'net.ipv4.conf.default.rp_filter=0' >> /etc/sysctl.conf 
+    [root@neutron0 ~]# echo 'net.ipv4.conf.all.rp_filter=0' >> /etc/sysctl.conf 
+    [root@neutron0 ~]# sysctl -p 
 
     # 配置neutron
     [root@network ~]# vi /etc/neutron/neutron.conf
@@ -1290,7 +1290,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     admin_password = servicepassword
 
     # 配置三层交换代理
-    [root@network0 ~]# vi /etc/neutron/l3_agent.ini
+    [root@neutron0 ~]# vi /etc/neutron/l3_agent.ini
     # line 19: uncomment
     interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
     # line 25: uncomment
@@ -1299,7 +1299,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     external_network_bridge =
 
     # 配置dhcp代理
-    [root@network0 ~]# vi /etc/neutron/dhcp_agent.ini
+    [root@neutron0 ~]# vi /etc/neutron/dhcp_agent.ini
     # line 27: uncomment
     interface_driver = neutron.agent.linux.interface.OVSInterfaceDriver
     # line 31: uncomment
@@ -1308,7 +1308,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     use_namespaces = True
 
     # 配置元数据代理
-    [root@network0 ~]# vi /etc/neutron/metadata_agent.ini
+    [root@neutron0 ~]# vi /etc/neutron/metadata_agent.ini
     # line 6: change (specify endpoint of keystone)
     auth_url = http://192.168.77.50:35357/v2.0
     # line 12: change (auth info ofr keystone)
@@ -1323,7 +1323,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     metadata_proxy_shared_secret = metadata_secret
 
     # 配置ml2
-    [root@network0 ~]# vi /etc/neutron/plugins/ml2/ml2_conf.ini
+    [root@neutron0 ~]# vi /etc/neutron/plugins/ml2/ml2_conf.ini
     # line 7: add
     type_drivers = flat,vlan,gre
     tenant_network_types = vlan,gre
@@ -1332,13 +1332,13 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     enable_security_group = True
     firewall_driver = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
 
-    [root@network0 ~]# mv /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini.org 
-    [root@network0 ~]# ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini 
-    [root@network0 ~]# ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
-    [root@network0 ~]# systemctl start openvswitch 
-    [root@network0 ~]# systemctl enable openvswitch 
-    [root@network0 ~]# ovs-vsctl add-br br-int 
-    [root@network0 ~]# for service in dhcp-agent l3-agent metadata-agent openvswitch-agent; do
+    [root@neutron0 ~]# mv /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini.org 
+    [root@neutron0 ~]# ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini 
+    [root@neutron0 ~]# ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini 
+    [root@neutron0 ~]# systemctl start openvswitch 
+    [root@neutron0 ~]# systemctl enable openvswitch 
+    [root@neutron0 ~]# ovs-vsctl add-br br-int 
+    [root@neutron0 ~]# for service in dhcp-agent l3-agent metadata-agent openvswitch-agent; do
     systemctl start neutron-$service
     systemctl enable neutron-$service
     done 
@@ -1452,7 +1452,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
            |              |                 |                        |192.168.77.200-192.168.77.254
        eth0|192.168.77.50 |    192.168.77.30| eth0          +--------+-------+
   +--------+---------+    |     +-----------+----------+    | Virtual Router |
-  | [ controller0 ]  |    |     |   [   network0   ]   |    +--------+-------+
+  | [ controller0 ]  |    |     |   [   neutron0   ]   |    +--------+-------+
   |     Keystone     |    |     |       DHCP Agent     |       192.168.100.1
   |      Glance      |    | eth2|       L3 Agent       |eth1         |            192.168.100.0/24
   |     Nova API     |    |     |       L2 Agent       |             |           +-----------------+
@@ -1465,7 +1465,7 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
                    192.168.77.51|       L2 Agent       |                     |---| Virtual Machine |
                                 +----------------------+                         +-----------------+
 
-    其中，controller0、compute0都有两个物理网口，network0有三个物理网口。
+    其中，controller0、compute0都有两个物理网口，neutron0有三个物理网口。
 
 修改控制节点配置：
 
@@ -1486,10 +1486,10 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
 .. code::
 
     # 添加一个桥
-    [root@network0 ~]# ovs-vsctl add-br br-eth1
+    [root@neutron0 ~]# ovs-vsctl add-br br-eth1
     # 将eno33554984网口附加到桥，即对应eth1
-    [root@network0 ~]# ovs-vsctl add-port br-eth1 eno33554984
-    [root@network0 ~]# vi /etc/neutron/plugins/ml2/ml2_conf.ini
+    [root@neutron0 ~]# ovs-vsctl add-port br-eth1 eno33554984
+    [root@neutron0 ~]# vi /etc/neutron/plugins/ml2/ml2_conf.ini
     # line 64
     [ml2_type_vlan]
     network_vlan_ranges = physnet1:1000:2999
@@ -1497,19 +1497,19 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     [ovs]
     tenant_network_type = vlan
     bridge_mappings = physnet1:br-eth1
-    [root@network0 ~]# systemctl restart neutron-openvswitch-agent 
+    [root@neutron0 ~]# systemctl restart neutron-openvswitch-agent 
 
 在网络节点添加eth2作外网：
 
 .. code::
 
-    [root@network0 ~]# ovs-vsctl add-br br-ext 
+    [root@neutron0 ~]# ovs-vsctl add-br br-ext 
     # eno50332208对应eth2
-    [root@network0 ~]# ovs-vsctl add-port br-ext eno50332208
-    [root@network0 ~]# vi /etc/neutron/l3_agent.ini
+    [root@neutron0 ~]# ovs-vsctl add-port br-ext eno50332208
+    [root@neutron0 ~]# vi /etc/neutron/l3_agent.ini
     # line 63
     external_network_bridge = br-ext
-    [root@network0 ~]# systemctl restart neutron-l3-agent 
+    [root@neutron0 ~]# systemctl restart neutron-l3-agent 
 
 在任意节点修改（neutron的配置属于集群全局配置，此处在控制节点修改，其他节点也可）：
 
@@ -1768,10 +1768,10 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     +-------------+----------------------------------+
     [root@controller0 ~(keystone)]# export cinder_api=192.168.77.50
     [root@controller0 ~(keystone)]#  keystone endpoint-create --region RegionOne \
-    > --service cinder \
-    > --publicurl "http://$cinder_api:8776/v1/\$(tenant_id)s" \
-    > --internalurl "http://$cinder_api:8776/v1/\$(tenant_id)s" \
-    > --adminurl "http://$cinder_api:8776/v1/\$(tenant_id)s" 
+    --service cinder \
+    --publicurl "http://$cinder_api:8776/v1/\$(tenant_id)s" \
+    --internalurl "http://$cinder_api:8776/v1/\$(tenant_id)s" \
+    --adminurl "http://$cinder_api:8776/v1/\$(tenant_id)s" 
     +-------------+--------------------------------------------+
     |   Property  |                   Value                    |
     +-------------+--------------------------------------------+
@@ -1783,10 +1783,10 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
     |  service_id |      f9745ca8657f40d188a464c706d1d923      |
     +-------------+--------------------------------------------+
     [root@controller0 ~(keystone)]# keystone endpoint-create --region RegionOne \
-    > --service cinderv2 \
-    > --publicurl "http://$cinder_api:8776/v2/\$(tenant_id)s" \
-    > --internalurl "http://$cinder_api:8776/v2/\$(tenant_id)s" \
-    > --adminurl "http://$cinder_api:8776/v2/\$(tenant_id)s" 
+    --service cinderv2 \
+    --publicurl "http://$cinder_api:8776/v2/\$(tenant_id)s" \
+    --internalurl "http://$cinder_api:8776/v2/\$(tenant_id)s" \
+    --adminurl "http://$cinder_api:8776/v2/\$(tenant_id)s" 
     +-------------+--------------------------------------------+
     |   Property  |                   Value                    |
     +-------------+--------------------------------------------+
@@ -2684,6 +2684,275 @@ neutron依赖于各种插件（openvswitch、linuxbridge等），我们在此使
 
 配置Heat（可选）
 ----------------
+
+Heat服务即用于提供orchestration，在此我们使用neutron0当作heat节点。
+
+.. code::
+
+                                    |
+  +------------------+              |              +-----------------------+
+  | [ controller0 ]  |              |              |      [ neutron0 ]     |
+  |     Keystone     |192.168.77.50 | 192.168.77.30|    DHCP,L3,L2 Agent   |
+  |      Glance      |--------------+--------------|     Metadata Agent    |
+  |     Nova API     |eth0          |           th0|    Heat API,API-CFN   |
+  |  Neutron Server  |              |              |       Heat Engine     |
+  +------------------+              |              +-----------------------+
+                                eth0|192.168.77.51
+                         +--------------------+
+                         |    [ compute0 ]    |
+                         |    Nova Compute    |
+                         |      L2 Agent      |
+                         +--------------------+
+
+控制节点配置
+
+.. code::
+
+    # 安装所需包
+    [root@controller0 ~]# yum install -y openstack-heat-common
+
+    # 添加用户，创建endpoint
+    [root@controller0 ~(keystone)]# openstack user create --project service --password servicepassword heat
+    +------------+----------------------------------+
+    | Field      | Value                            |
+    +------------+----------------------------------+
+    | email      | None                             |
+    | enabled    | True                             |
+    | id         | d18e4d820a5d4384a676bb0064448c09 |
+    | name       | heat                             |
+    | project_id | 9acf83020ae34047b6f1e320c352ae44 |
+    | username   | heat                             |
+    +------------+----------------------------------+
+    [root@controller0 ~(keystone)]# openstack role add --project service --user heat admin 
+    +-------+----------------------------------+
+    | Field | Value                            |
+    +-------+----------------------------------+
+    | id    | 95c4b8fb8d97424eb52a4e8a00a357e7 |
+    | name  | admin                            |
+    +-------+----------------------------------+
+    [root@controller0 ~(keystone)]# openstack role create heat_stack_owner 
+    +-------+----------------------------------+
+    | Field | Value                            |
+    +-------+----------------------------------+
+    | id    | 91ef76ae6d6c4fc0b908cf7416055da0 |
+    | name  | heat_stack_owner                 |
+    +-------+----------------------------------+
+    [root@controller0 ~(keystone)]# openstack role create heat_stack_user 
+    +-------+----------------------------------+
+    | Field | Value                            |
+    +-------+----------------------------------+
+    | id    | 0bf5c075fcb7448d844699131c8008fb |
+    | name  | heat_stack_user                  |
+    +-------+----------------------------------+
+    [root@controller0 ~(keystone)]# openstack role add --project admin --user admin heat_stack_owner
+    +-------+----------------------------------+
+    | Field | Value                            |
+    +-------+----------------------------------+
+    | id    | 91ef76ae6d6c4fc0b908cf7416055da0 |
+    | name  | heat_stack_owner                 |
+    +-------+----------------------------------+
+    [root@controller0 ~(keystone)]# openstack service create --name heat --description "Openstack Orchestration" orchestration 
+    +-------------+----------------------------------+
+    | Field       | Value                            |
+    +-------------+----------------------------------+
+    | description | Openstack Orchestration          |
+    | enabled     | True                             |
+    | id          | fc32f278bf3243d9b6b6c7a5cbf13135 |
+    | name        | heat                             |
+    | type        | orchestration                    |
+    +-------------+----------------------------------+
+    [root@controller0 ~(keystone)]# openstack service create --name heat-cfn --description "Openstack Orchestration" cloudformation
+    +-------------+----------------------------------+
+    | Field       | Value                            |
+    +-------------+----------------------------------+
+    | description | Openstack Orchestration          |
+    | enabled     | True                             |
+    | id          | f3334830bc254e6491b5f7de8f7d9a58 |
+    | name        | heat-cfn                         |
+    | type        | cloudformation                   |
+    +-------------+----------------------------------+
+    [root@controller0 ~(keystone)]# heat_api=192.168.77.30
+    [root@controller0 ~(keystone)]# openstack endpoint create \
+    --publicurl http://$heat_api:8004/v1/%\(tenant_id\)s \
+    --internalurl http://$heat_api:8004/v1/%\(tenant_id\)s \
+    --adminurl http://$heat_api:8004/v1/%\(tenant_id\)s \
+    --region RegionOne \
+    orchestration
+    +--------------+--------------------------------------------+
+    | Field        | Value                                      |
+    +--------------+--------------------------------------------+
+    | adminurl     | http://192.168.77.30:8004/v1/%(tenant_id)s |
+    | id           | 1a91dbfe0913466db38595c1b4f0bd59           |
+    | internalurl  | http://192.168.77.30:8004/v1/%(tenant_id)s |
+    | publicurl    | http://192.168.77.30:8004/v1/%(tenant_id)s |
+    | region       | RegionOne                                  |
+    | service_id   | fc32f278bf3243d9b6b6c7a5cbf13135           |
+    | service_name | heat                                       |
+    | service_type | orchestration                              |
+    +--------------+--------------------------------------------+
+    [root@controller0 ~(keystone)]# openstack endpoint create \
+    --publicurl http://$heat_api:8000/v1 \
+    --internalurl http://$heat_api:8000/v1 \
+    --adminurl http://$heat_api:8000/v1 \
+    --region RegionOne \
+    cloudformation 
+    +--------------+----------------------------------+
+    | Field        | Value                            |
+    +--------------+----------------------------------+
+    | adminurl     | http://192.168.77.30:8000/v1     |
+    | id           | e40570fd8201420fbea42abf3231d8eb |
+    | internalurl  | http://192.168.77.30:8000/v1     |
+    | publicurl    | http://192.168.77.30:8000/v1     |
+    | region       | RegionOne                        |
+    | service_id   | f3334830bc254e6491b5f7de8f7d9a58 |
+    | service_name | heat-cfn                         |
+    | service_type | cloudformation                   |
+    +--------------+----------------------------------+
+
+    # 注意末尾的信息，同时手动更新/etc/heat/heat.conf文件
+    [root@controller0 ~(keystone)]# heat-keystone-setup-domain \
+    --stack-user-domain-name heat_user_domain \
+    --stack-domain-admin heat_domain_admin \
+    --stack-domain-admin-password domainpassword 
+
+    Please update your heat.conf with the following in [DEFAULT]
+
+    stack_user_domain_id=55654da575f048869a9128db12d26f27
+    stack_domain_admin=heat_domain_admin
+    stack_domain_admin_password=domainpassword
+    [root@controller0 ~(keystone)]# vim /etc/heat/heat.conf 
+
+    # 创建数据库
+    [root@controller0 ~]# mysql -uroot -p
+    Enter password: 
+    Welcome to the MariaDB monitor.  Commands end with ; or \g.
+    Your MariaDB connection id is 11
+    Server version: 5.5.40-MariaDB-wsrep MariaDB Server, wsrep_25.11.r4026
+
+    Copyright (c) 2000, 2014, Oracle, MariaDB Corporation Ab and others.
+
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+    MariaDB [(none)]> create database heat; 
+    Query OK, 1 row affected (0.00 sec)
+
+    MariaDB [(none)]> grant all privileges on heat.* to heat@'localhost' identified by 'password'; 
+    Query OK, 0 rows affected (0.00 sec)
+
+    MariaDB [(none)]> grant all privileges on heat.* to heat@'%' identified by 'password'; 
+    Query OK, 0 rows affected (0.00 sec)
+
+    MariaDB [(none)]> flush privileges; 
+    Query OK, 0 rows affected (0.00 sec)
+
+    MariaDB [(none)]> exit
+    Bye
+
+heat节点配置
+
+.. code::
+
+    [root@neutron0 ~]# mv /etc/heat/heat.conf /etc/heat/heat.conf.org 
+    [root@neutron0 ~]# vi /etc/heat/heat.conf
+    [DEFAULT]
+    deferred_auth_method = trusts
+    trusts_delegated_roles = heat_stack_owner
+    # Heat installed server
+    heat_metadata_server_url = http://192.168.77.30:8000
+    heat_waitcondition_server_url = http://192.168.77.30:8000/v1/waitcondition
+    heat_watch_server_url = http://192.168.77.30:8003
+    heat_stack_user_role = heat_stack_user
+    stack_user_domain_id=55654da575f048869a9128db12d26f27
+    stack_domain_admin=heat_domain_admin
+    stack_domain_admin_password=domainpassword
+    rpc_backend = rabbit
+    [database]
+    # MariaDB connection info
+    connection = mysql://heat:password@192.168.77.50/heat
+    # RabbitMQ connection info
+    [oslo_messaging_rabbit]
+    rabbit_host = 192.168.77.50
+    rabbit_port = 5672
+    rabbit_userid = guest
+    rabbit_password = password
+    [ec2authtoken]
+    # Keystone server
+    auth_uri = http://192.168.77.50:35357/v2.0
+    [heat_api]
+    bind_host = 0.0.0.0
+    bind_port = 8004
+    [heat_api_cfn]
+    bind_host = 0.0.0.0
+    bind_port = 8000
+    [keystone_authtoken]
+    # Keystone auth info
+    auth_host = 192.168.77.50
+    auth_port = 35357
+    auth_protocol = http
+    auth_uri = http://192.168.77.50:35357/v2.0
+    # Heat admin user
+    admin_user = heat
+    # Heat admin user's password
+    admin_password = servicepassword
+    # Heat admin user's tenant
+    admin_tenant_name = service
+
+    [root@neutron0 ~]# chgrp heat /etc/heat/heat.conf 
+    [root@neutron0 ~]# chmod 640 /etc/heat/heat.conf 
+    [root@neutron0 ~]# chmod 640 /etc/heat/heat.conf 
+    [root@neutron0 ~]# heat-manage db_sync
+    [root@neutron0 ~]# systemctl start openstack-heat-api openstack-heat-api-cfn openstack-heat-engine 
+    [root@neutron0 ~]# systemctl enable openstack-heat-api openstack-heat-api-cfn openstack-heat-engine
+    ln -s '/usr/lib/systemd/system/openstack-heat-api.service' '/etc/systemd/system/multi-user.target.wants/openstack-heat-api.service'
+    ln -s '/usr/lib/systemd/system/openstack-heat-api-cfn.service' '/etc/systemd/system/multi-user.target.wants/openstack-heat-api-cfn.service'
+    ln -s '/usr/lib/systemd/system/openstack-heat-engine.service' '/etc/systemd/system/multi-user.target.wants/openstack-heat-engine.service'
+
+使用heat创建虚拟机
+
+.. code::
+
+    [root@controller0 ~]# vi sample-stack.yml
+    heat_template_version: 2014-10-16
+
+    description: Heat Sample Template
+
+    parameters:
+      ImageID:
+       type: string
+       description: Image used to boot a server
+      NetID:
+       type: string
+       description: Network ID for the server
+
+    resources:
+     server1:
+      type: OS::Nova::Server
+      properties:
+       name: "Heat_Deployed_Server"
+       image: { get_param: ImageID }
+       flavor: "m1.small"
+       networks:
+       - network: { get_param: NetID }
+
+    outputs:
+     server1_private_ip:
+      description: IP address of the server in the private network
+      value: { get_attr: [ server1, first_address ] }
+
+    [root@controller0 ~]# source admin_keystone
+    [root@controller0 ~(keystone)]# glance image-list
+    +--------------------------------------+---------+-------------+------------------+-------------+--------+
+    | ID                                   | Name    | Disk Format | Container Format | Size        | Status |
+    +--------------------------------------+---------+-------------+------------------+-------------+--------+
+    | fc9da1a8-0418-4ae8-8e67-22a7975f7a0b | centos6 | qcow2       | bare             | 10739318784 | active |
+    +--------------------------------------+---------+-------------+------------------+-------------+--------+
+    [root@controller0 ~(keystone)]# Int_Net_ID=`neutron net-list | grep int_net | awk '{ print $2 }'`
+    [root@controller0 ~(keystone)]# heat stack-create -f sample-stack.yml -P "ImageID=centos6;NetID=$Int_Net_ID" Sample-Stack 
+    +--------------------------------------+--------------+--------------------+----------------------+
+    | id                                   | stack_name   | stack_status       | creation_time        |
+    +--------------------------------------+--------------+--------------------+----------------------+
+    | 35b5c1e6-ec84-4bf8-9e77-1946bcf8d09b | Sample-Stack | CREATE_IN_PROGRESS | 2015-07-31T03:06:27Z |
+    +--------------------------------------+--------------+--------------------+----------------------+
 
 配置Ceilometer（可选）
 ----------------------
