@@ -45,6 +45,8 @@ OpenStack 部署
 Mirantis Fuel 部署
 ===================
 
+现在国内使用Mirantis部署的人已经越来越多了，而我们同样使用它来一次快速部署。精通了Mirantis就掌握了大规模集群的部署方式，不只是OpenStack。
+
 RDO 快速部署
 =============
 

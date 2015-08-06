@@ -78,7 +78,7 @@ Hadoop权威指南
 
 Weka应用技术与实践
 
-Python机器学习时间
+Python机器学习实践
 
 Model Thinking
 
