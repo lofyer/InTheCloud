@@ -1030,7 +1030,7 @@ P2V/V2P
 
     .. code::
 
-        # virt-v2v -ic esx://192.168.1.135/?no_verify=1 -o rhev -os 192.168.1.111:/virtfan/export --network mgmtnet myvm
+        # virt-v2v -ic esx://192.168.1.135/?no_verify=1 -o rhev -os 192.168.1.111:/export --network mgmtnet myvm
         myvm_myvm: 100% [====================================================]D 0h04m48s
         virt-v2v: myvm configured with virtio drivers.
 
