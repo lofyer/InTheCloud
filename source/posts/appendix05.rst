@@ -28,6 +28,8 @@ extundelete
 
 .. image:: ../images/apx01-11.jpg
 
+all in one - pip install glances
+
 另外针对qemu/libvirt相关的测试工具，可以参考 `virt-test <https://github.com/autotest/virt-test>`_ ，当然，仅作参考。
 
 ----------------
