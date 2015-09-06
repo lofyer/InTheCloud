@@ -8,7 +8,7 @@
 
 另外，可以使用 `Nutch <http://nutch.apache.org>`_ 来爬取，并用 `Solr <http://lucene.apache.org/solr/>`_ 来构建一个简单的搜索引擎，它们可以跟下一章节的Hadoop集成。 
 
-还有一个比较重要的知识点-- `Model Thinking <https://www.coursera.org/course/modelthinking>`_ ，你需要有一些建模的知识，数据和算法不是最重要的，重要的是你如何利用这些数据通过你设计的模型来输出对你有用的结果。
+还有一个比较重要的点-- `Model Thinking <https://www.coursera.org/course/modelthinking>`_ ，你需要的不只是建模的知识，还要有建模的思想。数据和算法并不是最重要的，重要的是你如何利用这些数据通过你设计的模型来输出对你有用的结果。
 
 **不要以编程开始你的机器学习之旅，这样容易使思维受限于语言，从模型和结果思考去达到你的目的，编程只是手段之一。**
 
@@ -620,3 +620,5 @@ Microsoft Excel 2013 PowerView使用示例
 `Netlogo <https://ccl.northwestern.edu/netlogo/>`_
 
 `SciKit <http://scikit-learn.org/>`_
+
+`Pandas <http://pandas.pydata.org/>`_

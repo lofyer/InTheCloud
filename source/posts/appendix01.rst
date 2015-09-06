@@ -90,6 +90,12 @@ RDO 快速部署
     假如更换了admin/demo/services的密码，不要忘记在此配置文件中将其修改为新密码。
     # packstack --answer-file=/root/packstack-answers-20140730-110621.txt
 
+添加计算节点
+-------------
+
+使用Neutron网络
+---------------
+
 分步详细部署
 =============
 
