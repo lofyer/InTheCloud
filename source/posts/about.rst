@@ -10,12 +10,6 @@ QQ: 578645806
 
 个人博客: http://lofyer.org
 
-如果你想要服（捐）务（赠），请访问 `我的淘宝店铺 <https://shop106962852.taobao.com>`_ 拍下吧！
-
-书的源码
-
-Github: https://github.com/lofyer/InTheCloud
-
 在线阅读
 
 ReadTheDocs: https://inthecloud.readthedocs.org
