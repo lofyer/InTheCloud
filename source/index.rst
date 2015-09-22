@@ -20,6 +20,7 @@ In the Cloud
     posts/appendix04.rst
     posts/appendix05.rst
     posts/appendix06.rst
+    posts/appendix07.rst
     posts/exp.rst
 
 链接

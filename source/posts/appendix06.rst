@@ -16,6 +16,12 @@ OVF
 
     链接: http://pan.baidu.com/s/1he23k 密码: bmfn
 
+---------
+Qemu Doc
+---------
+
+qemu是KVM虚拟机的基础套件，建议通读其 `手册 <http://qemu.weilnetz.de/qemu-doc.html>`_ 中所有内容以了结其特性。
+
 ------------
 快速安装脚本
 ------------

@@ -8,7 +8,9 @@ Author: lofyer@gmail.com
 
 QQ: 578645806
 
-个人博客: http://lofyer.org
+微信: 578645806
+
+个人博客: http://blog.lofyer.org
 
 在线阅读
 
