@@ -50,7 +50,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'In the Cloud'
+project = u'运维前线'
 copyright = u'2014, lofyer'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -188,7 +188,7 @@ html_use_smartypants = True
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'IntheCloud_cndoc'
+htmlhelp_basename = 'frontline'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -208,7 +208,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  ('index', 'IntheCloud.tex', u'In the Cloud Documentation',
+  ('index', 'frontline.tex', u'运维前线',
    u'lofyer', 'manual'),
 ]
 
@@ -238,7 +238,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'inthecloud', u'In the Cloud Documentation',
+    ('index', 'frontline', u'运维前线',
      [u'lofyer'], 1)
 ]
 
@@ -252,8 +252,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'IntheCloud', u'In the Cloud Documentation',
-   u'lofyer', 'IntheCloud', 'One line description of project.',
+  ('index', 'frontline', u'运维前线',
+   u'lofyer', 'frontline', 'One line description of project.',
    'Miscellaneous'),
 ]
 
@@ -273,10 +273,10 @@ texinfo_documents = [
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'In the Cloud'
+epub_title = u'运维前线'
 epub_author = u'lofyer'
 epub_publisher = u'lofyer'
-epub_copyright = u'2014, lofyer'
+epub_copyright = u'2015, lofyer'
 
 # The basename for the epub file. It defaults to the project name.
 #epub_basename = u'In the Cloud'

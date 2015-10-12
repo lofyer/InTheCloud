@@ -3,30 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-In the Cloud
-=============================
+运维前线2
+=========
 
 .. toctree::
     :maxdepth: 3
 
-    posts/ch01.rst
-    posts/ch02.rst
-    posts/ch03.rst
-    posts/ch04.rst
-    posts/ch05.rst
-    posts/appendix01.rst
-    posts/appendix02.rst
-    posts/appendix03.rst
-    posts/appendix04.rst
-    posts/appendix05.rst
-    posts/appendix06.rst
-    posts/appendix07.rst
-    posts/exp.rst
+    posts/storage.rst
 
-链接
-==================
+运维前线3
+=========
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 3
 
-    posts/about.rst
+    posts/network.rst
