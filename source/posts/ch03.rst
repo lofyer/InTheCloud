@@ -1141,7 +1141,8 @@ UI 插件
 
 **初始化Windows 7**
 
-    使用位于 *C:\\Windows\\system32\\sysprep* 目录下的工具。
+    1. 使用http://www.drbl-winroll.org工具批量修改。
+    2. 使用位于 *C:\\Windows\\system32\\sysprep* 目录下的工具。
 
     .. image:: ../images/03-10.jpg
         :align: center
