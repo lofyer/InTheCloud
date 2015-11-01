@@ -99,7 +99,85 @@ oVirt中存在一种“无状态”实例，此种实例的创建过程如下：
 2. 启动风暴相关系列试验
 =======================
 
-启动风暴实验中将会使块
+此次实验的目的为考察多台虚拟机同时启动对磁盘IO的负载，不考虑qcow2格式与raw格式的影响，统一适用qcow2格式。所有的虚拟机均使用VirtIO接口，qcow2磁盘，backing_file格式也为qcow2，Windows XP 32位操作系统，无任何附加软件。
+
+模板参数：
+
+.. code::
+
+    file: base_xp.sh
+    #!/bin/bash
+    /usr/libexec/qemu-kvm -no-user-config -nodefaults \
+    -m 1024M -cpu host -smp 1,sockets=1,cores=1 \
+    -net tap,ifname=tap0,script=no,downscript=no -net nic,model=virtio \
+    -monitor stdio -vga qxl -global qxl-vga.vram_size=67108864 \
+    -spice port=7001,ipv4,disable-ticketing \
+    -drive file=hda.qcow2,if=none,id=drive-virtio-disk0,format=qcow2,cache=none,werror=stop,rerror=stop,aio=threads \
+    -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x7,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+    -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x8
+
+实验脚本：
+
+.. code::
+
+    创建20个以hda.qcow2为backing file的磁盘，用于实例。
+
+    file: create-imgs.sh
+    #!/bin/bash
+    for i in `seq 11 30`
+    do
+        qemu-img create -f qcow2 -b hda.qcow2 hda-$i.qcow2
+    done
+
+    一次性启动20台实例。
+
+    file: start-vms.sh
+    #!/bin/bash
+    function startvm {
+        /usr/libexec/qemu-kvm -no-user-config -nodefaults \
+        -m 1024M -cpu host -smp 1,sockets=1,cores=1 \
+        -net tap,ifname=tap0,script=no,downscript=no -net nic,model=virtio \
+        -monitor stdio \
+        -vga qxl -global qxl-vga.vram_size=67108864 \
+        -spice port=$1,ipv4,disable-ticketing \
+        -drive file=$2,if=none,id=drive-virtio-disk0,format=qcow2,cache=none,werror=stop,rerror=stop,aio=threads \
+        -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x7,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+        -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x8
+    }
+
+    for i in `seq 11 30`
+    do
+        startvm 70$i hda-$i.qcow2
+    done
+
+测量：
+
+.. code::
+
+    iostat -cdmx 1|tee 20-xp.iostat-cdm.out
+
+数据预处理，我们只需要读写速度（MB/s）、读写请求（q/s）、CPU利用（%user,%sys）。
+
+.. code::
+
+    awk 'BEGIN {print "cpu usage\n";i=0};$1 ~ /[0-9]/ {print i,$1+$3;i+=1;}' 20-xp.iostat-cdm.out > 20-xp.iostat-cdm-cpu.out
+    awk 'BEGIN {print "sda info\nTime IOPS MBps";i=0};$1 ~ /^sda/ {iops=$4+$5;iombps=$6+$7;print i,iops,iombps;i+=1;}' 20-xp.iostat-cdm.out > 20-xp.iostat-cdm-sda.out
+    awk 'BEGIN {print "sdb info\nTime IOPS MBps";i=0};$1 ~ /^sdb/ {iops=$4+$5;iombps=$6+$7;print i,iops,iombps;i+=1;}' 20-xp.iostat-cdm.out > 20-xp.iostat-cdm-sdb.out
+
+可视化示例：
+
+.. code::
+
+    #!/usr/bin/env python
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+    f_c = file('20-xp.iostat-cdm-sda.out').readlines()
+    c = np.array(map(str.split,f_c[2:]),dtype='float')
+
+    plt.plot(c[:,0],c[:,1],label="$IO Requests/s$", color="red", linewidth=2)
+    plt.plot(c[:,0],c[:,2],label="$IO MB/s$", color="blue", linewidth=2)
+    plt.legend()
 
 ---------------------------
 2.1. WD 15K SAS启动win7实验
@@ -129,7 +207,11 @@ oVirt中存在一种“无状态”实例，此种实例的创建过程如下：
 -----------------------------------------
 
 ---------------
-3.5. bcache测试
+3.5. bcache
+---------------
+
+---------------
+3.6. fscache
 ---------------
 
 4. 总结 
