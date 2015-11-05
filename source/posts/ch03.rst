@@ -1139,9 +1139,16 @@ UI 插件
 
     删除 */etc/sysconfig/network-scripts/ifcfg-** 文件中的 **HWADDR=** 字段，删除 */var/log/** 、 */root/*.log* ，然后关机即可。
 
+    修改密码
+
+    .. code::
+
+        # virt-sysprep --root-password password:123456 -a os.img
+
 **初始化Windows 7**
 
     1. 使用http://www.drbl-winroll.org工具批量修改。
+
     2. 使用位于 *C:\\Windows\\system32\\sysprep* 目录下的工具。
 
     .. image:: ../images/03-10.jpg
