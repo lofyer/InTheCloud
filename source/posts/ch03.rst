@@ -680,10 +680,13 @@ spice proxy/gateway - squid代理
 
         # yum install squid
 
-   修改/etc/squid/squid.conf，在第41行。
+   修改/etc/squid/squid.conf。
 
     .. code::
          
+        # 第5行
+        acl localhost src 192.168.0.150
+        # 第41行修改为
         http_access allow CONNECT Safe_ports
         #acl spice_servers dst 192.168.10.0/24
         #http_access allow spice_servers
