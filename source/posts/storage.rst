@@ -93,8 +93,7 @@
 
 .. note:: 
 
-    ids - used by sanlock - each host maintain a lockspace on each domain, allowing it to acquire resources
-          on the leases volume.
+    ids - used by sanlock - each host maintain a lockspace on each domain, allowing it to acquire resources on the leases volume.
     leases - used for acquiring resources. For example, the spm node acquire a resource on this volume
     inbox - every host can write message to the spm node using this volume
     outbox - the spm write messages to other hosts on this volume
