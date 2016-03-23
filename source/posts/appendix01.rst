@@ -12,7 +12,7 @@
 
 API使用请参考http://developer.openstack.org/api-ref.html 以及 http://docs.openstack.org/developer/openstack-projects.html 。
 
-关于在ubuntu/debian上部署OpenStack请参考 `Server-World <http://www.server-world.info/en/>`_ 。
+关于在centos/ubuntu/debian上部署OpenStack请参考 `Server-World <http://www.server-world.info/en/>`_ ，这个更新较为及时。
 
 ---------------
 OpenStack 部署
