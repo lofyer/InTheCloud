@@ -656,6 +656,7 @@ normal、replica、striped卷组合
 通过ls -i 和find -inum 找到此文件及其硬连接文件。
 
 .. code::
+
     [root@hostd data0]# ls -i 1443f429-7076-4792-9cb7-06b1ee38d828/images/5c881816-6cdc-4d8a-a8c8-4b068a917c2f/80f33212-7adb-4e24-9f01-336898ae1a2c
     12976365 1443f429-7076-4792-9cb7-06b1ee38d828/images/5c881816-6cdc-4d8a-a8c8-4b068a917c2f/80f33212-7adb-4e24-9f01-336898ae1a2c
     [root@hostd data0]# find -inum 12976365
