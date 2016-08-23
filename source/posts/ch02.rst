@@ -669,6 +669,26 @@ normal、replica、striped卷组合
 
     [root@hostd data0]# find -inum 12976365 |xargs rm -rf
 
+或者
+
+.. code::
+
+    -bash-4.1# getfattr -d -e hex -m . ids 
+    # file: ids
+    trusted.afr.data_double10t-client-0=0x000000010000000000000000
+    trusted.afr.data_double10t-client-1=0x000000000000000000000000
+    trusted.afr.dirty=0x000000010000000000000000
+    trusted.bit-rot.version=0x040000000000000056e52946000deaaa
+    trusted.gfid=0x112060ecdd5c42f9baa3dd2d67fcf729
+
+    -bash-4.1# setfattr -x trusted.afr.data_double10t-client-0 ids
+    -bash-4.1# setfattr -x trusted.afr.data_double10t-client-1 ids
+    -bash-4.1# setfattr -x trusted.afr.dirty ids
+    -bash-4.1# getfattr -d -e hex -m . ids 
+    # file: ids
+    trusted.bit-rot.version=0x040000000000000056e52946000deaaa
+    trusted.gfid=0x112060ecdd5c42f9baa3dd2d67fcf729
+
 脑裂文件恢复完成，此文件可以在挂载点上读写。
 
 砖块复用
