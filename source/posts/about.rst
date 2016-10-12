@@ -4,7 +4,9 @@
 
 文档基本已暂停更新，计划出书中，详情见作者博客。
 
-Author: lofyer@gmail.com
+Author: 十六（lofyer）
+
+Mail: lofyer@gmail.com
 
 新浪微博: lofyer
 
