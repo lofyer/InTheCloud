@@ -14,6 +14,8 @@ API使用请参考http://developer.openstack.org/api-ref.html 以及 http://docs
 
 关于在centos/ubuntu/debian上部署OpenStack请参考 `Server-World <http://www.server-world.info/en/>`_ ，这个更新较为及时。
 
+笔者最近仿照Mirantis撸了一个脚本，全自动安装部署OpenStack，打算再写个Django拖拽安装。当然，要配上kubernestes部署了。请参考 https://github.com/lofyer/openstack-pxe-deployment 。
+
 ---------------
 OpenStack 部署
 ---------------
