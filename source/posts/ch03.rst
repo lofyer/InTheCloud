@@ -8,6 +8,8 @@
 
 Welcome to the core!
 
+天下平台一大抄。。嗯，笔者撸了个OpenStack和k8s的部署 `脚本 <https://github.com/lofyer/openstack-pxe-deployment>`_ ，PXE哦。
+
 云计算目前主流实现有SaaS（Software-as-a-service）、PaaS（Platform-as-a-service）和IaaS（Infrastructure-as-a-service）。IaaS和PaaS都算作基础件，SaaS可以与基础件自由组合或者单独使用。
 
 虚拟化技术已经很受重视而且被推到了一个浪尖。如今诸多开源虚拟化平台，比如XenServer、CloudStack、OpenStack、Eucalyptus、oVirt、OpenVZ、Docker、LXC等，我们都看花了眼，些许慌乱不知哪个适合自己了。
