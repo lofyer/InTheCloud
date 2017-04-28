@@ -6,7 +6,7 @@
 In the Cloud
 =============================
 
-本文档已经深度提炼，作为《KVM私有云架构设计与实践》一书的参考内容之一，已由上海交通大学出版社出版，欢迎购买。
+本文档已经深度提炼，作为《KVM私有云架构设计与实践》一书的参考内容之一（新版目录可至 `lofyer.org <https://blog.lofyer.org/private-cloud-design/>`_ 查看），已由上海交通大学出版社出版，欢迎购买，或者联系本人团购，微信号为lofyer_org。
 
 .. toctree::
     :maxdepth: 3
